@@ -20,5 +20,8 @@ RUN (python -m pip install --no-cache-dir --quiet pypdf || uv pip install --pyth
 USER 1000
 # the dashboard is set up while the image is built, so the site starts fast
 RUN bash /app/cgem/space_start.sh --build
+# v50 and later small updates (patch_*.py in the repository)
+COPY --chown=1000:1000 patch_*.py /app/cgem/
+RUN export SUPERSET_SECRET_KEY="$(cat /app/superset_home/.cgem_key)" && for f in /app/cgem/patch_*.py; do python "$f"; done
 EXPOSE 8088
 CMD ["bash", "/app/cgem/space_start.sh"]
