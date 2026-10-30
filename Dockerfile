@@ -26,7 +26,7 @@ RUN export SUPERSET_SECRET_KEY="$(cat /app/superset_home/.cgem_key)" && for f in
 # fast first visit: open every tab once during the build so chart results are already cached
 USER root
 COPY --chown=1000:1000 warm_cache.py /app/cgem/
-RUN set +e; python -m pip install --no-cache-dir --quiet playwright==1.48.0; python -m playwright install --with-deps chromium; \
+RUN set +e; (python -m pip install --no-cache-dir --quiet playwright==1.48.0 || uv pip install --python "$(command -v python)" playwright==1.48.0 || (python -m ensurepip && python -m pip install --no-cache-dir --quiet playwright==1.48.0)); python -c "import playwright; print('playwright ready')"; python -m playwright install --with-deps chromium; \
     cd /app/cgem && SUPERSET_SECRET_KEY="$(cat /app/superset_home/.cgem_key)" python /app/cgem/warm_cache.py; \
     rm -rf /app/superset_home/.cache/ms-playwright /root/.cache/ms-playwright; \
     chown -R 1000:1000 /app/superset_home /app/cgem; true
