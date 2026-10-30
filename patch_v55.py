@@ -53,9 +53,7 @@ with app.app_context():
             pos[r2] = {'type': 'ROW', 'id': r2, 'children': [c1], 'parents': base, 'meta': {'background': 'BACKGROUND_TRANSPARENT'}}
             pos[c1] = {'type': 'CHART', 'id': c1, 'children': [], 'parents': base + [r2],
                        'meta': {'chartId': sl.id, 'width': 12, 'height': 60, 'uuid': str(sl.uuid), 'sliceName': NAME}}
-            kids = pos[tab]['children']
-            i = kids.index(arow) + 1 if arow in kids else len(kids)
-            pos[tab]['children'] = kids[:i] + [r1, r2] + kids[i:]
+            pos[tab]['children'] = pos[tab]['children'] + [r1, r2]   # at the end of the Live Prices page
             dash.position_json = json.dumps(pos)
             dash.slices = list(dash.slices) + [sl]
             md = json.loads(dash.json_metadata or '{}')
