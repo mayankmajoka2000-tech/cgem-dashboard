@@ -23,5 +23,13 @@ RUN bash /app/cgem/space_start.sh --build
 # v50 and later small updates (patch_*.py in the repository)
 COPY --chown=1000:1000 patch_*.py /app/cgem/
 RUN export SUPERSET_SECRET_KEY="$(cat /app/superset_home/.cgem_key)" && for f in /app/cgem/patch_*.py; do python "$f"; done
+# fast first visit: open every tab once during the build so chart results are already cached
+USER root
+COPY --chown=1000:1000 warm_cache.py /app/cgem/
+RUN set +e; python -m pip install --no-cache-dir --quiet playwright==1.48.0; python -m playwright install --with-deps chromium; \
+    cd /app/cgem && SUPERSET_SECRET_KEY="$(cat /app/superset_home/.cgem_key)" python /app/cgem/warm_cache.py; \
+    rm -rf /app/superset_home/.cache/ms-playwright /root/.cache/ms-playwright; \
+    chown -R 1000:1000 /app/superset_home /app/cgem; true
+USER 1000
 EXPOSE 8088
 CMD ["bash", "/app/cgem/space_start.sh"]
