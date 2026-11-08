@@ -1,0 +1,588 @@
+{
+ "ml": {
+  "version": 18,
+  "basis_year": 2026,
+  "intercept": 1.9959411173883599,
+  "const": {
+   "year_2026": 0.04477818479896946,
+   "reg_asia": -0.29968705078707214,
+   "india": 0.11687091128059864,
+   "removal": 0.3863459423821556,
+   "vint_recent": -0.15599262636295702,
+   "rating_low": -0.37026612403778725,
+   "authorised": 0.4138622107086304
+  },
+  "w_v2": 0,
+  "ccp_premium": 2.365,
+  "types": {
+   "Renewable energy": {
+    "type_effect": -2.0469560154523085,
+    "removal": false,
+    "old_vintage_adj": 0.0,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 21,
+    "ci90": [
+     0.3263704258716048,
+     1.248295719179241
+    ],
+    "_india_shift": -0.1
+   },
+   "Household devices (cookstoves, lighting, water)": {
+    "type_effect": -0.15959402236351175,
+    "removal": false,
+    "old_vintage_adj": -0.6439847983304201,
+    "high_rating_effect": 0.7307713984740838,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.3445418895463849,
+    "confidence": "Low",
+    "n_wholesale": 24,
+    "ci90": [
+     1.5262499194978754,
+     9.150380242907106
+    ],
+    "_india_shift": -0.1
+   },
+   "Waste (methane, composting, waste-to-energy)": {
+    "type_effect": -0.7114227023213276,
+    "removal": false,
+    "old_vintage_adj": -1.514707243475074,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 13,
+    "ci90": [
+     1.0413083622829054,
+     4.696017320617824
+    ],
+    "_india_shift": -0.1
+   },
+   "Rice methane (AWD, DSR, SRI)": {
+    "type_effect": 1.067362947001178,
+    "removal": false,
+    "old_vintage_adj": -1.6050357573656289,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.9111796733681976,
+    "p90_log": 0.8875020216584302,
+    "auth_extra": 0.0,
+    "confidence": "Medium",
+    "n_wholesale": 4,
+    "ci90": [
+     5.753514330281847,
+     19.303531170398223
+    ],
+    "_india_shift": -0.1
+   },
+   "Soil carbon / regenerative agriculture": {
+    "type_effect": 0.947081499055618,
+    "removal": true,
+    "old_vintage_adj": -1.6050357573656289,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Medium",
+    "n_wholesale": 10,
+    "ci90": [
+     10.625258641587616,
+     29.805854185823133
+    ],
+    "_india_shift": -0.1
+   },
+   "Livestock and other agriculture methane": {
+    "type_effect": 0.27934336109883884,
+    "removal": false,
+    "old_vintage_adj": -1.6050357573656289,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.9111796733681976,
+    "p90_log": 0.8875020216584302,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 2,
+    "ci90": [
+     2.880911191321792,
+     16.811387980695468
+    ],
+    "_india_shift": -0.1
+   },
+   "Energy efficiency and fuel switching": {
+    "type_effect": -0.901155865520064,
+    "removal": false,
+    "old_vintage_adj": -0.5028152332011584,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.9111796733681976,
+    "p90_log": 0.8875020216584302,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 2,
+    "ci90": [
+     1.0826806167266783,
+     3.564004450963754
+    ],
+    "_india_shift": -0.1
+   },
+   "Industrial and chemical processes": {
+    "type_effect": -0.76143894633917,
+    "removal": false,
+    "old_vintage_adj": -0.5028152332011584,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.9111796733681976,
+    "p90_log": 0.8875020216584302,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 5,
+    "ci90": [
+     1.1980448425873864,
+     4.565154479596882
+    ],
+    "_india_shift": -0.1
+   },
+   "Transport": {
+    "type_effect": -0.6047325163027863,
+    "removal": false,
+    "old_vintage_adj": -0.5028152332011584,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.9111796733681976,
+    "p90_log": 0.8875020216584302,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 2,
+    "ci90": [
+     1.9397455856491177,
+     6.377232076893489
+    ],
+    "_india_shift": -0.1
+   },
+   "Afforestation / reforestation (ARR)": {
+    "type_effect": 0.25498587948088236,
+    "removal": true,
+    "old_vintage_adj": -0.12663860509662933,
+    "high_rating_effect": 0.676718255623171,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 38,
+    "ci90": [
+     2.8639716154274875,
+     25.491470037302904
+    ],
+    "_india_shift": -0.1
+   },
+   "Agroforestry": {
+    "type_effect": 0.8725483409004173,
+    "removal": true,
+    "old_vintage_adj": -0.5769356149596279,
+    "high_rating_effect": 0.6752099042804045,
+    "p10_log": -0.9111796733681976,
+    "p90_log": 0.8875020216584302,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 3,
+    "ci90": [
+     3.991643476220407,
+     37.21168492408441
+    ],
+    "_india_shift": -0.1
+   },
+   "REDD+ (avoided deforestation)": {
+    "type_effect": -0.801439845151704,
+    "removal": false,
+    "old_vintage_adj": -1.1013530065811015,
+    "high_rating_effect": 0.682982876377229,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 48,
+    "ci90": [
+     1.0263041375509696,
+     7.104579415455599
+    ],
+    "_india_shift": -0.1
+   },
+   "Blue carbon (mangrove, wetland)": {
+    "type_effect": 1.5998565364173347,
+    "removal": true,
+    "old_vintage_adj": -0.5769356149596279,
+    "high_rating_effect": 0.6752099042804045,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 6,
+    "ci90": [
+     16.47570055352555,
+     84.17604134539963
+    ],
+    "_india_shift": -0.1
+   },
+   "Biochar and engineered removal": {
+    "type_effect": 2.718222232838153,
+    "removal": true,
+    "old_vintage_adj": -0.5028152332011584,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "High",
+    "n_wholesale": 25,
+    "ci90": [
+     104.6497347858232,
+     139.21133024659545
+    ],
+    "_india_shift": -0.1
+   },
+   "Other / not classified": {
+    "type_effect": 0.0,
+    "removal": false,
+    "old_vintage_adj": -0.5028152332011584,
+    "high_rating_effect": 0.8920516269625709,
+    "p10_log": -0.6407864489121317,
+    "p90_log": 0.5916680144389534,
+    "auth_extra": 0.0,
+    "confidence": "Low",
+    "n_wholesale": 0,
+    "ci90": [
+     3.0608946882894843,
+     8.203268156344404
+    ],
+    "_india_shift": -0.1
+   }
+  },
+  "lam": {
+   "fixed": 0.3,
+   "std": 0.03,
+   "region": 1,
+   "type": 0.3,
+   "type_x_asia": 0.3,
+   "slope_vint": 1,
+   "slope_rating": 1,
+   "chan_x": 0.3,
+   "india_x_type": 1.0,
+   "slope_time": 1.0,
+   "auth_x": 1.0
+  },
+  "scheme": [
+   0.7,
+   1.5,
+   0.4
+  ],
+  "coef": {
+   "year_2020": -0.3894528921929099,
+   "year_2021": -0.2438543268273421,
+   "year_2022": 0.40406523518124793,
+   "year_2023": 0.10275677466768586,
+   "year_2024": 0.02367653998393464,
+   "year_2025": 0.07276804300654131,
+   "year_2026": 0.04477818479896946,
+   "removal": 0.3863459423821556,
+   "reduction": -0.43839356585210454,
+   "vint_recent": -0.15599262636295702,
+   "vint_old": -0.6588078595641154,
+   "rating_high": 0.8920516269625709,
+   "rating_low": -0.37026612403778725,
+   "authorised": 0.8499045006975476,
+   "ccp": 0.8608235535484627,
+   "kind_offer": 0.45982479004407734,
+   "kind_forward": -0.18921936015804297,
+   "platts_mc": -0.2520957616221078,
+   "small_lot": 0.4427918586707632,
+   "channel_onchain": 1.2671871542658433,
+   "channel_retail": 1.1214901381077946,
+   "auth_2026": -0.43604228998891725,
+   "std_VCS": -0.4595468459268106,
+   "std_ACR": 0.23917392262103607,
+   "std_GS": 0.1670803732012832,
+   "std_CDM": -1.3595839362841042,
+   "std_CAR": 0.34202231517455745,
+   "std_PlanVivo": 0.42615155723623954,
+   "std_UKWCC": 1.200946915256004,
+   "std_CSA": -0.10450371044378265,
+   "std_Cercarbono": -0.5750462873366705,
+   "reg_latam": 0.12171271136055725,
+   "reg_namerica": 0.1464985887671795,
+   "reg_asia": -0.29968705078707214,
+   "reg_africa": -0.09868578874723197,
+   "reg_europe": -0.0841538614442025,
+   "reg_oceania": 0.22731377861673432,
+   "india": 0.11687091128059864,
+   "type_forestry": 0.14556381351651843,
+   "type_re": -0.7928544119156766,
+   "type_industrial": -0.76143894633917,
+   "type_household": -0.1382105076124402,
+   "type_waste": -0.7087956565913371,
+   "type_agri": 0.5023105045329394,
+   "type_ee": -0.901155865520064,
+   "type_transport": -0.6047325163027863,
+   "type_redd": -0.41556815990135887,
+   "type_ifm": 0.4964884321051257,
+   "type_arr": 0.363896746022424,
+   "type_agroforestry": 0.7260352524127572,
+   "type_blue": 1.4533434479296745,
+   "type_biochar": 2.5924643076843585,
+   "type_rice": 0.7880195859023391,
+   "type_soil": 0.6677381379567792,
+   "type_re*asia": -0.08493973799822227,
+   "type_household*asia": -0.09462404383728809,
+   "type_forestry*asia": 0.022354658106406286,
+   "type_arr*asia": -0.2554239550292018,
+   "type_redd*asia": -0.5323847737380052,
+   "type_biochar*asia": 0.17435643364799475,
+   "type_agri*asia": 0.06379714012830784,
+   "type_waste*asia": -0.0026270457299905478,
+   "vint_old*type_re": 1.9910947274809836,
+   "vint_old*type_household": -0.14116956512926165,
+   "vint_old*type_forestry": -0.07412038175846945,
+   "vint_old*type_arr": 0.4502970098629985,
+   "vint_old*type_redd": -0.5244173916214737,
+   "vint_old*type_biochar": 0.0,
+   "vint_old*type_agri": -1.1022205241644705,
+   "vint_old*type_waste": -1.0118920102739155,
+   "rating_high*type_re": 0.0,
+   "rating_high*type_household": -0.1612802284884871,
+   "rating_high*type_forestry": -0.21684172268216645,
+   "rating_high*type_arr": 0.0015083513427665437,
+   "rating_high*type_redd": 0.007772972096824518,
+   "rating_high*type_biochar": 0.0,
+   "rating_high*type_agri": 0.0,
+   "rating_high*type_waste": 0.0,
+   "authorised*type_household": 0.3445418895463849,
+   "india*type_re": 0.19024328684630348,
+   "india*type_biochar": -0.04859850849420042,
+   "india*type_household": 0.3143868136101465,
+   "india*type_agri": -0.28676428356240835,
+   "india*type_forestry": -0.021405383135264612,
+   "india*type_waste": 0.0,
+   "time*type_re": -1.359405152384713,
+   "time*type_household": -0.24114628452392994,
+   "channel_onchain*type_re": -2.4778160621452225,
+   "channel_onchain*type_household": 0.0,
+   "channel_onchain*type_forestry": 0.0447471232355771,
+   "channel_onchain*type_arr": -0.5320167143398594,
+   "channel_onchain*type_redd": -0.06425876624728241,
+   "channel_onchain*type_agri": -0.680388077149909,
+   "channel_onchain*type_waste": 0.048007827975683204,
+   "channel_onchain*type_biochar": -1.5287664512024777,
+   "channel_onchain*india": -0.22541460317893391,
+   "channel_onchain*reg_asia": -0.07037624322515176,
+   "channel_onchain*vint_old": -0.12306543992450451,
+   "channel_retail*type_re": 0.7604316063002425,
+   "channel_retail*type_household": -0.045959651203794714,
+   "channel_retail*type_forestry": -0.26919300517787836,
+   "channel_retail*type_arr": -0.26919300517787836,
+   "channel_retail*type_redd": 0.0,
+   "channel_retail*type_agri": 0.0,
+   "channel_retail*type_waste": 0.6774273238796581,
+   "channel_retail*type_biochar": 0.0,
+   "channel_retail*india": -0.07808235877194497,
+   "channel_retail*reg_asia": 0.174183638257309,
+   "channel_retail*vint_old": 0.0
+  },
+  "blend": {
+   "w_prior": 0.2,
+   "w_huber": 0.8
+  },
+  "prior": {
+   "vint_old": -0.25,
+   "rating_high": 0.8,
+   "rating_low": -0.3,
+   "authorised": 0.7,
+   "removal": 0.6,
+   "india": 0.0,
+   "ccp": 0.17
+  },
+  "prior_strength": 3,
+  "huber": {
+   "alpha": 0.3,
+   "epsilon": 1.35
+  },
+  "time_decay": 0.7,
+  "low_scale_cap": 1.5,
+  "india_interval": {
+   "p10_shift": -0.1,
+   "method": "Evidence-group conformal intervals, P10 lowered by 0.10 for Indian credits, cover 81% of 36 Indian deal prices (leave-one-out)"
+  },
+  "registry_adjustment": {
+   "reference_log": -0.111,
+   "factors": {
+    "Verra": 0.7057,
+    "Gold Standard": 1.3206,
+    "CDM": 0.2869,
+    "PlanVivo": 1.7111,
+    "Cercarbono": 0.6287
+   },
+   "note": "Project price = credit-type price \u00d7 registry factor. Factor = exp(standard effect \u2212 average standard effect of Indian deal prices). Registries without a fitted effect (GCC, UCR, Isometric, Puro and others) use 1.0. On 9 Indian deal prices with a known standard, the adjustment cut median error from 40% to 26% (in-sample)."
+  }
+ },
+ "v2": {
+  "categories": {
+   "Renewable energy": {
+    "base": 1.93339080374352,
+    "india_factor": 0.303847236401513,
+    "sigma_base": 0.35,
+    "sigma_india": 0.2
+   },
+   "Household devices (cookstoves, lighting, water)": {
+    "base": 5.49745395615097,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.4,
+    "sigma_india": 0.25
+   },
+   "Waste (methane, composting, waste-to-energy)": {
+    "base": 6.72,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.4,
+    "sigma_india": 0.25
+   },
+   "Rice methane (AWD, DSR, SRI)": {
+    "base": 15.816108339273,
+    "india_factor": 1,
+    "sigma_base": 0.35,
+    "sigma_india": 0
+   },
+   "Soil carbon / regenerative agriculture": {
+    "base": 21.8262295081967,
+    "india_factor": 1,
+    "sigma_base": 0.3,
+    "sigma_india": 0
+   },
+   "Livestock and other agriculture methane": {
+    "base": 7.66,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.45,
+    "sigma_india": 0.25
+   },
+   "Energy efficiency and fuel switching": {
+    "base": 3.05,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.4,
+    "sigma_india": 0.25
+   },
+   "Industrial and chemical processes": {
+    "base": 3.66,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.4,
+    "sigma_india": 0.25
+   },
+   "Transport": {
+    "base": 3.24,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.45,
+    "sigma_india": 0.25
+   },
+   "Afforestation / reforestation (ARR)": {
+    "base": 20.44,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.5,
+    "sigma_india": 0.25
+   },
+   "Agroforestry": {
+    "base": 14.11,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.5,
+    "sigma_india": 0.25
+   },
+   "REDD+ (avoided deforestation)": {
+    "base": 6.03,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.5,
+    "sigma_india": 0.25
+   },
+   "Blue carbon (mangrove, wetland)": {
+    "base": 29.72,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.6,
+    "sigma_india": 0.25
+   },
+   "Biochar and engineered removal": {
+    "base": 149.666295470958,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.3,
+    "sigma_india": 0.2
+   },
+   "Other / not classified": {
+    "base": 6.34,
+    "india_factor": 0.905362776025237,
+    "sigma_base": 0.5,
+    "sigma_india": 0.25
+   }
+  },
+  "factors": {
+   "Market level 2025 vs 2024 base prices": {
+    "central": 0.962145110410095,
+    "low": 0.85,
+    "high": 1.05,
+    "sigma": 0.0642276880447438
+   },
+   "Vintage cut-off (years)": {
+    "central": 5,
+    "low": null,
+    "high": null,
+    "sigma": null
+   },
+   "Vintage: recent (age \u2264 cut-off)": {
+    "central": 1.15,
+    "low": 1.1,
+    "high": 1.2,
+    "sigma": 0.0264472270485197
+   },
+   "Vintage: older (age > cut-off)": {
+    "central": 0.85,
+    "low": 0.8,
+    "high": 0.9,
+    "sigma": 0.0358003147891743
+   },
+   "Co-benefit label (Gold Standard, CCB, SD VISta, GCC SDG+)": {
+    "central": 1.2,
+    "low": 1.05,
+    "high": 1.71,
+    "sigma": 0.148238056639859
+   },
+   "ICVCM CCP-approved": {
+    "central": 1.15,
+    "low": 1.05,
+    "high": 1.25,
+    "sigma": 0.0529949504999324
+   },
+   "Rating: high (e.g. Sylvera BBB+ or equivalent)": {
+    "central": 1.36,
+    "low": 1.15,
+    "high": 1.6,
+    "sigma": 0.100377412422668
+   },
+   "Rating: low": {
+    "central": 0.73,
+    "low": 0.6,
+    "high": 0.9,
+    "sigma": 0.12324167419701
+   },
+   "CORSIA Phase 1 eligible (with India LoA)": {
+    "central": 1,
+    "low": 1,
+    "high": 1.3,
+    "sigma": 0.0797459770417906
+   },
+   "Registry: CDM credits (CERs)": {
+    "central": 0.29,
+    "low": 0.2,
+    "high": 0.4,
+    "sigma": 0.210683033604847
+   },
+   "Authorised route (credits with India's letter of authorisation and corresponding adjustment)": {
+    "central": null,
+    "low": null,
+    "high": null,
+    "sigma": null
+   }
+  },
+  "z80": 1.2816,
+  "basis_year": 2025
+ }
+}
