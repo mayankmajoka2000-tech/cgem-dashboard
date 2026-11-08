@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contribute Deal Prices</title>
+<meta name="description" content="Share Indian carbon credit deal prices confidentially with the C-GEM Research Team to make the open benchmark more accurate.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a short contributor page. Why it matters, the promise, three steps, what to send, then the button */
+:root{
+  --bg:#0C1714; --panel:#12211D; --panel2:#172A25; --ink:#E8EFEA; --muted:#93A8A0; --line:#24382F;
+  --accent:#E8A25C; --good:#5CC48E;
+  --f-display:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --f-body:'IBM Plex Sans', Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', 'Courier New', monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root{
+  --bg:#F4F2EB; --panel:#FFFDF7; --panel2:#F6F2E8; --ink:#14302A; --muted:#586862; --line:#DAD5C6;
+  --accent:#B5651D; --good:#2E7D52; color-scheme:light}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,4.6vw,46px);line-height:1.06;margin:8px 0 12px;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:23px;margin:0 0 10px}
+.lede{font-size:17px;color:var(--muted);max-width:64ch;margin:0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.facts div{background:var(--panel);padding:14px 16px}
+.facts b{display:block;font-family:var(--f-mono);font-weight:500;font-size:24px;color:var(--accent)}
+.facts span{font-size:13px;color:var(--muted)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;counter-reset:s}
+ol.steps li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;counter-increment:s;position:relative;padding-top:44px}
+ol.steps li::before{content:counter(s);position:absolute;top:14px;left:16px;font-family:var(--f-mono);color:var(--accent);font-size:18px}
+ol.steps b{display:block;margin-bottom:4px}
+ul.plain{margin:0;padding-left:18px;max-width:72ch}
+ul.plain li{margin-bottom:6px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel);font-size:12px;color:var(--muted);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:20px}
+.btn{display:inline-flex;align-items:center;text-decoration:none;font-weight:600;padding:11px 20px;border-radius:999px;background:var(--accent);color:#14110C}
+.btn:hover{filter:brightness(1.08)}
+.cta p{margin:0;color:var(--muted);font-size:14px;flex:1 1 300px}
+footer{border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:13px}
+/* site navigation (same on every page) */
+.sitenav{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 20px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.sitenav .in{max-width:1320px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.sitenav .brand{font-family:'Source Serif 4', Georgia, serif;font-weight:600;font-size:17px;color:var(--ink);text-decoration:none;margin-right:auto}
+.sitenav a.l{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}
+.sitenav a.l:hover,.sitenav a.l[aria-current="page"]{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="sitenav" aria-label="Site"><div class="in"><a class="brand" href="./">C-GEM Carbon Price</a><a class="l" href="./">Home</a><a class="l" href="dashboard.html">Dashboard</a><a class="l" href="calculator.html">Calculator</a><a class="l" href="weekly.html">Weekly index</a><a class="l" href="methodology.html">Methodology</a><a class="l" href="contribute.html" aria-current="page">Contribute</a><a class="l" href="./#downloads">Downloads</a></div></nav>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">For developers, buyers and brokers</span>
+    <h1>Help set India’s carbon price</h1>
+    <p class="lede">Most Indian carbon credit deals are private, so every public benchmark guesses. Share your deal prices with us in confidence and the open C-GEM price becomes more accurate for everyone, including you.</p>
+  </header>
+
+  <section class="facts" aria-label="Why it matters">
+    <div><b id="fDeals">36</b><span>Indian deal prices the model learns from today</span></div>
+    <div><b id="fErr">24.5%</b><span>median error on Indian deals it has not seen</span></div>
+    <div><b>300</b><span>Indian deal prices we aim to hold by November 2027</span></div>
+  </section>
+
+  <section>
+    <h2>How to contribute</h2>
+    <ol class="steps">
+      <li><b>Ask for access</b>Open the submission form below and request access, or ask the C-GEM team to invite you. We add each contributor by email.</li>
+      <li><b>Submit your prices</b>One entry per deal: credit type, price, month and a few optional details. It takes about two minutes.</li>
+      <li><b>Get the benefit</b>Early access to each model release and a confidential valuation of your own projects or purchases.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Our promise</h2>
+    <ul class="plain">
+      <li>Only the C-GEM team reads submissions. Other contributors cannot see yours.</li>
+      <li>We never publish a project name, a counterparty or a single deal. A price appears only inside an aggregate of at least three contributors.</li>
+      <li>We sign an NDA on request, and delete any submission you ask us to remove.</li>
+      <li>Each price is checked against the model before it is used, and the effect on accuracy is published in the <a href="methodology.html#history">version history</a>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What we ask for</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Field</th><th>Needed?</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Credit type</td><td>Yes</td><td>Rice methane (AWD, DSR, SRI)</td></tr>
+        <tr><td>Price per tCO₂e and currency</td><td>Yes</td><td>17.50 USD, or 1,450 INR</td></tr>
+        <tr><td>Month of the deal</td><td>Yes</td><td>2026-09</td></tr>
+        <tr><td>Spot, forward or offer; your role</td><td>Yes</td><td>Forward offtake; seller</td></tr>
+        <tr><td>Volume band</td><td>Optional</td><td>10,000–50,000 t</td></tr>
+        <tr><td>Registry, methodology, vintage</td><td>Optional</td><td>Verra, VM0051, 2025</td></tr>
+        <tr><td>Rating, CCP label, Article 6 / CORSIA</td><td>Optional</td><td>BeZero A; CCP; not authorised</td></tr>
+      </tbody>
+    </table></div>
+    <p style="color:var(--muted);font-size:13px;margin:10px 0 0">Please share a price only if your agreement with the other party allows it.</p>
+  </section>
+
+  <section class="cta">
+    <a class="btn" href="https://claude.ai/artifact/NsdmXDQggvdWXNs25HZGHy" target="_blank" rel="noopener">Open the submission form</a>
+    <p>The form opens on claude.ai. If you have not been invited yet, you will be asked to request access; the C-GEM team approves each contributor.</p>
+  </section>
+
+  <footer>C-GEM Research Team. Contributions are used only to improve the C-GEM price model and index.</footer>
+</div>
+<script>
+(async function(){try{const a=await (await fetch('api/latest.json')).json();const t=a.tests||{};if(t['LOO Indian deal prices'])document.getElementById('fErr').textContent=(t['LOO Indian deal prices']*100).toFixed(1)+'%';}catch(e){}})();
+</script>
+</body>
+</html>
