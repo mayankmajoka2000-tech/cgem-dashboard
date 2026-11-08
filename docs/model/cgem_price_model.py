@@ -1,4 +1,4 @@
-"""C-GEM India carbon market model, version 16.
+"""C-GEM India carbon market model, version 17.
 
 Price (US$ per tCO2e, 2026 market level) for an Indian voluntary carbon credit:
   * ML model v7 : 0.2 x hierarchical hedonic model with literature priors + 0.8 x robust Huber

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C-GEM Price Model Methodology</title>
+<meta name="description" content="How the C-GEM India carbon credit price model works, how it is tested, every training price with its source, and the machine-readable price feed.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a long-form audit document. Sticky section index on wide screens, single column on phones */
+:root{
+  --bg:#0C1714; --panel:#12211D; --panel2:#172A25; --ink:#E8EFEA; --muted:#93A8A0; --line:#24382F;
+  --accent:#E8A25C; --good:#5CC48E; --bad:#EE7F6B;
+  --f-display:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --f-body:'IBM Plex Sans', Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', 'Courier New', monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root{
+  --bg:#F4F2EB; --panel:#FFFDF7; --panel2:#F6F2E8; --ink:#14302A; --muted:#586862; --line:#DAD5C6;
+  --accent:#B5651D; --good:#2E7D52; --bad:#B4452F; color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:36px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}nav.toc{display:none}}
+.top{max-width:1180px;margin:0 auto 24px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px}
+.top .links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+.top .links a{text-decoration:none;font-weight:500}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+nav.toc{position:sticky;top:20px;align-self:start;font-size:13.5px;display:flex;flex-direction:column;gap:6px;border-left:1px solid var(--line);padding-left:14px}
+nav.toc a{color:var(--muted);text-decoration:none}
+nav.toc a:hover{color:var(--ink)}
+main{min-width:0;display:flex;flex-direction:column;gap:36px}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,4.2vw,44px);line-height:1.08;margin:0 0 10px;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:25px;margin:0 0 10px;text-wrap:balance;scroll-margin-top:16px}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:0 0 10px;max-width:72ch}
+.lede{font-size:17px;color:var(--muted);max-width:70ch}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px}
+.facts div{background:var(--panel);padding:14px 16px}
+.facts b{display:block;font-family:var(--f-mono);font-weight:500;font-size:24px;color:var(--accent)}
+.facts span{font-size:12.5px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+ol.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;max-width:75ch}
+.eq,pre{font-family:var(--f-mono);font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;white-space:pre;color:var(--ink);margin:10px 0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel);font-size:12px;color:var(--muted);font-weight:600;position:sticky;top:0}
+td.n,th.n{text-align:right;font-family:var(--f-mono)}
+.better{color:var(--good);font-weight:600}.worse{color:var(--bad);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.controls input,.controls select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);min-width:0}
+.controls input{flex:1 1 220px}
+.count{font-size:13px;color:var(--muted);font-family:var(--f-mono);align-self:center}
+.big{max-height:620px;overflow:auto}
+.pill{display:inline-block;font-size:11.5px;padding:0 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+ul.plain{margin:0;padding-left:18px;max-width:75ch}
+ul.plain li{margin-bottom:6px}
+footer{max-width:1180px;margin:40px auto 0;border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="eyebrow">C-GEM Research Team · India carbon price model</span>
+  <span class="links"><a href="./">Dashboard</a><a href="calculator.html">Calculator</a><a href="#feed">Price feed</a><a href="data/training_data.csv">Training data (CSV)</a></span>
+</div>
+<div class="wrap">
+  <nav class="toc" aria-label="Sections">
+    <a href="#summary">Summary</a><a href="#who">Who it is for</a><a href="#method">How the model works</a><a href="#tests">How it is tested</a><a href="#history">Version history</a><a href="#data">Training data</a><a href="#feed">Price feed</a><a href="#governance">Governance and limits</a>
+  </nav>
+  <main>
+    <section id="summary">
+      <h1>How the C-GEM price model works</h1>
+      <p class="lede">A transparent, tested estimate of what an Indian voluntary carbon credit is worth, with an honest range. Every price the model learns from is listed below with its source, and every test result is published, including the ones where it got worse.</p>
+      <div class="facts">
+        <div><b id="fN">—</b><span>public prices it learns from</span></div>
+        <div><b id="fErr">—</b><span>median error on Indian deal prices it did not see</span></div>
+        <div><b id="fCov">—</b><span>of Indian deal prices inside its P10–P90 range</span></div>
+        <div><b id="fVer">—</b><span>current version</span></div>
+      </div>
+    </section>
+
+    <section id="who">
+      <h2>Who it is for</h2>
+      <div class="tw"><table>
+        <thead><tr><th>User</th><th>What they use it for</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Corporate buyers and brands</td><td>Fair-value check on a quote, budgeting a net-zero or contribution claim, choosing a mix that meets a removal share and quality floor</td><td><a href="calculator.html#buy">Buyer portfolio</a>, <a href="calculator.html#price">Credit price</a></td></tr>
+          <tr><td>Investors and project financiers</td><td>NPV, IRR, cost per credit, delivery risk and price risk of an Indian project</td><td><a href="calculator.html#fin">Project finance &amp; risk</a></td></tr>
+          <tr><td>Traders and analysts</td><td>Price ladder by type, like-for-like index, demand against supply, project register</td><td><a href="./">Dashboard</a>, <a href="#feed">price feed</a></td></tr>
+          <tr><td>Developers</td><td>What rating, CCP label or Article 6 authorisation is worth for their project</td><td><a href="calculator.html#price">Credit price</a>, <a href="calculator.html#int">Integrity score</a></td></tr>
+          <tr><td>Exporters and policy teams</td><td>EU CBAM cost, CCTS surplus or shortfall</td><td><a href="calculator.html#cbam">CBAM</a>, <a href="calculator.html#ccts">CCTS</a></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="method">
+      <h2>How the model works</h2>
+      <ol class="steps">
+        <li><b>Collect public prices.</b> Market averages, benchmark assessments, named trades, offers and marketplace listings from 2020 to 2026, each with its date, credit type, region, standard, vintage, rating, labels and source link.</li>
+        <li><b>Describe each price by its features.</b> Year, credit type, region and India, standard, removal or reduction, recent or old vintage, high or low rating, Article 6 / CORSIA authorisation, CCP label, and whether it is an offer, a forward or a listing.</li>
+        <li><b>Fit a robust hedonic model on log price.</b> 0.8 × Huber regression, which keeps outlier deals from dominating, plus 0.2 × a hierarchical ridge pulled toward premiums published in the literature. Each older year counts 0.7× the next.</li>
+        <li><b>Let effects vary where the data shows they do.</b> Separate slopes for vintage and rating by credit type, Asia and India effects by type, and, from version 17, a separate Article 6 / CORSIA effect for 2026, when CORSIA Phase 1 prices fell from about $23 to about $10.</li>
+        <li><b>Give every price a range.</b> P10 and P90 come from split-conformal prediction on leave-one-out errors, wider for credit types with fewer than six wholesale prices.</li>
+        <li><b>Test before release.</b> A new version ships only if it beats the last one on Indian deal prices it did not see.</li>
+      </ol>
+      <div class="eq" id="eq">Loading the current equation…</div>
+    </section>
+
+    <section id="tests">
+      <h2>How it is tested</h2>
+      <p>Every test predicts prices the model did not see when it was fitted. The number is the median error. Lower is better, except the coverage row.</p>
+      <div class="tw"><table><thead><tr><th>Test</th><th class="n">Result</th></tr></thead><tbody id="accRows"></tbody></table></div>
+      <h3>What the tests mean</h3>
+      <ul class="plain">
+        <li><b>Leave-one-out</b>: fit on every price but one, predict that one, repeat for each.</li>
+        <li><b>Leave-one-publisher-out</b>: drop every price from one publisher, predict them. This checks the model does not just copy one source.</li>
+        <li><b>Time split</b>: fit on prices up to 2024, predict 2025–26 as if they were 2024. This is the hardest test and the weakest result, because 2025–26 prices moved for reasons earlier data cannot show.</li>
+        <li><b>Honest error on new research prices</b>: how the previous version did on prices added after it was built.</li>
+      </ul>
+    </section>
+
+    <section id="history">
+      <h2>Version history</h2>
+      <div class="tw"><table>
+        <thead><tr><th>Version</th><th>Date</th><th>What changed</th><th class="n">Indian deal error</th></tr></thead>
+        <tbody>
+          <tr><td>v17</td><td>Nov 2026</td><td>Article 6 / CORSIA effect allowed to differ in 2026. A separate rating slope for industrial gases was tested and dropped: no rated industrial prices exist to estimate it.</td><td class="n" id="hErr">—</td></tr>
+          <tr><td>v16</td><td>Nov 2026</td><td>29 new researched prices (rice methane, soil carbon, industrial, blue carbon, CORSIA, CCP landfill gas, ARR and REDD+ benchmarks); Delta Blue Carbon-1 marked as a removal; an unverified e-bus Article 6 price left out</td><td class="n">27.5%</td></tr>
+          <tr><td>v14</td><td>Nov 2026</td><td>Fastmarkets series combined into one row per report; Indian P10 widened so 82% of Indian deals fall inside the range</td><td class="n">29.2%</td></tr>
+          <tr><td>v15</td><td>Nov 2026</td><td>Rejected: adding the EM 2024 cost curve raised Indian error to 32.2%</td><td class="n">—</td></tr>
+        </tbody>
+      </table></div>
+      <p style="margin-top:10px">Other rejected additions: MSCI and Calyx rating-index points, and down-weighting newer Fastmarkets rows. Each was tested and made Indian accuracy worse.</p>
+    </section>
+
+    <section id="data">
+      <h2>Training data</h2>
+      <p>Every price the model learns from, with its source. Class: <span class="pill">avg</span> market average, <span class="pill">deal</span> deal, assessment or offer, <span class="pill">list</span> marketplace listing (weighted less).</p>
+      <div class="controls">
+        <select id="dType" aria-label="Credit type"><option value="">All credit types</option></select>
+        <select id="dCls" aria-label="Price class"><option value="">All classes</option><option value="avg">Market averages</option><option value="deal">Deals and assessments</option><option value="list">Listings</option></select>
+        <input id="dQ" type="search" placeholder="Search label or source" aria-label="Search training data">
+        <span class="count" id="dCount">—</span>
+      </div>
+      <div class="tw big"><table>
+        <thead><tr><th>Label</th><th class="n">US$/t</th><th class="n">Year</th><th>Type</th><th>Region</th><th>Class</th><th>Source</th></tr></thead>
+        <tbody id="dRows"></tbody>
+      </table></div>
+    </section>
+
+    <section id="feed">
+      <h2>Price feed</h2>
+      <p>Company systems can read the current model directly. These files update whenever a new version ships; the version number is inside each one.</p>
+      <div class="tw"><table>
+        <thead><tr><th>File</th><th>What it holds</th></tr></thead>
+        <tbody>
+          <tr><td><a href="api/latest.json">api/latest.json</a></td><td>Version, release date, test results, and the price, P10, P90, confidence and multipliers for each credit type</td></tr>
+          <tr><td><a href="data/projects.csv">data/projects.csv</a></td><td>5,013 Indian projects with model price, range, integrity score, demand score and expected sales value</td></tr>
+          <tr><td><a href="model/price_model.json">model/price_model.json</a></td><td>Every coefficient, so you can reprice any credit yourself</td></tr>
+          <tr><td><a href="model/cgem_price_model.py">model/cgem_price_model.py</a></td><td>Python functions: price, project finance, CCTS, CBAM, portfolio risk, integrity score</td></tr>
+          <tr><td><a href="data/training_data.csv">data/training_data.csv</a></td><td>All training prices with source links</td></tr>
+        </tbody>
+      </table></div>
+      <pre id="feedEx">// Example: read the price of Indian cookstove credits
+const r = await fetch('https://cgem-price-model.onrender.com/api/latest.json');
+const m = await r.json();
+const c = m.types['Household devices (cookstoves, lighting, water)'];
+console.log(m.version, c.price, c.p10, c.p90);</pre>
+    </section>
+
+    <section id="governance">
+      <h2>Governance and limits</h2>
+      <ul class="plain">
+        <li><b>Public data only.</b> Private deals and paywalled assessment series are not included unless their figures were published. Several Indian credit types still rest on fewer than five wholesale prices; their confidence is marked Low.</li>
+        <li><b>No public price yet</b> for Indian rice methane deals beyond one 2025 offtake report, N₂O or HFC-23 deals, livestock methane deals, Indian mangrove credits, or CCTS carbon credit certificates.</li>
+        <li><b>Register prices are type prices.</b> Each project in the dashboard gets its credit type’s price, adjusted for an old vintage or a CCP label where known. Use the calculator to add a project’s rating or Article 6 status.</li>
+        <li><b>Change control.</b> Every candidate change is tested on the same held-out prices, and the result is recorded in the version history whether it ships or not.</li>
+        <li><b>Not investment advice.</b> Estimates are for screening, budgeting and negotiation support. Check any price against a current quote before you buy or sell.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+<footer>C-GEM Research Team. Model code and data are published on this site; reuse with attribution.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(async function(){
+  const pct=(v)=>isNaN(v)?'—':(v*100).toFixed(1)+'%';
+  let api={},acc=[],tr=[];
+  try{[api,acc,tr]=await Promise.all([d3.json('api/latest.json'),d3.csv('data/accuracy.csv'),d3.csv('data/training_data.csv')]);}catch(e){document.getElementById('dRows').innerHTML='<tr><td>Could not load the data files. Refresh the page to try again.</td></tr>';return;}
+  document.getElementById('fN').textContent=d3.format(',')(tr.length);
+  const ie=acc.find(r=>r.test==='LOO Indian deal prices'),cov=acc.find(r=>/inside/i.test(r.test));
+  document.getElementById('fErr').textContent=ie?pct(+ie.median_error):'—';
+  document.getElementById('hErr').textContent=ie?pct(+ie.median_error):'—';
+  document.getElementById('fCov').textContent=cov?Math.round(+cov.median_error*100)+'%':'—';
+  document.getElementById('fVer').textContent='v'+(api.version||'');
+  if(api.equation)document.getElementById('eq').textContent=api.equation;
+  const tb=document.getElementById('accRows');
+  acc.forEach(r=>{const t=tb.insertRow();t.insertCell().textContent=r.test;const c=t.insertCell();c.className='n';c.textContent=/inside/i.test(r.test)?Math.round(+r.median_error*100)+'%':pct(+r.median_error);});
+  const nice={re:'Renewable energy',household:'Household devices',waste:'Waste',rice:'Rice methane',soil:'Soil carbon',agri:'Agriculture',ee:'Energy efficiency',industrial:'Industrial',transport:'Transport',arr:'ARR',agroforestry:'Agroforestry',redd:'REDD+',blue:'Blue carbon',biochar:'Biochar',ifm:'IFM',forestry:'Forestry'};
+  const typeOf=r=>{const t=(r.types||'').split('|').filter(Boolean);return t.length?nice[t[t.length-1]]||t[t.length-1]:'All types'};
+  tr.forEach(r=>{r._t=typeOf(r);r._k=(r.label+' '+r.source_url).toLowerCase();});
+  const sel=document.getElementById('dType');[...new Set(tr.map(r=>r._t))].sort().forEach(t=>sel.append(new Option(t,t)));
+  function draw(){
+    const q=document.getElementById('dQ').value.trim().toLowerCase(),ty=sel.value,cl=document.getElementById('dCls').value;
+    const rows=tr.filter(r=>(!ty||r._t===ty)&&(!cl||r.price_class===cl)&&(!q||r._k.includes(q)));
+    document.getElementById('dCount').textContent=d3.format(',')(rows.length)+' prices';
+    const frag=document.createDocumentFragment();
+    rows.forEach(r=>{const t=document.createElement('tr');const td=(v,c)=>{const e=document.createElement('td');if(c)e.className=c;e.textContent=v;t.append(e);return e;};
+      td(r.label);td((+r.price_usd).toFixed(2),'n');td(r.year,'n');td(r._t);td((r.india==='1'?'India':'')||r.region||'');td(r.price_class);
+      const s=td('');if(r.source_url){const a=document.createElement('a');a.href=r.source_url;a.rel='noopener';a.target='_blank';try{a.textContent=new URL(r.source_url).hostname.replace('www.','')}catch(e){a.textContent='source'}s.append(a);}
+      frag.append(t);});
+    document.getElementById('dRows').replaceChildren(frag);
+  }
+  ['dQ','dType','dCls'].forEach(id=>document.getElementById(id).addEventListener('input',draw));draw();
+})();
+</script>
+</body>
+</html>
