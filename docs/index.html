@@ -580,7 +580,7 @@ P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
       const sc = td(r._sales ? d3.format(',.0f')(r._sales) : '', 'n');
       if (r._sales) { const m = document.createElement('span'); m.className = 'mini'; const f = document.createElement('span'); f.style.width = Math.max(2, Math.sqrt(r._sales / maxSales) * 100) + '%'; m.append(f); sc.append(m); }
       const lc = td(''); const a = document.createElement('a');
-      const qs = new URLSearchParams({type: r.credit_type}); if (r.latest_vintage) qs.set('vint', r.latest_vintage);
+      const qs = new URLSearchParams({type: r.credit_type}); if (r.latest_vintage) qs.set('vint', r.latest_vintage); qs.set('reg', r.registry);
       a.href = 'calculator.html?' + qs.toString(); a.textContent = 'Price it →'; lc.append(a);
       frag.append(tr);
     });

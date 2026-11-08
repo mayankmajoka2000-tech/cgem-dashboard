@@ -71,7 +71,7 @@ footer{max-width:1180px;margin:40px auto 0;border-top:1px solid var(--line);padd
 </div>
 <div class="wrap">
   <nav class="toc" aria-label="Sections">
-    <a href="#summary">Summary</a><a href="#who">Who it is for</a><a href="#method">How the model works</a><a href="#tests">How it is tested</a><a href="#history">Version history</a><a href="#data">Training data</a><a href="#feed">Price feed</a><a href="#governance">Governance and limits</a>
+    <a href="#summary">Summary</a><a href="#compare">Compared with benchmarks</a><a href="#who">Who it is for</a><a href="#method">How the model works</a><a href="#tests">How it is tested</a><a href="#history">Version history</a><a href="#data">Training data</a><a href="#feed">Price feed</a><a href="#governance">Governance and limits</a>
   </nav>
   <main>
     <section id="summary">
@@ -83,6 +83,21 @@ footer{max-width:1180px;margin:40px auto 0;border-top:1px solid var(--line);padd
         <div><b id="fCov">—</b><span>of Indian deal prices inside its P10–P90 range</span></div>
         <div><b id="fVer">—</b><span>current version</span></div>
       </div>
+    </section>
+
+    <section id="compare">
+      <h2>How it differs from paid price benchmarks</h2>
+      <p>Paid benchmark services such as Platts, Fastmarkets or MSCI assess prices from daily conversations with traders and from private deal data. That is something a public-data model cannot match, and their assessments are part of this model’s training data where they were published. This model is built for different jobs:</p>
+      <div class="tw"><table>
+        <thead><tr><th>Need</th><th>This model</th></tr></thead>
+        <tbody>
+          <tr><td>A price for a specific Indian project</td><td>5,013 projects priced individually by type, registry, vintage and CCP label</td></tr>
+          <tr><td>Knowing how sure the price is</td><td>P10–P90 range on every price, tested on held-out Indian deals</td></tr>
+          <tr><td>Checking how a price was made</td><td>Equation, every coefficient, every training price and every test are published</td></tr>
+          <tr><td>Turning a price into a decision</td><td>Project finance, risk simulation, buyer portfolio, forward curve, CCTS and CBAM tools on the same model</td></tr>
+          <tr><td>Daily traded market levels</td><td>Not offered. Use a paid benchmark for daily marks, and this model to check and extend them</td></tr>
+        </tbody>
+      </table></div>
     </section>
 
     <section id="who">
@@ -180,7 +195,7 @@ console.log(m.version, c.price, c.p10, c.p90);</pre>
       <ul class="plain">
         <li><b>Public data only.</b> Private deals and paywalled assessment series are not included unless their figures were published. Several Indian credit types still rest on fewer than five wholesale prices; their confidence is marked Low.</li>
         <li><b>No public price yet</b> for Indian rice methane deals beyond one 2025 offtake report, N₂O or HFC-23 deals, livestock methane deals, Indian mangrove credits, or CCTS carbon credit certificates.</li>
-        <li><b>Register prices are type prices.</b> Each project in the dashboard gets its credit type’s price, adjusted for an old vintage or a CCP label where known. Use the calculator to add a project’s rating or Article 6 status.</li>
+        <li><b>Project prices.</b> Each project in the dashboard gets its credit type’s price, adjusted for its registry (Verra ×0.71, Gold Standard ×1.32, CDM ×0.29, Plan Vivo ×1.71, Cercarbono ×0.63; others ×1.0), an old vintage and a CCP label where known. On the 9 Indian deal prices with a known standard, the registry adjustment cut median error from 40% to 26%; the sample is small. Use the calculator to add a project’s rating or Article 6 status.</li>
         <li><b>Change control.</b> Every candidate change is tested on the same held-out prices, and the result is recorded in the version history whether it ships or not.</li>
         <li><b>Not investment advice.</b> Estimates are for screening, budgeting and negotiation support. Check any price against a current quote before you buy or sell.</li>
       </ul>

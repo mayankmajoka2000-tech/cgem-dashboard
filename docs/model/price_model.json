@@ -408,6 +408,17 @@
   "india_interval": {
    "p10_shift": -0.1,
    "method": "Evidence-group conformal intervals, P10 lowered by 0.10 for Indian credits, cover 81% of 36 Indian deal prices (leave-one-out)"
+  },
+  "registry_adjustment": {
+   "reference_log": -0.111,
+   "factors": {
+    "Verra": 0.7057,
+    "Gold Standard": 1.3206,
+    "CDM": 0.2869,
+    "PlanVivo": 1.7111,
+    "Cercarbono": 0.6287
+   },
+   "note": "Project price = credit-type price \u00d7 registry factor. Factor = exp(standard effect \u2212 average standard effect of Indian deal prices). Registries without a fitted effect (GCC, UCR, Isometric, Puro and others) use 1.0. On 9 Indian deal prices with a known standard, the adjustment cut median error from 40% to 26% (in-sample)."
   }
  },
  "v2": {

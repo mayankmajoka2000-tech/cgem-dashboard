@@ -96,6 +96,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   <button role="tab" id="t-cbam" aria-selected="false" data-tab="cbam">CBAM cost</button>
   <button role="tab" id="t-ccts" aria-selected="false" data-tab="ccts">CCTS balance</button>
   <button role="tab" id="t-buy" aria-selected="false" data-tab="buy">Buyer portfolio</button>
+  <button role="tab" id="t-fwd" aria-selected="false" data-tab="fwd">Forward curve</button>
 </nav>
 
 <!-- PRICE -->
@@ -106,6 +107,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <label class="full">Credit type<select id="p-type"></select></label>
       <label>Vintage year<input id="p-vint" type="number" min="2005" max="2026" value="2024"></label>
       <label>Rating<select id="p-rating"><option value="">Not rated / average</option><option value="high">High (e.g. A or above)</option><option value="low">Low (e.g. C or below)</option></select></label>
+      <label class="full">Registry / standard<select id="p-reg"><option value="">Not known / other (GCC, UCR, Isometric, Puro…)</option><option value="Verra">Verra (×0.71)</option><option value="Gold Standard">Gold Standard (×1.32)</option><option value="CDM">CDM (×0.29)</option><option value="PlanVivo">PlanVivo (×1.71)</option><option value="Cercarbono">Cercarbono (×0.63)</option></select></label>
       <label class="check full"><input id="p-auth" type="checkbox"> Article 6 authorised / CORSIA eligible</label>
       <label class="check full"><input id="p-ccp" type="checkbox"> ICVCM CCP-approved methodology</label>
       <label>Volume (tCO₂e)<input id="p-vol" type="number" min="0" value="50000"></label>
@@ -283,6 +285,29 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </div>
 </section>
 
+<!-- FORWARD CURVE -->
+<section class="grid" data-panel="fwd" hidden>
+  <div class="card">
+    <h2>Market assumptions</h2>
+    <div class="fields">
+      <label class="full">Credit type<select id="w-type"></select></label>
+      <label>Demand growth per year (%)<input id="w-gd" type="number" step="0.5" value="6"></label>
+      <label>Supply growth per year (%)<input id="w-gs" type="number" step="0.5" value="4"></label>
+      <label>Price elasticity<input id="w-el" type="number" step="0.1" min="0.2" value="1.5"></label>
+      <label>Policy shock in 2028 (%)<input id="w-shock" type="number" step="5" value="0"></label>
+      <label class="check full"><input id="w-auth" type="checkbox"> Article 6 authorised / CORSIA eligible</label>
+      <label class="check full"><input id="w-rated" type="checkbox"> Highly rated</label>
+    </div>
+    <p class="note">Price(t) = Price(2026) × [(1 + demand growth) ÷ (1 + supply growth)]^(years ÷ elasticity) × (1 + shock from 2028). The band widens with the square root of years ahead. The growth rule is the one in the workbook’s Supply and demand sheet. A scenario, not a forecast.</p>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>Forward curve, 2026–2030</h2>
+    <div><span class="big" id="wr-30">–</span> <span class="sub">US$ per tCO₂e in 2030</span></div>
+    <svg id="wr-chart" viewBox="0 0 520 220" width="100%" role="img" aria-label="Forward price curve with P10 to P90 band"></svg>
+    <div class="tw"><table id="wr-table" style="color:var(--deep-ink)"></table></div>
+  </div>
+</section>
+
 <footer>Same equations as cgem_price_model.py and the training data in model/price_model.json. Estimates from public data; not investment advice. C-GEM Research Team, November 2026.</footer>
 </div>
 
@@ -313,7 +338,8 @@ const inr=v=>isFinite(v)?(v<0?'−₹':'₹')+Math.abs(v).toLocaleString('en-IN'
 const eur=v=>isFinite(v)?'€'+v.toLocaleString('en-IN',{maximumFractionDigits:v<100?2:0}):'–';
 const fmt=(v,d=0)=>isFinite(v)?v.toLocaleString('en-IN',{maximumFractionDigits:d}):'–';
 
-function mlPrice(type,vint,rating,auth,ccp){
+const REGF={"Verra": 0.7057, "Gold Standard": 1.3206, "CDM": 0.2869, "PlanVivo": 1.7111, "Cercarbono": 0.6287};
+function mlPrice(type,vint,rating,auth,ccp,reg){
   const t=ML.T[type],c=ML.c;
   let l=ML.intercept+c.year+c.asia+c.india+t[0]+c.recent;
   if(t[1])l+=c.removal;
@@ -321,7 +347,7 @@ function mlPrice(type,vint,rating,auth,ccp){
   if(rating==='high')l+=t[3];
   if(rating==='low')l+=c.low;
   if(auth)l+=c.auth+(t[8]||0);
-  const prem=ccp?ML.ccp:1,mid=Math.exp(l)*prem;
+  const prem=(ccp?ML.ccp:1)*(REGF[reg]||1),mid=Math.exp(l)*prem;
   return{mid,lo:mid*Math.exp(t[7]),hi:mid*Math.exp(t[4]),conf:t[5],n:t[6]};
 }
 
@@ -331,7 +357,7 @@ $('i-type').value="Rice methane (AWD, DSR, SRI)";
 
 let cur={mid:0,lo:0,hi:0};
 function calcPrice(){
-  const type=$('p-type').value,r=mlPrice(type,num('p-vint'),$('p-rating').value,$('p-auth').checked,$('p-ccp').checked);
+  const type=$('p-type').value,reg=$('p-reg').value,r=mlPrice(type,num('p-vint'),$('p-rating').value,$('p-auth').checked,$('p-ccp').checked,reg);
   cur=r;const vol=num('p-vol'),fx=num('p-fx',88);
   $('r-mid').textContent=usd(r.mid,2);
   $('r-rng').textContent=usd(r.lo,2)+' – '+usd(r.hi,2);
@@ -339,7 +365,7 @@ function calcPrice(){
   $('r-val').textContent=usd(r.mid*vol,0);
   $('r-valr').textContent=usd(r.lo*vol,0)+' – '+usd(r.hi*vol,0);
   if($('p-rating').value==='high'){$('r-rate').textContent='already applied'}
-  else{const h=mlPrice(type,num('p-vint'),'high',$('p-auth').checked,$('p-ccp').checked);$('r-rate').textContent='+'+usd(h.mid-r.mid,2)+' / t · '+usd((h.mid-r.mid)*vol,0)+' on volume'}
+  else{const h=mlPrice(type,num('p-vint'),'high',$('p-auth').checked,$('p-ccp').checked,reg);$('r-rate').textContent='+'+usd(h.mid-r.mid,2)+' / t · '+usd((h.mid-r.mid)*vol,0)+' on volume'}
   $('r-conf').textContent=r.conf+' confidence';
   $('r-n').textContent=r.n+' wholesale prices of this type in training data';
   const L=Math.log(r.lo/2),H=Math.log(r.hi*1.5),pos=v=>((Math.log(v)-L)/(H-L)*100);
@@ -473,6 +499,28 @@ function calcBuy(){
   $('br-note').textContent=note.join(' ');
 }
 document.querySelectorAll('[data-panel="buy"] input').forEach(e=>e.addEventListener('input',calcBuy));
+(function(){const sel=$('w-type');Object.keys(ML.T).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o)});sel.value="Household devices (cookstoves, lighting, water)";})();
+function calcFwd(){
+  const t=$('w-type').value,r=mlPrice(t,2024,$('w-rated').checked?'high':'',$('w-auth').checked,false,'');
+  const gd=num('w-gd')/100,gs=num('w-gs')/100,el=Math.max(.2,num('w-el',1.5)),sh=num('w-shock')/100;
+  const lo0=Math.log(r.lo/r.mid),hi0=Math.log(r.hi/r.mid);
+  const pts=[2026,2027,2028,2029,2030].map(y=>{const k=y-2026,m=r.mid*Math.pow((1+gd)/(1+gs),k/el)*(y>=2028?1+sh:1),w=Math.sqrt(Math.max(1,k));return{y,m,lo:m*Math.exp(lo0*w),hi:m*Math.exp(hi0*w)}});
+  $('wr-30').textContent=usd(pts[4].m,2);
+  let rows='<tr><th>Year</th><th class="n">P10</th><th class="n">Price</th><th class="n">P90</th></tr>';
+  pts.forEach(p=>rows+=`<tr><td>${p.y}</td><td class="n">${usd(p.lo,2)}</td><td class="n">${usd(p.m,2)}</td><td class="n">${usd(p.hi,2)}</td></tr>`);
+  $('wr-table').innerHTML=rows;
+  const W=520,H=220,L=48,R=16,T=12,B=26,mx=Math.max(...pts.map(p=>p.hi))*1.08;
+  const x=y=>L+(y-2026)/4*(W-L-R),yy=v=>H-B-(v/mx)*(H-T-B);
+  const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const band=pts.map(p=>`${x(p.y)},${yy(p.hi)}`).join(' ')+' '+pts.slice().reverse().map(p=>`${x(p.y)},${yy(p.lo)}`).join(' ');
+  const ticks=[0,.25,.5,.75,1].map(f=>f*mx);
+  $('wr-chart').innerHTML=ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${yy(v)}" y2="${yy(v)}" stroke="${css('--deep-muted')}" stroke-opacity=".18"/><text x="${L-6}" y="${yy(v)+4}" text-anchor="end" font-size="11" fill="${css('--deep-muted')}">$${v<10?v.toFixed(1):Math.round(v)}</text>`).join('')
+    +`<polygon points="${band}" fill="${css('--accent')}" fill-opacity=".18"/>`
+    +`<polyline points="${pts.map(p=>`${x(p.y)},${yy(p.m)}`).join(' ')}" fill="none" stroke="${css('--accent')}" stroke-width="2.5"/>`
+    +pts.map(p=>`<circle cx="${x(p.y)}" cy="${yy(p.m)}" r="3.5" fill="${css('--accent')}"/><text x="${x(p.y)}" y="${H-8}" text-anchor="middle" font-size="11" fill="${css('--deep-muted')}">${p.y}</text>`).join('');
+}
+document.querySelectorAll('[data-panel="fwd"] input,[data-panel="fwd"] select').forEach(e=>e.addEventListener('input',calcFwd));
+
 
 
 function show(tab){
@@ -480,12 +528,13 @@ function show(tab){
   document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){location.hash=b.dataset.tab}}));
-const h=location.hash.slice(1);if(['price','fin','int','cbam','ccts','buy'].includes(h))show(h);
-window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(['price','fin','int','cbam','ccts','buy'].includes(k))show(k)});
+const h=location.hash.slice(1);if(['price','fin','int','cbam','ccts','buy','fwd'].includes(h))show(h);
+window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(['price','fin','int','cbam','ccts','buy','fwd'].includes(k))show(k)});
 const qs=new URLSearchParams(location.search);
 if(qs.get('type')&&ML.T[qs.get('type')]){$('p-type').value=qs.get('type');$('i-type').value=qs.get('type')}
+if(qs.get('reg')&&REGF[qs.get('reg')])$('p-reg').value=qs.get('reg');
 if(qs.get('vint')&&+qs.get('vint')>2000){$('p-vint').value=qs.get('vint');$('i-vint').value=qs.get('vint')}
-calcPrice();calcInt();calcCbam();calcCcts();calcBuy();
+calcPrice();calcInt();calcCbam();calcCcts();calcBuy();calcFwd();
 </script>
 </body>
 </html>
