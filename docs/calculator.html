@@ -81,7 +81,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 <div class="wrap">
 <p class="topnav"><a href="./">← Price dashboard</a></p>
 <header>
-  <span class="eyebrow">C-GEM Research Team · Model v14</span>
+  <span class="eyebrow">C-GEM Research Team · Model v16</span>
   <h1>India Carbon Credit Calculator</h1>
   <p class="lede">Estimate the fair price of an Indian voluntary carbon credit, then test the project’s finances, integrity grade, EU CBAM cost and CCTS position. All figures update as you type. Example values are pre-filled; replace them with your own.</p>
 </header>
@@ -107,7 +107,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <label>Volume (tCO₂e)<input id="p-vol" type="number" min="0" value="50000"></label>
       <label>USD → INR rate (your assumption)<input id="p-fx" type="number" min="1" step="0.1" value="88"></label>
     </div>
-    <p class="note">Credits older than 5 years get the type’s older-vintage discount. The CCP premium (×2.26) is learned from the training data and is the most uncertain factor.</p>
+    <p class="note">Credits older than 5 years get the type’s older-vintage discount. The CCP premium (×2.24) is learned from the training data and is the most uncertain factor.</p>
   </div>
   <div class="card result" aria-live="polite">
     <h2>Fair price, 2026</h2>
@@ -124,7 +124,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <dt>Gain from a high rating</dt><dd id="r-rate">–</dd>
     </dl>
     <div><span class="pill" id="r-conf">Confidence</span> <span class="sub" id="r-n"></span></div>
-    <p class="note">About 8 in 10 Indian deal prices fell inside this range when tested. Median error on Indian deals: 29%.</p>
+    <p class="note">About 8 in 10 Indian deal prices fell inside this range when tested. Median error on Indian deals: 27%.</p>
   </div>
 </section>
 
@@ -246,28 +246,27 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </div>
 </section>
 
-<footer>Same equations as cgem_price_model.py and the India_VCM_Price_Model_FINAL_v14 workbook. Estimates from public data; not investment advice. C-GEM Research Team, November 2026.</footer>
+<footer>Same equations as cgem_price_model.py and the training data in model/price_model.json. Estimates from public data; not investment advice. C-GEM Research Team, November 2026.</footer>
 </div>
 
 <script>
-const ML={intercept:2.000128709516364,c:{year:0.0011426954568226678,asia:-0.2736550657223324,india:0.1521809247391587,removal:0.3510810577409067,recent:-0.17101334934555004,low:-0.3496465599557228,auth:0.5738554979792262},ccp:2.255,
+const ML={intercept:1.970402540813413,c:{year:-0.03481272088854333,asia:-0.23650651337825876,india:0.0813845884963613,removal:0.4332826042135475,recent:-0.17587783121849457,low:-0.32227543943090764,auth:0.6725621912300688},ccp:2.241,
 T:{
-"Renewable energy":[-2.219244949003456,0,0,0.9076745462585601,0.603739477816639,"Low",19],
-"Household devices (cookstoves, lighting, water)":[-0.08784679688936335,0,-0.7650375564810762,0.8068775844221325,0.603739477816639,"Low",22],
-"Waste (methane, composting, waste-to-energy)":[-0.6038675579093444,0,-1.6264625690881873,0.9076745462585601,0.603739477816639,"Low",11],
-"Rice methane (AWD, DSR, SRI)":[1.0033684588825942,0,-1.5945956728677149,0.9076745462585601,0.9056092167249585,"Low",2],
-"Soil carbon / regenerative agriculture":[0.6989929560382296,1,-1.5945956728677149,0.9076745462585601,0.9056092167249585,"Low",4],
-"Livestock and other agriculture methane":[0.06494701539876868,0,-1.5945956728677149,0.9076745462585601,0.9056092167249585,"Low",2],
-"Energy efficiency and fuel switching":[-0.8929966135010845,0,-0.49815743709961513,0.9076745462585601,0.9056092167249585,"Low",2],
-"Industrial and chemical processes":[-0.8857651749421154,0,-0.49815743709961513,0.9076745462585601,0.9056092167249585,"Low",3],
-"Transport":[-0.5509757133183628,0,-0.49815743709961513,0.9076745462585601,0.9056092167249585,"Low",1],
-"Afforestation / reforestation (ARR)":[0.22092252112180644,1,-0.09760663508564058,0.6832289546234552,0.603739477816639,"Low",36],
-"Agroforestry":[0.275784323592265,1,-0.5689845921467483,0.7161613127888437,0.9056092167249585,"Low",3],
-"REDD+ (avoided deforestation)":[-0.6942542315015863,0,-1.1111897042549868,0.7210374129143049,0.603739477816639,"Low",44],
-"Blue carbon (mangrove, wetland)":[1.0449556958986146,1,-0.5689845921467483,0.7161613127888437,0.9056092167249585,"Low",4],
-"Biochar and engineered removal":[2.676476039064898,1,-0.49815743709961513,0.9076745462585601,0.603739477816639,"High",24],
-"Other / not classified":[0,0,-0.49815743709961513,0.9076745462585601,0.603739477816639,"Low",0]}};
-const P10LOG=-1.049;
+"Renewable energy":[-2.0575290636770553,0,0.0,0.9631836878175798,0.565099550741424,"Low",21,-0.5600429267479212],
+"Household devices (cookstoves, lighting, water)":[-0.0493266832112734,0,-0.7177629786739934,0.7397380272336651,0.565099550741424,"Low",24,-0.5600429267479212],
+"Waste (methane, composting, waste-to-energy)":[-0.6484191429734215,0,-1.520318762024084,0.9631836878175798,0.565099550741424,"Low",13,-0.5600429267479212],
+"Rice methane (AWD, DSR, SRI)":[1.082109572301143,0,-1.5879353198087816,0.9631836878175798,0.8476493261121361,"Low",4,-0.8400643901218818],
+"Soil carbon / regenerative agriculture":[0.9194494724551446,1,-1.5879353198087816,0.9631836878175798,0.565099550741424,"Medium",10,-0.5600429267479212],
+"Livestock and other agriculture methane":[0.27574780329452175,0,-1.5879353198087816,0.9631836878175798,0.8476493261121361,"Low",2,-0.8400643901218818],
+"Energy efficiency and fuel switching":[-0.8849976983334558,0,-0.4880325677708368,0.9631836878175798,0.8476493261121361,"Low",2,-0.8400643901218818],
+"Industrial and chemical processes":[-0.7461667224924429,0,-0.4880325677708368,0.9631836878175798,0.8476493261121361,"Medium",5,-0.8400643901218818],
+"Transport":[-0.5985844454875926,0,-0.4880325677708368,0.9631836878175798,0.8476493261121361,"Low",2,-0.8400643901218818],
+"Afforestation / reforestation (ARR)":[0.20405438783587926,1,-0.12018687432774808,0.7344218777203975,0.565099550741424,"Low",38,-0.5600429267479212],
+"Agroforestry":[0.8095320847945754,1,-0.5666383157291683,0.7034353288137258,0.8476493261121361,"Low",3,-0.8400643901218818],
+"REDD+ (avoided deforestation)":[-0.7723295780183539,0,-1.0916955050889205,0.748458569554891,0.565099550741424,"Low",48,-0.5600429267479212],
+"Blue carbon (mangrove, wetland)":[1.561044198283146,1,-0.5666383157291683,0.7034353288137258,0.565099550741424,"Low",6,-0.5600429267479212],
+"Biochar and engineered removal":[2.7058639120645664,1,-0.4880325677708368,0.9631836878175798,0.565099550741424,"High",25,-0.5600429267479212],
+"Other / not classified":[0.0,0,-0.4880325677708368,0.9631836878175798,0.565099550741424,"Low",0,-0.5600429267479212]}};
 const RISK={"Renewable energy":.2,"Household devices (cookstoves, lighting, water)":.4,"Energy efficiency and fuel switching":.45,"Industrial and chemical processes":.5,"Transport":.5,"Waste (methane, composting, waste-to-energy)":.7,"Livestock and other agriculture methane":.7,"Rice methane (AWD, DSR, SRI)":.6,"Soil carbon / regenerative agriculture":.5,"Afforestation / reforestation (ARR)":.7,"Agroforestry":.65,"REDD+ (avoided deforestation)":.4,"Blue carbon (mangrove, wetland)":.7,"Biochar and engineered removal":.9,"Other / not classified":.5};
 
 const $=id=>document.getElementById(id);
@@ -286,7 +285,7 @@ function mlPrice(type,vint,rating,auth,ccp){
   if(rating==='low')l+=c.low;
   if(auth)l+=c.auth;
   const prem=ccp?ML.ccp:1,mid=Math.exp(l)*prem;
-  return{mid,lo:mid*Math.exp(P10LOG),hi:mid*Math.exp(t[4]),conf:t[5],n:t[6]};
+  return{mid,lo:mid*Math.exp(t[7]),hi:mid*Math.exp(t[4]),conf:t[5],n:t[6]};
 }
 
 for(const s of ['p-type','i-type']){const el=$(s);Object.keys(ML.T).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;el.appendChild(o)});}
@@ -358,7 +357,7 @@ function calcFin(){
   $('fr-pre').textContent=isFinite(r.pre)?(r.pre*100).toFixed(1)+'%':'–';
   let sig;
   if($('f-link').checked&&cur.lo>0)sig=(Math.log(cur.hi)-Math.log(cur.lo))/(2*1.2816);
-  else sig=(0.603739477816639-P10LOG)/(2*1.2816);
+  else sig=(0.5651+0.56)/(2*1.2816);
   const m=monteCarlo(o,sig);
   $('mc-p').textContent=(m.p*100).toFixed(0)+'%';$('mc-bar').style.width=(m.p*100)+'%';
   $('mc-10').textContent=usd(m.p10,0);$('mc-50').textContent=usd(m.p50,0);$('mc-90').textContent=usd(m.p90,0);

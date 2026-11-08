@@ -1,8 +1,8 @@
-"""C-GEM India carbon market model, version 14.
+"""C-GEM India carbon market model, version 16.
 
 Price (US$ per tCO2e, 2026 market level) for an Indian voluntary carbon credit:
   * ML model v7 : 0.2 x hierarchical hedonic model with literature priors + 0.8 x robust Huber
-                  regression (one linear equation), trained on 443 public prices 2020-2026
+                  regression (one linear equation), trained on 472 public prices 2020-2026
   * v2 model    : expert multiplicative formula, kept as a cross-check
   * Recommended : v2^w x ML^(1-w) x learned CCP premium if CCP-approved; w = 0 from cross-validation
 Plus investor, CCTS and CBAM tools that match the Excel workbook.

@@ -1,9 +1,10 @@
 test,median_error
-LOO deal prices (all),0.2856
-LOO same deal prices as v12,0.2789
-LOO Indian deal prices,0.2922
-LOO Fastmarkets series,0.3136
-Leave-one-publisher-out,0.3505
-Time split (to 2024 → 2025–26),0.3982
-LOO marketplace listings,0.2531
-Indian deal prices inside P10–P90 (target 80%),0.824
+LOO deal prices (all),0.2973
+LOO Indian deal prices,0.2749
+v14 on the same Indian deal prices,0.2922
+LOO new research prices (Nov 2026),0.3218
+v14 honest error on those new prices,0.3687
+Leave-one-publisher-out,0.3086
+Time split (to 2024 → 2025–26),0.423
+LOO marketplace listings,0.2426
+Indian deal prices inside P10–P90 (target 80%),0.806

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>India Carbon Price Dashboard</title>
-<meta name="description" content="C-GEM model v14: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
+<meta name="description" content="C-GEM model v16: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: market-terminal grid. Command bar, KPI strip, then linked panels (click any credit type to filter all), then the register */
@@ -119,11 +119,11 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
       <div class="mark" aria-hidden="true"></div>
       <div>
         <h1>India Carbon Price Dashboard</h1>
-        <div class="meta">C-GEM Research Team · Price model v14 · 443 training prices · 2026 market level</div>
+        <div class="meta">C-GEM Research Team · Price model v16 · 472 training prices · 2026 market level</div>
       </div>
     </div>
     <div class="right">
-      <span class="live"><i></i>Model v14 · Nov 2026</span>
+      <span class="live"><i></i>Model v16 · Nov 2026</span>
       <a class="cta" href="calculator.html">Calculator →</a>
     </div>
   </div>
@@ -227,21 +227,21 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
 
   <details>
     <summary>The price equation</summary>
-    <div class="eq">ln(price) = 2.000 + 0.001 (2026) − 0.274 (Asia) + 0.152 (India) + type effect − 0.171 (recent vintage)
-          + 0.351 if removal credit
+    <div class="eq">ln(price) = 1.970 − 0.035 (2026) − 0.237 (Asia) + 0.081 (India) + type effect − 0.176 (recent vintage)
+          + 0.433 if removal credit
           + old-vintage adjustment if vintage is more than 5 years old
-          + high-rating effect if rated high, or −0.350 if rated low
-          + 0.574 if Article 6 authorised / CORSIA
-price = exp(ln price) × 2.255 if ICVCM CCP-approved
-P10 = price × exp(−1.049)      P90 = price × exp(type p90_log)</div>
-    <p class="note" style="margin-top:8px">0.8 × Huber regression + 0.2 × hierarchical ridge with literature priors, trained on 443 public prices (2020–2026, older years weighted 0.7× per year). Coefficients: <a href="model/price_model.json">price_model.json</a> · Python: <a href="model/cgem_price_model.py">cgem_price_model.py</a></p>
+          + high-rating effect if rated high, or − 0.322 if rated low
+          + 0.673 if Article 6 authorised / CORSIA
+price = exp(ln price) × 2.241 if ICVCM CCP-approved
+P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
+    <p class="note" style="margin-top:8px">0.8 × Huber regression + 0.2 × hierarchical ridge with literature priors, trained on 472 public prices (2020–2026, older years weighted 0.7× per year). Coefficients: <a href="model/price_model.json">price_model.json</a> · Python: <a href="model/cgem_price_model.py">cgem_price_model.py</a></p>
   </details>
 
   <details>
     <summary>Definitions and limits</summary>
     <dl>
       <dt>Model price</dt><dd>Wholesale price at 2026 market level. The register applies the credit type’s equation with a recent vintage and no rating; use the calculator for a project-specific price.</dd>
-      <dt>P10 and P90</dt><dd>One price in ten falls below P10 and one in ten above P90. Indian ranges are calibrated on Indian deal prices (82% inside when tested).</dd>
+      <dt>P10 and P90</dt><dd>One price in ten falls below P10 and one in ten above P90. When tested, 81% of Indian deal prices fell inside the range.</dd>
       <dt>Integrity score</dt><dd>C-GEM screening score from public registry data: type risk, CCP status, delivery record, vintage, co-benefit label, activity and Article 6 match. Not a rating.</dd>
       <dt>Demand score</dt><dd>Expected share of a project’s credits that get retired, from the C-GEM demand model.</dd>
       <dt>Sales value</dt><dd>Model price × risk-adjusted annual credits × demand score.</dd>
