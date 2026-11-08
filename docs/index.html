@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>India Carbon Price Dashboard</title>
-<meta name="description" content="C-GEM model v17: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
+<meta name="description" content="C-GEM model v18: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: market-terminal grid. Command bar, KPI strip, then linked panels (click any credit type to filter all), then the register */
@@ -121,11 +121,11 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
       <div class="mark" aria-hidden="true"></div>
       <div>
         <h1>India Carbon Price Dashboard</h1>
-        <div class="meta">C-GEM Research Team · Price model v17 · 472 training prices · 2026 market level</div>
+        <div class="meta">C-GEM Research Team · Price model v18 · 472 training prices · 2026 market level</div>
       </div>
     </div>
     <div class="right">
-      <span class="live"><i></i>Model v17 · Nov 2026</span>
+      <span class="live"><i></i>Model v18 · Nov 2026</span>
       <a class="ghost" href="methodology.html">Methodology &amp; data</a>
       <a class="cta" href="calculator.html">Calculator →</a>
     </div>
@@ -230,12 +230,12 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
 
   <details>
     <summary>The price equation</summary>
-    <div class="eq">ln(price) = 1.970 + 0.011 (2026) − 0.258 (Asia) + 0.086 (India) + type effect − 0.161 (recent vintage)
-          + 0.389 if removal credit
+    <div class="eq">ln(price) = 1.996 + 0.045 (2026) − 0.300 (Asia) + 0.117 (India) + type effect − 0.156 (recent vintage)
+          + 0.386 if removal credit
           + old-vintage adjustment if vintage is more than 5 years old
-          + high-rating effect if rated high, or − 0.339 if rated low
-          + 0.499 if Article 6 authorised / CORSIA (2026 effect)
-price = exp(ln price) × 2.170 if ICVCM CCP-approved
+          + high-rating effect if rated high, or − 0.370 if rated low
+          + 0.414 if Article 6 authorised / CORSIA (2026 effect; +0.345 more for cookstoves)
+price = exp(ln price) × 2.365 if ICVCM CCP-approved
 P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
     <p class="note" style="margin-top:8px">0.8 × Huber regression + 0.2 × hierarchical ridge with literature priors, trained on 472 public prices (2020–2026, older years weighted 0.7× per year). Coefficients: <a href="model/price_model.json">price_model.json</a> · Python: <a href="model/cgem_price_model.py">cgem_price_model.py</a></p>
   </details>

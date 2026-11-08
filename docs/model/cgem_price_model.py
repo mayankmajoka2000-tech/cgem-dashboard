@@ -34,7 +34,7 @@ def ml_price(credit_type, vintage=None, rating=None, authorised=False, basis_yea
     if vintage is not None and basis_year - vintage > 5: lnp += t['old_vintage_adj']
     if rating == 'high': lnp += t['high_rating_effect']
     if rating == 'low': lnp += c['rating_low']
-    if authorised: lnp += c['authorised']
+    if authorised: lnp += c['authorised'] + t.get('auth_extra', 0.0)
     mid = math.exp(lnp)
     return mid, mid * math.exp(t['p10_log']), mid * math.exp(t['p90_log'])
 

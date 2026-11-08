@@ -105,7 +105,7 @@ footer{max-width:1180px;margin:40px auto 0;border-top:1px solid var(--line);padd
         <li><b>Collect public prices.</b> Market averages, benchmark assessments, named trades, offers and marketplace listings from 2020 to 2026, each with its date, credit type, region, standard, vintage, rating, labels and source link.</li>
         <li><b>Describe each price by its features.</b> Year, credit type, region and India, standard, removal or reduction, recent or old vintage, high or low rating, Article 6 / CORSIA authorisation, CCP label, and whether it is an offer, a forward or a listing.</li>
         <li><b>Fit a robust hedonic model on log price.</b> 0.8 × Huber regression, which keeps outlier deals from dominating, plus 0.2 × a hierarchical ridge pulled toward premiums published in the literature. Each older year counts 0.7× the next.</li>
-        <li><b>Let effects vary where the data shows they do.</b> Separate slopes for vintage and rating by credit type, Asia and India effects by type, and, from version 17, a separate Article 6 / CORSIA effect for 2026, when CORSIA Phase 1 prices fell from about $23 to about $10.</li>
+        <li><b>Let effects vary where the data shows they do.</b> Separate slopes for vintage and rating by credit type, Asia and India effects by type, a separate Article 6 / CORSIA effect for 2026, when CORSIA Phase 1 prices fell from about $23 to about $10 (from version 17), and a separate CORSIA premium for cookstoves (from version 18).</li>
         <li><b>Give every price a range.</b> P10 and P90 come from split-conformal prediction on leave-one-out errors, wider for credit types with fewer than six wholesale prices.</li>
         <li><b>Test before release.</b> A new version ships only if it beats the last one on Indian deal prices it did not see.</li>
       </ol>
@@ -130,7 +130,8 @@ footer{max-width:1180px;margin:40px auto 0;border-top:1px solid var(--line);padd
       <div class="tw"><table>
         <thead><tr><th>Version</th><th>Date</th><th>What changed</th><th class="n">Indian deal error</th></tr></thead>
         <tbody>
-          <tr><td>v17</td><td>Nov 2026</td><td>Article 6 / CORSIA effect allowed to differ in 2026. A separate rating slope for industrial gases was tested and dropped: no rated industrial prices exist to estimate it.</td><td class="n" id="hErr">—</td></tr>
+          <tr><td>v18</td><td>Nov 2026</td><td>Separate Article 6 / CORSIA premium for cookstoves, where CORSIA-eligible credits trade at about 3.5× non-eligible ones. Time decay of 0.6 and 0.8 per year also tested and rejected (Indian error 30.4% and 25.8%).</td><td class="n" id="hErr">—</td></tr>
+          <tr><td>v17</td><td>Nov 2026</td><td>Article 6 / CORSIA effect allowed to differ in 2026. A separate rating slope for industrial gases was tested and dropped: no rated industrial prices exist to estimate it.</td><td class="n">25.5%</td></tr>
           <tr><td>v16</td><td>Nov 2026</td><td>29 new researched prices (rice methane, soil carbon, industrial, blue carbon, CORSIA, CCP landfill gas, ARR and REDD+ benchmarks); Delta Blue Carbon-1 marked as a removal; an unverified e-bus Article 6 price left out</td><td class="n">27.5%</td></tr>
           <tr><td>v14</td><td>Nov 2026</td><td>Fastmarkets series combined into one row per report; Indian P10 widened so 82% of Indian deals fall inside the range</td><td class="n">29.2%</td></tr>
           <tr><td>v15</td><td>Nov 2026</td><td>Rejected: adding the EM 2024 cost curve raised Indian error to 32.2%</td><td class="n">—</td></tr>
