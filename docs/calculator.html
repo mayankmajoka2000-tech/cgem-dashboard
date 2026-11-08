@@ -93,7 +93,7 @@ body{padding-top:0!important}
 <div class="wrap">
 <p class="topnav"><a href="dashboard.html">← Price dashboard</a> · <a href="methodology.html">Methodology &amp; data</a> · <a href="weekly.html">Weekly index</a> · <a href="methodology.html#feed">Price feed</a></p>
 <header>
-  <span class="eyebrow">C-GEM Research Team · Model v20</span>
+  <span class="eyebrow">C-GEM Research Team · Model v22</span>
   <h1>India Carbon Credit Calculator</h1>
   <p class="lede">Estimate the fair price of an Indian voluntary carbon credit, then test the project’s finances, integrity grade, EU CBAM cost and CCTS position. All figures update as you type. Example values are pre-filled; replace them with your own.</p>
 </header>
@@ -140,7 +140,7 @@ body{padding-top:0!important}
       <dt>Gain from a high rating</dt><dd id="r-rate">–</dd>
     </dl>
     <div><span class="pill" id="r-conf">Confidence</span> <span class="sub" id="r-n"></span></div>
-    <p class="note">About 8 in 10 Indian deal prices fell inside this range when tested. Median error on Indian deals: 23.5%.</p>
+    <p class="note">About 8 in 10 Indian deal prices fell inside this range when tested. Median error on Indian deals: 21.7%.</p>
   </div>
 </section>
 
@@ -313,7 +313,7 @@ body{padding-top:0!important}
       <label>Correlation between types<input id="b-rho" type="number" min="0" max="1" step="0.1" value="0.5"></label>
       <label>USD → INR rate (your assumption)<input id="b-fx" type="number" min="1" step="0.1" value="88"></label>
     </div>
-    <p class="note">The tool fills the removal share with the cheapest eligible removal credits, then the rest with the cheapest eligible credits of any kind, never putting more than the cap into one type. Prices are model v20 prices for Indian credits, recent vintage, with your quality choices applied.</p>
+    <p class="note">The tool fills the removal share with the cheapest eligible removal credits, then the rest with the cheapest eligible credits of any kind, never putting more than the cap into one type. Prices are model v22 prices for Indian credits, recent vintage, with your quality choices applied.</p>
   </div>
   <div class="card result" aria-live="polite">
     <h2>Suggested portfolio</h2>
@@ -357,23 +357,23 @@ body{padding-top:0!important}
 </div>
 
 <script>
-const ML={intercept:1.9931512646577283,c:{year:0.04857634321186009,asia:-0.29889562255947866,india:0.10555971528745133,removal:0.37813501753195816,recent:-0.14635414049248213,low:-0.3723264977861802,auth:0.4124771941224692},ccp:2.379,
+const ML={intercept:1.9837221523626511,c:{year:0.0570277891345636,asia:-0.2976852635787029,india:0.07551585470722844,removal:0.3779534673832144,recent:-0.14944078251263496,low:-0.3715064560114287,auth:0.4100742107938071},ccp:2.378,
 T:{
-"Renewable energy":[-2.0373830067022842,0,0.0,0.8915670290373692,0.5831374296175684,"Low",21,-0.6404680792368979,0.0],
-"Household devices (cookstoves, lighting, water)":[-0.1611267045837936,0,-0.6566489840872765,0.7333022916712222,0.5831374296175684,"Low",24,-0.6404680792368979,0.3436319659940363],
-"Waste (methane, composting, waste-to-energy)":[-0.7153421977934024,0,-1.518054712346475,0.8915670290373692,0.5831374296175684,"Low",13,-0.6404680792368979,0.0],
-"Rice methane (AWD, DSR, SRI)":[0.9983857075815548,0,-1.6095440902011258,0.8915670290373692,0.7286709803630673,"Medium",5,-0.7753526444199792,0.0],
-"Soil carbon / regenerative agriculture":[0.9117632534814551,1,-1.6095440902011258,0.8915670290373692,0.5831374296175684,"Medium",11,-0.6404680792368979,0.0],
-"Livestock and other agriculture methane":[0.23056297659255443,0,-1.6095440902011258,0.8915670290373692,0.7286709803630673,"Low",2,-0.7753526444199792,0.0],
-"Energy efficiency and fuel switching":[-0.8999486645560879,0,-0.5080085433441675,0.8915670290373692,0.7286709803630673,"Low",2,-0.7753526444199792,0.0],
-"Industrial and chemical processes":[-0.760463230044604,0,-0.5080085433441675,0.8915670290373692,0.7286709803630673,"Medium",5,-0.7753526444199792,0.0],
-"Transport":[-0.5981895312143757,0,-0.5080085433441675,0.8915670290373692,0.7286709803630673,"Low",2,-0.7753526444199792,0.0],
-"Afforestation / reforestation (ARR)":[0.2665577880239387,1,-0.128828521244378,0.6714346927717048,0.5831374296175684,"Low",38,-0.6404680792368979,0.0],
-"Agroforestry":[0.8827646820978395,1,-0.5807764889515301,0.6730698910490885,0.7286709803630673,"Low",3,-0.7753526444199792,0.0],
-"REDD+ (avoided deforestation)":[-0.8016668654130068,0,-1.1054924022660442,0.6802901270720308,0.5831374296175684,"Low",48,-0.6404680792368979,0.0],
-"Blue carbon (mangrove, wetland)":[1.6147254366006745,1,-0.5807764889515301,0.6730698910490885,0.5831374296175684,"Low",6,-0.6404680792368979,0.0],
-"Biochar and engineered removal":[2.7295732907979438,1,-0.5080085433441675,0.8915670290373692,0.5831374296175684,"High",25,-0.6404680792368979,0.0],
-"Other / not classified":[0.0,0,-0.5080085433441675,0.8915670290373692,0.5831374296175684,"Low",0,-0.6404680792368979,0.0]}};
+"Renewable energy":[-2.0105140554171284,0,0.0,0.89470925431859,0.5901065548571803,"Low",21,-0.6458426619407235,0.0],
+"Household devices (cookstoves, lighting, water)":[-0.15068188100656452,0,-0.6435854957891545,0.7350622160733158,0.5901065548571803,"Low",24,-0.6458426619407235,0.34295638995877753],
+"Waste (methane, composting, waste-to-energy)":[-0.718550636899198,0,-1.4546965925177295,0.89470925431859,0.5901065548571803,"Low",13,-0.6458426619407235,0.0],
+"Rice methane (AWD, DSR, SRI)":[1.0691544760281775,0,-0.3695280942202921,0.89470925431859,0.5901065548571803,"High",7,-0.6458426619407235,0.0],
+"Soil carbon / regenerative agriculture":[0.9474547764974873,1,-0.3695280942202921,0.89470925431859,0.5901065548571803,"High",11,-0.6458426619407235,0.0],
+"Livestock and other agriculture methane":[0.27061774372968894,0,-0.3695280942202921,0.89470925431859,0.8851598322857706,"Low",2,-0.9187639929110852,0.0],
+"Energy efficiency and fuel switching":[-0.8967806652566519,0,-0.44374858344528545,0.89470925431859,0.8851598322857706,"Low",2,-0.9187639929110852,0.0],
+"Industrial and chemical processes":[-0.7589950962393729,0,-0.44374858344528545,0.89470925431859,0.8851598322857706,"Medium",5,-0.9187639929110852,0.0],
+"Transport":[-0.5761718127466686,0,-0.44374858344528545,0.89470925431859,0.8851598322857706,"Low",2,-0.9187639929110852,0.0],
+"Afforestation / reforestation (ARR)":[0.1962098903012014,1,-0.12634457202677998,0.6708361012640547,0.5901065548571803,"Low",38,-0.6458426619407235,0.0],
+"Agroforestry":[0.7154299892867912,1,-0.5571163526446603,0.6734515337700382,0.8851598322857706,"Low",4,-0.9187639929110852,0.0],
+"REDD+ (avoided deforestation)":[-0.8841355661878834,0,-1.1012559024619144,0.6781470446441544,0.5901065548571803,"Low",48,-0.6458426619407235,0.0],
+"Blue carbon (mangrove, wetland)":[1.5315525657918612,1,-0.5571163526446603,0.6734515337700382,0.5901065548571803,"Low",6,-0.6458426619407235,0.0],
+"Biochar and engineered removal":[2.763885183850866,1,-0.44374858344528545,0.89470925431859,0.5901065548571803,"High",25,-0.6458426619407235,0.0],
+"Other / not classified":[0.0,0,-0.44374858344528545,0.89470925431859,0.5901065548571803,"Low",0,-0.6458426619407235,0.0]}};
 const RISK={"Renewable energy":.2,"Household devices (cookstoves, lighting, water)":.4,"Energy efficiency and fuel switching":.45,"Industrial and chemical processes":.5,"Transport":.5,"Waste (methane, composting, waste-to-energy)":.7,"Livestock and other agriculture methane":.7,"Rice methane (AWD, DSR, SRI)":.6,"Soil carbon / regenerative agriculture":.5,"Afforestation / reforestation (ARR)":.7,"Agroforestry":.65,"REDD+ (avoided deforestation)":.4,"Blue carbon (mangrove, wetland)":.7,"Biochar and engineered removal":.9,"Other / not classified":.5};
 
 const $=id=>document.getElementById(id);

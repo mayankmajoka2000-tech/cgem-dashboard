@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>India Carbon Price Dashboard</title>
-<meta name="description" content="C-GEM model v20: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
+<meta name="description" content="C-GEM model v22: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: market-terminal grid. Command bar, KPI strip, then linked panels (click any credit type to filter all), then the register */
@@ -133,11 +133,11 @@ body{padding-top:0!important}
       <div class="mark" aria-hidden="true"></div>
       <div>
         <h1>India Carbon Price Dashboard</h1>
-        <div class="meta">C-GEM Research Team · Price model v20 · 474 training prices · 2026 market level</div>
+        <div class="meta">C-GEM Research Team · Price model v22 · 477 training prices · 2026 market level</div>
       </div>
     </div>
     <div class="right">
-      <span class="live"><i></i>Model v20 · Nov 2026</span>
+      <span class="live"><i></i>Model v22 · Nov 2026</span>
       <a class="ghost" href="weekly.html">Weekly index</a>
       <a class="ghost" href="methodology.html">Methodology &amp; data</a>
       <a class="cta" href="calculator.html">Calculator →</a>
@@ -265,12 +265,12 @@ body{padding-top:0!important}
 
   <details>
     <summary>The price equation</summary>
-    <div class="eq">ln(price) = 1.993 + 0.049 (2026) − 0.299 (Asia) + 0.106 (India) + type effect − 0.146 (recent vintage)
+    <div class="eq">ln(price) = 1.984 + 0.057 (2026) − 0.298 (Asia) + 0.076 (India) + type effect − 0.149 (recent vintage)
           + 0.378 if removal credit
           + old-vintage adjustment if vintage is more than 5 years old
           + high-rating effect if rated high, or − 0.372 if rated low
-          + 0.412 if Article 6 authorised / CORSIA (2026 effect; +0.344 more for cookstoves)
-price = exp(ln price) × 2.379 if ICVCM CCP-approved
+          + 0.410 if Article 6 authorised / CORSIA (2026 effect; +0.343 more for cookstoves)
+price = exp(ln price) × 2.378 if ICVCM CCP-approved
 P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
     <p class="note" style="margin-top:8px">0.8 × Huber regression + 0.2 × hierarchical ridge with literature priors, trained on 472 public prices (2020–2026, older years weighted 0.7× per year). Coefficients: <a href="model/price_model.json">price_model.json</a> · Python: <a href="model/cgem_price_model.py">cgem_price_model.py</a></p>
   </details>
@@ -647,7 +647,7 @@ P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
 (async function(){
   const tb=document.getElementById('evRows'),cnt=document.getElementById('evCount'),fl=document.getElementById('evFilter');
   let rows=[];try{rows=await d3.csv('data/evidence.csv');}catch(e){tb.innerHTML='<tr><td colspan="9">Could not load the evidence file. Refresh the page to try again.</td></tr>';return;}
-  const cls=s=>/^Used/.test(s)?'A':(/Tested|Real deal/.test(s)?'B':'C');
+  const cls=s=>/^Used/.test(s)?'A':(/Tested|Real deal|check/.test(s)?'B':'C');
   const groups=[['All',()=>true],['Used in model',r=>cls(r.status)==='A'],['Real prices, not used',r=>cls(r.status)==='B'],['No usable price',r=>cls(r.status)==='C']];
   function draw(f){tb.textContent='';const sel=rows.filter(f);
     sel.forEach(r=>{const tr=document.createElement('tr');

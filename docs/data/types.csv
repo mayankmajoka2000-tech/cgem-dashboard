@@ -1,16 +1,16 @@
 credit_type,price,p10,p90,confidence,wholesale_prices,old_vintage_mult,high_rating_mult,removal
-Renewable energy,0.715,0.377,1.281,Low,21,1.0,2.439,No
-"Household devices (cookstoves, lighting, water)",4.669,2.461,8.365,Low,24,0.519,2.082,No
-"Waste (methane, composting, waste-to-energy)",2.682,1.414,4.806,Low,13,0.219,2.439,No
-"Rice methane (AWD, DSR, SRI)",14.886,6.856,30.849,Medium,5,0.2,2.439,No
-Soil carbon / regenerative agriculture,19.924,10.501,35.697,Medium,11,0.2,2.439,Yes
-Livestock and other agriculture methane,6.907,3.181,14.314,Low,2,0.2,2.439,No
-Energy efficiency and fuel switching,2.23,1.027,4.622,Low,2,0.602,2.439,No
-Industrial and chemical processes,2.564,1.181,5.313,Medium,5,0.602,2.439,No
-Transport,3.016,1.389,6.25,Low,2,0.602,2.439,No
-Afforestation / reforestation (ARR),10.451,5.508,18.725,Low,38,0.879,1.957,Yes
-Agroforestry,19.355,8.914,40.109,Low,3,0.559,1.96,Yes
-REDD+ (avoided deforestation),2.461,1.297,4.408,Low,48,0.331,1.974,No
-"Blue carbon (mangrove, wetland)",40.241,21.209,72.099,Low,6,0.559,1.96,Yes
-Biochar and engineered removal,122.7,64.669,219.836,High,25,0.602,2.439,Yes
-Other / not classified,5.485,2.891,9.827,Low,0,0.602,2.439,No
+Renewable energy,0.711,0.373,1.282,Low,21,1.0,2.447,No
+"Household devices (cookstoves, lighting, water)",4.565,2.393,8.236,Low,24,0.525,2.086,No
+"Waste (methane, composting, waste-to-energy)",2.587,1.356,4.668,Low,13,0.233,2.447,No
+"Rice methane (AWD, DSR, SRI)",15.461,8.105,27.894,High,7,0.691,2.447,No
+Soil carbon / regenerative agriculture,19.976,10.472,36.041,High,11,0.691,2.447,Yes
+Livestock and other agriculture methane,6.957,2.776,16.86,Low,2,0.691,2.447,No
+Energy efficiency and fuel switching,2.165,0.864,5.246,Low,2,0.642,2.447,No
+Industrial and chemical processes,2.485,0.991,6.021,Medium,5,0.642,2.447,No
+Transport,2.983,1.19,7.229,Low,2,0.642,2.447,No
+Afforestation / reforestation (ARR),9.424,4.94,17.003,Low,38,0.881,1.956,Yes
+Agroforestry,15.84,6.32,38.386,Low,4,0.573,1.961,Yes
+REDD+ (avoided deforestation),2.192,1.149,3.956,Low,48,0.332,1.97,No
+"Blue carbon (mangrove, wetland)",35.825,18.78,64.635,Low,6,0.573,1.961,Yes
+Biochar and engineered removal,122.852,64.401,221.647,High,25,0.642,2.447,Yes
+Other / not classified,5.308,2.782,9.576,Low,0,0.642,2.447,No

@@ -1,4 +1,4 @@
-"""Retrain the C-GEM price model (v20: v18 structure plus CIX India agri-carbon averages; Article 6 / CORSIA effect differs in 2026 and for cookstoves) (0.2 x hierarchical model with literature priors + 0.8 x robust Huber regression) from training_data.csv and rewrite the 'ml' block of price_model.json.
+"""Retrain the C-GEM price model (v22: v20 plus Acorn India agroforestry, Platts and Quantum rice methane; Article 6 / CORSIA effect differs in 2026 and for cookstoves) (0.2 x hierarchical model with literature priors + 0.8 x robust Huber regression) from training_data.csv and rewrite the 'ml' block of price_model.json.
 
 Model: weighted generalised ridge on ln(price). Each block of coefficients has its own penalty
 (= a mixed model with random intercepts by credit type and type x Asia, and random slopes for vintage
