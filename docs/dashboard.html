@@ -120,6 +120,9 @@ body{padding-top:0!important}
 .sitenav .brand{font-family:'Source Serif 4', Georgia, serif;font-weight:600;font-size:17px;color:var(--ink);text-decoration:none;margin-right:auto}
 .sitenav a.l{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}
 .sitenav a.l:hover,.sitenav a.l[aria-current="page"]{color:var(--accent)}
+.evbtn{font:inherit;font-size:12.5px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 11px;cursor:pointer}
+.evbtn[aria-pressed="true"]{color:var(--ink);border-color:var(--accent);background:var(--glow)}
+.st{font-size:12px;font-weight:600;white-space:nowrap}.st.A{color:var(--A)}.st.B{color:var(--B)}.st.C{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -209,6 +212,18 @@ body{padding-top:0!important}
     <div class="card" style="grid-column:1/-1">
       <header><h2>How accurate the model is</h2><span class="tag">held-out prices</span></header>
       <div class="chart" id="accChart"></div>
+    </div>
+  </section>
+
+  <section class="card" id="evidence">
+    <header><h2>Government and donor evidence</h2><span class="count" id="evCount">—</span></header>
+    <p class="note">What Indian forest departments, JICA, GIZ, ADB and other public sources say about carbon credit prices, checked against the original documents. Only prices marked “Used in model” enter the price model; the rest are kept here so the gaps are visible.</p>
+    <div class="controls" id="evFilter" role="group" aria-label="Filter evidence"></div>
+    <div class="tablebox" style="max-height:none">
+      <table>
+        <thead><tr><th>Organisation</th><th>Project</th><th>Credit type</th><th>State</th><th class="n">US$/t</th><th>Year</th><th>What it shows</th><th>Status</th><th>Source</th></tr></thead>
+        <tbody id="evRows"><tr><td colspan="9">Loading…</td></tr></tbody>
+      </table>
     </div>
   </section>
 
@@ -616,6 +631,22 @@ P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
   drawAll();
   let rt, lastW = innerWidth; addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(drawAll, 160); });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', drawAll);
+})();
+</script>
+<script>
+(async function(){
+  const tb=document.getElementById('evRows'),cnt=document.getElementById('evCount'),fl=document.getElementById('evFilter');
+  let rows=[];try{rows=await d3.csv('data/evidence.csv');}catch(e){tb.innerHTML='<tr><td colspan="9">Could not load the evidence file. Refresh the page to try again.</td></tr>';return;}
+  const cls=s=>/^Used/.test(s)?'A':(/Tested|Real deal/.test(s)?'B':'C');
+  const groups=[['All',()=>true],['Used in model',r=>cls(r.status)==='A'],['Real prices, not used',r=>cls(r.status)==='B'],['No usable price',r=>cls(r.status)==='C']];
+  function draw(f){tb.textContent='';const sel=rows.filter(f);
+    sel.forEach(r=>{const tr=document.createElement('tr');
+      [r.organisation,r.project,r.credit_type,r.state,r.price_usd||'—',r.year,r.what_it_shows].forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===4)td.className='n';tr.appendChild(td);});
+      const st=document.createElement('td');const sp=document.createElement('span');sp.className='st '+cls(r.status);sp.textContent=r.status;st.appendChild(sp);tr.appendChild(st);
+      const ln=document.createElement('td');const a=document.createElement('a');a.href=r.source_url;a.target='_blank';a.rel='noopener';a.textContent='Open';ln.appendChild(a);tr.appendChild(ln);tb.appendChild(tr);});
+    cnt.textContent=sel.length+' of '+rows.length+' sources';}
+  groups.forEach(([n,f],i)=>{const b=document.createElement('button');b.type='button';b.className='evbtn';b.textContent=n;b.setAttribute('aria-pressed',i===0);b.onclick=()=>{fl.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');draw(f);};fl.appendChild(b);});
+  draw(groups[0][1]);
 })();
 </script>
 </body>
