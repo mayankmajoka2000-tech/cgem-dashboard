@@ -2,14 +2,14 @@
  "index": "C-GEM India Carbon Index",
  "issue": 1,
  "date": "2026-11-09",
- "model_version": 18,
- "basket_price": 1.7637,
+ "model_version": 20,
+ "basket_price": 1.7668,
  "level": 100.0,
  "sub_indices": {
-  "India Basket": 1.7637,
-  "Removals": 15.341,
-  "Avoidance": 1.3056,
-  "Nature-based": 14.962
+  "India Basket": 1.7668,
+  "Removals": 15.0973,
+  "Avoidance": 1.3112,
+  "Nature-based": 14.7258
  },
  "weights": {
   "Renewable energy": 0.5592,
@@ -29,93 +29,93 @@
  },
  "types": {
   "Renewable energy": {
-   "price": 0.708,
-   "p10": 0.373,
-   "p90": 1.28,
+   "price": 0.715,
+   "p10": 0.377,
+   "p90": 1.281,
    "confidence": "Low"
   },
   "Household devices (cookstoves, lighting, water)": {
-   "price": 4.675,
-   "p10": 2.463,
-   "p90": 8.448,
+   "price": 4.669,
+   "p10": 2.461,
+   "p90": 8.365,
    "confidence": "Low"
   },
   "Waste (methane, composting, waste-to-energy)": {
-   "price": 2.693,
-   "p10": 1.419,
-   "p90": 4.865,
+   "price": 2.682,
+   "p10": 1.414,
+   "p90": 4.806,
    "confidence": "Low"
   },
   "Rice methane (AWD, DSR, SRI)": {
-   "price": 15.947,
-   "p10": 6.412,
-   "p90": 38.736,
+   "price": 14.886,
+   "p10": 6.856,
+   "p90": 30.849,
    "confidence": "Medium"
   },
   "Soil carbon / regenerative agriculture": {
-   "price": 20.808,
-   "p10": 10.963,
-   "p90": 37.6,
+   "price": 19.924,
+   "p10": 10.501,
+   "p90": 35.697,
    "confidence": "Medium"
   },
   "Livestock and other agriculture methane": {
-   "price": 7.252,
-   "p10": 2.916,
-   "p90": 17.615,
+   "price": 6.907,
+   "p10": 3.181,
+   "p90": 14.314,
    "confidence": "Low"
   },
   "Energy efficiency and fuel switching": {
-   "price": 2.227,
-   "p10": 0.895,
-   "p90": 5.41,
+   "price": 2.23,
+   "p10": 1.027,
+   "p90": 4.622,
    "confidence": "Low"
   },
   "Industrial and chemical processes": {
-   "price": 2.561,
-   "p10": 1.03,
-   "p90": 6.221,
-   "confidence": "Low"
+   "price": 2.564,
+   "p10": 1.181,
+   "p90": 5.313,
+   "confidence": "Medium"
   },
   "Transport": {
-   "price": 2.996,
-   "p10": 1.204,
-   "p90": 7.277,
+   "price": 3.016,
+   "p10": 1.389,
+   "p90": 6.25,
    "confidence": "Low"
   },
   "Afforestation / reforestation (ARR)": {
-   "price": 10.415,
-   "p10": 5.487,
-   "p90": 18.82,
+   "price": 10.451,
+   "p10": 5.508,
+   "p90": 18.725,
    "confidence": "Low"
   },
   "Agroforestry": {
-   "price": 19.314,
-   "p10": 7.765,
-   "p90": 46.914,
+   "price": 19.355,
+   "p10": 8.914,
+   "p90": 40.109,
    "confidence": "Low"
   },
   "REDD+ (avoided deforestation)": {
    "price": 2.461,
    "p10": 1.297,
-   "p90": 4.447,
+   "p90": 4.408,
    "confidence": "Low"
   },
   "Blue carbon (mangrove, wetland)": {
-   "price": 39.969,
-   "p10": 21.059,
-   "p90": 72.225,
+   "price": 40.241,
+   "p10": 21.209,
+   "p90": 72.099,
    "confidence": "Low"
   },
   "Biochar and engineered removal": {
-   "price": 122.3,
-   "p10": 64.437,
-   "p90": 220.996,
+   "price": 122.7,
+   "p10": 64.669,
+   "p90": 219.836,
    "confidence": "High"
   },
   "Other / not classified": {
-   "price": 5.484,
-   "p10": 2.89,
-   "p90": 9.91,
+   "price": 5.485,
+   "p10": 2.891,
+   "p90": 9.827,
    "confidence": "Low"
   }
  },
