@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>India Carbon Credit Calculator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a tabbed workbench; inputs left, live result panel right; stacks on phones */
+:root{
+  --bg:#F5F3EC; --panel:#FFFDF7; --ink:#14302A; --muted:#55645E; --line:#DCD7C8;
+  --accent:#B5651D; --accent-soft:#F3E3D0; --deep:#14302A; --deep-ink:#F5F3EC; --deep-muted:#BFD8D5;
+  --good:#2F6F4F; --bad:#A63D2F; --warn:#9A6B00;
+  --f-display:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --f-body:'IBM Plex Sans', Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1F1B; --panel:#162A25; --ink:#E9EFEA; --muted:#A3B5AE; --line:#2C443D;
+  --accent:#E8A25C; --accent-soft:#3A2C1C; --deep:#0A1714; --deep-ink:#E9EFEA; --deep-muted:#A9C7C2;
+  --good:#6FC79A; --bad:#F08A7A; --warn:#E6BE5A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1F1B; --panel:#162A25; --ink:#E9EFEA; --muted:#A3B5AE; --line:#2C443D;
+  --accent:#E8A25C; --accent-soft:#3A2C1C; --deep:#0A1714; --deep-ink:#E9EFEA; --deep-muted:#A9C7C2;
+  --good:#6FC79A; --bad:#F08A7A; --warn:#E6BE5A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:68ch;margin:0}
+nav{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);padding-bottom:10px}
+nav button{font:inherit;font-weight:500;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:999px;padding:7px 14px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+nav button:hover{border-color:var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card h2{font-family:var(--f-display);font-size:20px;font-weight:600;margin:0}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+@media (max-width:480px){.fields{grid-template-columns:minmax(0,1fr)}}
+.fields .full{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+input,select{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;font-variant-numeric:tabular-nums}
+.check{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px}
+.check input{width:auto}
+.result{background:var(--deep);color:var(--deep-ink);border:none}
+.result h2{color:var(--deep-ink)}
+.big{font-family:var(--f-display);font-size:clamp(44px,7vw,64px);font-weight:600;line-height:1;color:var(--accent)}
+.sub{color:var(--deep-muted);font-size:14px}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;font-variant-numeric:tabular-nums}
+.kv dt{color:var(--deep-muted)} .kv dd{margin:0;text-align:right;font-family:var(--f-mono)}
+.card:not(.result) .kv dt{color:var(--muted)}
+.band{position:relative;height:40px;margin-top:6px}
+.band .track{position:absolute;left:0;right:0;top:18px;height:4px;background:color-mix(in srgb,var(--deep-muted) 35%,transparent);border-radius:2px}
+.band .range{position:absolute;top:12px;height:16px;background:color-mix(in srgb,var(--accent) 45%,transparent);border-radius:4px}
+.band .mid{position:absolute;top:6px;width:3px;height:28px;background:var(--accent);border-radius:2px}
+.band-labels{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--deep-muted)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.result .pill{background:color-mix(in srgb,var(--accent) 25%,transparent);color:var(--deep-ink)}
+.grade{font-family:var(--f-display);font-size:64px;font-weight:600;line-height:1}
+.note{font-size:13px;color:var(--muted);margin:0;max-width:72ch}
+.result .note{color:var(--deep-muted)}
+.bar{height:10px;background:color-mix(in srgb,var(--deep-muted) 25%,transparent);border-radius:5px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right;font-family:var(--f-mono)}
+.tw{overflow-x:auto}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.result .pos{color:#8FD9B0} .result .neg{color:#F4A394}
+.topnav{margin:0;font-size:14px}.topnav a{color:var(--accent);font-weight:600;text-decoration:none}.topnav a:hover{text-decoration:underline}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:no-preference){.band .range,.band .mid,.bar span{transition:all .25s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="topnav"><a href="./">← Price dashboard</a></p>
+<header>
+  <span class="eyebrow">C-GEM Research Team · Model v14</span>
+  <h1>India Carbon Credit Calculator</h1>
+  <p class="lede">Estimate the fair price of an Indian voluntary carbon credit, then test the project’s finances, integrity grade, EU CBAM cost and CCTS position. All figures update as you type. Example values are pre-filled; replace them with your own.</p>
+</header>
+
+<nav role="tablist" aria-label="Calculators">
+  <button role="tab" id="t-price" aria-selected="true" data-tab="price">Credit price</button>
+  <button role="tab" id="t-fin" aria-selected="false" data-tab="fin">Project finance &amp; risk</button>
+  <button role="tab" id="t-int" aria-selected="false" data-tab="int">Integrity score</button>
+  <button role="tab" id="t-cbam" aria-selected="false" data-tab="cbam">CBAM cost</button>
+  <button role="tab" id="t-ccts" aria-selected="false" data-tab="ccts">CCTS balance</button>
+</nav>
+
+<!-- PRICE -->
+<section class="grid" data-panel="price">
+  <div class="card">
+    <h2>About the credit</h2>
+    <div class="fields">
+      <label class="full">Credit type<select id="p-type"></select></label>
+      <label>Vintage year<input id="p-vint" type="number" min="2005" max="2026" value="2024"></label>
+      <label>Rating<select id="p-rating"><option value="">Not rated / average</option><option value="high">High (e.g. A or above)</option><option value="low">Low (e.g. C or below)</option></select></label>
+      <label class="check full"><input id="p-auth" type="checkbox"> Article 6 authorised / CORSIA eligible</label>
+      <label class="check full"><input id="p-ccp" type="checkbox"> ICVCM CCP-approved methodology</label>
+      <label>Volume (tCO₂e)<input id="p-vol" type="number" min="0" value="50000"></label>
+      <label>USD → INR rate (your assumption)<input id="p-fx" type="number" min="1" step="0.1" value="88"></label>
+    </div>
+    <p class="note">Credits older than 5 years get the type’s older-vintage discount. The CCP premium (×2.26) is learned from the training data and is the most uncertain factor.</p>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>Fair price, 2026</h2>
+    <div><span class="big" id="r-mid">–</span> <span class="sub">US$ per tCO₂e</span></div>
+    <div>
+      <div class="band"><div class="track"></div><div class="range" id="r-range"></div><div class="mid" id="r-midbar"></div></div>
+      <div class="band-labels"><span id="r-lo">P10</span><span id="r-hi">P90</span></div>
+    </div>
+    <dl class="kv">
+      <dt>Likely range (P10–P90)</dt><dd id="r-rng">–</dd>
+      <dt>Price in INR</dt><dd id="r-inr">–</dd>
+      <dt>Value of volume (middle)</dt><dd id="r-val">–</dd>
+      <dt>Value of volume (P10–P90)</dt><dd id="r-valr">–</dd>
+      <dt>Gain from a high rating</dt><dd id="r-rate">–</dd>
+    </dl>
+    <div><span class="pill" id="r-conf">Confidence</span> <span class="sub" id="r-n"></span></div>
+    <p class="note">About 8 in 10 Indian deal prices fell inside this range when tested. Median error on Indian deals: 29%.</p>
+  </div>
+</section>
+
+<!-- FINANCE -->
+<section class="grid" data-panel="fin" hidden>
+  <div class="card">
+    <h2>Project inputs</h2>
+    <div class="fields">
+      <label>Credit price (US$)<input id="f-price" type="number" step="0.01" min="0"></label>
+      <label class="check"><input id="f-link" type="checkbox" checked> Use price from first tab</label>
+      <label>Expected credits per year<input id="f-q" type="number" min="0" value="25000"></label>
+      <label>Realisation ratio<input id="f-real" type="number" step="0.01" min="0" max="1.5" value="0.77"></label>
+      <label>Years before first issuance<input id="f-delay" type="number" min="0" max="10" value="2"></label>
+      <label>Crediting years<input id="f-years" type="number" min="1" max="30" value="10"></label>
+      <label>Price growth per year (%)<input id="f-g" type="number" step="0.5" value="3"></label>
+      <label>Buffer pool (%)<input id="f-buf" type="number" step="1" min="0" max="50" value="0"></label>
+      <label>Share to community / registry (%)<input id="f-share" type="number" step="1" min="0" max="80" value="10"></label>
+      <label>Upfront cost (US$)<input id="f-capex" type="number" min="0" value="300000"></label>
+      <label>Running cost per year (US$)<input id="f-opex" type="number" min="0" value="25000"></label>
+      <label>Verification per issuance (US$)<input id="f-ver" type="number" min="0" value="25000"></label>
+      <label>Fee per credit (US$)<input id="f-fee" type="number" step="0.01" min="0" value="0.20"></label>
+      <label>Discount rate (%)<input id="f-rate" type="number" step="0.5" value="12"></label>
+      <label>Offtake price (US$, blank = 85% of price)<input id="f-off" type="number" step="0.01" min="0"></label>
+      <label>Buyer default chance per year (%)<input id="f-def" type="number" step="0.5" min="0" value="5"></label>
+    </div>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>Is it worth funding?</h2>
+    <div><span class="big" id="fr-npv">–</span> <span class="sub">NPV, US$</span></div>
+    <dl class="kv">
+      <dt>IRR</dt><dd id="fr-irr">–</dd>
+      <dt>Cost per credit (LCOC)</dt><dd id="fr-lcoc">–</dd>
+      <dt>Credits issued in total</dt><dd id="fr-cred">–</dd>
+      <dt>Offtake deal present value</dt><dd id="fr-off">–</dd>
+      <dt>Discount for selling forward</dt><dd id="fr-pre">–</dd>
+    </dl>
+    <h2 style="font-size:17px">Risk simulation · 1,000 draws</h2>
+    <p class="note">Random price (from the P10–P90 range), realisation ratio and up to 2 extra years of delay.</p>
+    <div class="kv">
+      <dt>Chance NPV is positive</dt><dd id="mc-p">–</dd>
+    </div>
+    <div class="bar"><span id="mc-bar" style="width:0%"></span></div>
+    <dl class="kv">
+      <dt>NPV, bad case (P10)</dt><dd id="mc-10">–</dd>
+      <dt>NPV, middle (P50)</dt><dd id="mc-50">–</dd>
+      <dt>NPV, good case (P90)</dt><dd id="mc-90">–</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- INTEGRITY -->
+<section class="grid" data-panel="int" hidden>
+  <div class="card">
+    <h2>Project facts</h2>
+    <div class="fields">
+      <label class="full">Credit type<select id="i-type"></select></label>
+      <label>ICVCM CCP status<select id="i-ccp"><option value="approved">Approved</option><option value="under assessment">Under assessment</option><option value="not assessed" selected>Not assessed</option><option value="does not meet">Does not meet</option></select></label>
+      <label>Realisation ratio (blank if unknown)<input id="i-real" type="number" step="0.01" min="0" value="0.9"></label>
+      <label>Latest vintage<input id="i-vint" type="number" min="2005" max="2026" value="2025"></label>
+      <label>Activity status<select id="i-status"><option value="active">Active</option><option value="slowing">Slowing</option><option value="no credits">No credits yet</option><option value="dormant">Dormant</option><option value="withdrawn">Withdrawn</option></select></label>
+      <label class="check full"><input id="i-cob" type="checkbox" checked> Has a co-benefit label (e.g. SDG, CCB)</label>
+      <label class="check full"><input id="i-a6" type="checkbox"> On India’s Article 6 activity list</label>
+    </div>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>Integrity grade</h2>
+    <div style="display:flex;align-items:baseline;gap:16px"><span class="grade" id="ir-grade">–</span><span class="big" id="ir-score" style="font-size:40px">–</span><span class="sub">out of 100</span></div>
+    <p class="note">A = 70 or more · B = 50–69 · C = below 50. A screening score, not a rating.</p>
+    <div class="tw"><table id="ir-table" style="color:var(--deep-ink)"></table></div>
+  </div>
+</section>
+
+<!-- CBAM -->
+<section class="grid" data-panel="cbam" hidden>
+  <div class="card">
+    <h2>Export shipment to the EU</h2>
+    <div class="fields">
+      <label>Tonnes of product<input id="c-t" type="number" min="0" value="10000"></label>
+      <label>Embedded emissions (tCO₂ per tonne)<input id="c-e" type="number" step="0.01" min="0" value="2.2"></label>
+      <label>EU benchmark (tCO₂ per tonne)<input id="c-b" type="number" step="0.01" min="0" value="0"></label>
+      <label>Free-allocation factor<input id="c-f" type="number" step="0.005" min="0" max="1" value="0.975"></label>
+      <label>CBAM certificate price (€/tCO₂)<input id="c-p" type="number" step="0.01" min="0" value="82.32"></label>
+      <label>Carbon price already paid in India (€/tCO₂)<input id="c-paid" type="number" step="0.01" min="0" value="0"></label>
+    </div>
+    <p class="note">Certificates = max(0, embedded − factor × benchmark) × tonnes. Cost = certificates × (CBAM price − price paid). Default certificate price is the workbook assumption; update it to the current EU price.</p>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>CBAM cost</h2>
+    <div><span class="big" id="cr-cost">–</span> <span class="sub">€ in total</span></div>
+    <dl class="kv">
+      <dt>Certificates needed</dt><dd id="cr-cert">–</dd>
+      <dt>Cost per tonne of product</dt><dd id="cr-pt">–</dd>
+      <dt>Saved by price paid in India</dt><dd id="cr-save">–</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- CCTS -->
+<section class="grid" data-panel="ccts" hidden>
+  <div class="card">
+    <h2>Obligated entity under India’s CCTS</h2>
+    <div class="fields">
+      <label>Output (tonnes of product)<input id="s-out" type="number" min="0" value="1000000"></label>
+      <label>Baseline intensity (tCO₂e/t)<input id="s-base" type="number" step="0.001" min="0" value="0.80"></label>
+      <label>Target cut (%)<input id="s-cut" type="number" step="0.1" min="0" value="3"></label>
+      <label>Actual intensity (tCO₂e/t)<input id="s-act" type="number" step="0.001" min="0" value="0.785"></label>
+      <label class="full">Carbon credit certificate price (₹)<input id="s-px" type="number" min="0" value="800"></label>
+    </div>
+    <p class="note">Target = baseline × (1 − cut). Certificates = (target − actual) × output. A shortfall not covered is charged at 2× the price.</p>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>Position</h2>
+    <div><span class="big" id="sr-ccc">–</span> <span class="sub" id="sr-lab">certificates</span></div>
+    <dl class="kv">
+      <dt>Target intensity</dt><dd id="sr-tgt">–</dd>
+      <dt>Value at market price</dt><dd id="sr-val">–</dd>
+      <dt>Penalty if not covered</dt><dd id="sr-pen">–</dd>
+    </dl>
+  </div>
+</section>
+
+<footer>Same equations as cgem_price_model.py and the India_VCM_Price_Model_FINAL_v14 workbook. Estimates from public data; not investment advice. C-GEM Research Team, November 2026.</footer>
+</div>
+
+<script>
+const ML={intercept:2.000128709516364,c:{year:0.0011426954568226678,asia:-0.2736550657223324,india:0.1521809247391587,removal:0.3510810577409067,recent:-0.17101334934555004,low:-0.3496465599557228,auth:0.5738554979792262},ccp:2.255,
+T:{
+"Renewable energy":[-2.219244949003456,0,0,0.9076745462585601,0.603739477816639,"Low",19],
+"Household devices (cookstoves, lighting, water)":[-0.08784679688936335,0,-0.7650375564810762,0.8068775844221325,0.603739477816639,"Low",22],
+"Waste (methane, composting, waste-to-energy)":[-0.6038675579093444,0,-1.6264625690881873,0.9076745462585601,0.603739477816639,"Low",11],
+"Rice methane (AWD, DSR, SRI)":[1.0033684588825942,0,-1.5945956728677149,0.9076745462585601,0.9056092167249585,"Low",2],
+"Soil carbon / regenerative agriculture":[0.6989929560382296,1,-1.5945956728677149,0.9076745462585601,0.9056092167249585,"Low",4],
+"Livestock and other agriculture methane":[0.06494701539876868,0,-1.5945956728677149,0.9076745462585601,0.9056092167249585,"Low",2],
+"Energy efficiency and fuel switching":[-0.8929966135010845,0,-0.49815743709961513,0.9076745462585601,0.9056092167249585,"Low",2],
+"Industrial and chemical processes":[-0.8857651749421154,0,-0.49815743709961513,0.9076745462585601,0.9056092167249585,"Low",3],
+"Transport":[-0.5509757133183628,0,-0.49815743709961513,0.9076745462585601,0.9056092167249585,"Low",1],
+"Afforestation / reforestation (ARR)":[0.22092252112180644,1,-0.09760663508564058,0.6832289546234552,0.603739477816639,"Low",36],
+"Agroforestry":[0.275784323592265,1,-0.5689845921467483,0.7161613127888437,0.9056092167249585,"Low",3],
+"REDD+ (avoided deforestation)":[-0.6942542315015863,0,-1.1111897042549868,0.7210374129143049,0.603739477816639,"Low",44],
+"Blue carbon (mangrove, wetland)":[1.0449556958986146,1,-0.5689845921467483,0.7161613127888437,0.9056092167249585,"Low",4],
+"Biochar and engineered removal":[2.676476039064898,1,-0.49815743709961513,0.9076745462585601,0.603739477816639,"High",24],
+"Other / not classified":[0,0,-0.49815743709961513,0.9076745462585601,0.603739477816639,"Low",0]}};
+const P10LOG=-1.049;
+const RISK={"Renewable energy":.2,"Household devices (cookstoves, lighting, water)":.4,"Energy efficiency and fuel switching":.45,"Industrial and chemical processes":.5,"Transport":.5,"Waste (methane, composting, waste-to-energy)":.7,"Livestock and other agriculture methane":.7,"Rice methane (AWD, DSR, SRI)":.6,"Soil carbon / regenerative agriculture":.5,"Afforestation / reforestation (ARR)":.7,"Agroforestry":.65,"REDD+ (avoided deforestation)":.4,"Blue carbon (mangrove, wetland)":.7,"Biochar and engineered removal":.9,"Other / not classified":.5};
+
+const $=id=>document.getElementById(id);
+const num=(id,d=0)=>{const v=parseFloat($(id).value);return isFinite(v)?v:d};
+const usd=(v,dp)=>{if(!isFinite(v))return'–';const a=Math.abs(v);const d=dp??(a<10?2:a<1000?1:0);return(v<0?'−$':'$')+a.toLocaleString('en-IN',{minimumFractionDigits:d,maximumFractionDigits:d})};
+const inr=v=>isFinite(v)?(v<0?'−₹':'₹')+Math.abs(v).toLocaleString('en-IN',{maximumFractionDigits:0}):'–';
+const eur=v=>isFinite(v)?'€'+v.toLocaleString('en-IN',{maximumFractionDigits:v<100?2:0}):'–';
+const fmt=(v,d=0)=>isFinite(v)?v.toLocaleString('en-IN',{maximumFractionDigits:d}):'–';
+
+function mlPrice(type,vint,rating,auth,ccp){
+  const t=ML.T[type],c=ML.c;
+  let l=ML.intercept+c.year+c.asia+c.india+t[0]+c.recent;
+  if(t[1])l+=c.removal;
+  if(vint&&2026-vint>5)l+=t[2];
+  if(rating==='high')l+=t[3];
+  if(rating==='low')l+=c.low;
+  if(auth)l+=c.auth;
+  const prem=ccp?ML.ccp:1,mid=Math.exp(l)*prem;
+  return{mid,lo:mid*Math.exp(P10LOG),hi:mid*Math.exp(t[4]),conf:t[5],n:t[6]};
+}
+
+for(const s of ['p-type','i-type']){const el=$(s);Object.keys(ML.T).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;el.appendChild(o)});}
+$('p-type').value="Household devices (cookstoves, lighting, water)";
+$('i-type').value="Rice methane (AWD, DSR, SRI)";
+
+let cur={mid:0,lo:0,hi:0};
+function calcPrice(){
+  const type=$('p-type').value,r=mlPrice(type,num('p-vint'),$('p-rating').value,$('p-auth').checked,$('p-ccp').checked);
+  cur=r;const vol=num('p-vol'),fx=num('p-fx',88);
+  $('r-mid').textContent=usd(r.mid,2);
+  $('r-rng').textContent=usd(r.lo,2)+' – '+usd(r.hi,2);
+  $('r-inr').textContent=inr(r.mid*fx)+' (₹'+fmt(r.lo*fx)+'–'+fmt(r.hi*fx)+')';
+  $('r-val').textContent=usd(r.mid*vol,0);
+  $('r-valr').textContent=usd(r.lo*vol,0)+' – '+usd(r.hi*vol,0);
+  if($('p-rating').value==='high'){$('r-rate').textContent='already applied'}
+  else{const h=mlPrice(type,num('p-vint'),'high',$('p-auth').checked,$('p-ccp').checked);$('r-rate').textContent='+'+usd(h.mid-r.mid,2)+' / t · '+usd((h.mid-r.mid)*vol,0)+' on volume'}
+  $('r-conf').textContent=r.conf+' confidence';
+  $('r-n').textContent=r.n+' wholesale prices of this type in training data';
+  const L=Math.log(r.lo/2),H=Math.log(r.hi*1.5),pos=v=>((Math.log(v)-L)/(H-L)*100);
+  $('r-range').style.left=pos(r.lo)+'%';$('r-range').style.width=(pos(r.hi)-pos(r.lo))+'%';
+  $('r-midbar').style.left='calc('+pos(r.mid)+'% - 1px)';
+  $('r-lo').textContent='P10 '+usd(r.lo,2);$('r-hi').textContent='P90 '+usd(r.hi,2);
+  calcFin();
+}
+
+function finance(o){
+  const T=o.delay+o.years,q=[],pr=[],rev=[],cost=[],cf=[],df=[];
+  for(let t=0;t<=T;t++){
+    q[t]=(t>o.delay&&t<=T)?o.Q*o.real*(1-o.buf):0;
+    pr[t]=o.price*Math.pow(1+o.g,Math.max(t-1,0));
+    rev[t]=q[t]*pr[t]*(1-o.share);
+    cost[t]=t===0?o.capex:o.opex+(q[t]>0?o.ver+o.fee*q[t]:0);
+    cf[t]=rev[t]-cost[t];df[t]=Math.pow(1+o.rate,-t);
+  }
+  const npv=cf.reduce((s,v,t)=>s+v*df[t],0);
+  const lcoc=cost.reduce((s,v,t)=>s+v*df[t],0)/q.reduce((s,v,t)=>s+v*(1-o.share)*df[t],0);
+  const f=r=>cf.reduce((s,v,t)=>s+v/Math.pow(1+r,t),0);
+  let irr=null,lo=-0.99,hi=10;
+  if(f(lo)*f(hi)<0){for(let i=0;i<200;i++){const m=(lo+hi)/2;if(f(lo)*f(m)>0)lo=m;else hi=m}irr=(lo+hi)/2}
+  const F=o.off??0.85*o.price,tot=q.reduce((a,b)=>a+b,0);
+  const offpv=q.reduce((s,v,t)=>s+v*F*Math.pow(1-o.def,t)*df[t],0);
+  return{npv,irr,lcoc,tot,offpv,pre:tot?1-offpv/(F*tot):NaN};
+}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function monteCarlo(o,sig){
+  const R=rng(42),n=1000,out=[];
+  const gauss=()=>{let u=0,v=0;while(!u)u=R();v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+  const a=(1+o.g)/(1+o.rate),AN=(1-Math.pow(1+o.rate,-o.years))/o.rate;
+  for(let i=0;i<n;i++){
+    const p=o.price*Math.exp(sig*gauss()),Rr=Math.min(1.5,o.real*Math.exp(0.494*gauss())),d=o.delay+Math.floor(R()*3);
+    const Q=o.Q*Rr*(1-o.buf);
+    const S=Math.abs(1-a)<1e-9?o.years*Math.pow(a,d+1)/(1+o.g):Math.pow(a,d+1)*(1-Math.pow(a,o.years))/(1-a)/(1+o.g);
+    out.push(Q*p*(1-o.share)*S-(o.capex+o.opex*(1-Math.pow(1+o.rate,-(d+o.years)))/o.rate+(o.ver+o.fee*Q)*Math.pow(1+o.rate,-d)*AN));
+  }
+  out.sort((x,y)=>x-y);const pc=k=>out[Math.floor(k*(n-1))];
+  return{p:out.filter(v=>v>0).length/n,p10:pc(.1),p50:pc(.5),p90:pc(.9)};
+}
+function calcFin(){
+  if($('f-link').checked)$('f-price').value=cur.mid.toFixed(2);
+  const price=num('f-price'),offv=$('f-off').value.trim();
+  const o={price,Q:num('f-q'),real:num('f-real',.77),delay:Math.round(num('f-delay',2)),years:Math.max(1,Math.round(num('f-years',10))),g:num('f-g')/100,buf:num('f-buf')/100,share:num('f-share')/100,capex:num('f-capex'),opex:num('f-opex'),ver:num('f-ver'),fee:num('f-fee'),rate:num('f-rate',12)/100,off:offv===''?null:parseFloat(offv),def:num('f-def')/100};
+  const r=finance(o);
+  const el=$('fr-npv');el.textContent=usd(r.npv,0);el.className='big '+(r.npv>=0?'pos':'neg');
+  $('fr-irr').textContent=r.irr===null?'no IRR':(r.irr*100).toFixed(1)+'%';
+  $('fr-lcoc').textContent=usd(r.lcoc,2)+' / t';
+  $('fr-cred').textContent=fmt(r.tot)+' t';
+  $('fr-off').textContent=usd(r.offpv,0);
+  $('fr-pre').textContent=isFinite(r.pre)?(r.pre*100).toFixed(1)+'%':'–';
+  let sig;
+  if($('f-link').checked&&cur.lo>0)sig=(Math.log(cur.hi)-Math.log(cur.lo))/(2*1.2816);
+  else sig=(0.603739477816639-P10LOG)/(2*1.2816);
+  const m=monteCarlo(o,sig);
+  $('mc-p').textContent=(m.p*100).toFixed(0)+'%';$('mc-bar').style.width=(m.p*100)+'%';
+  $('mc-10').textContent=usd(m.p10,0);$('mc-50').textContent=usd(m.p50,0);$('mc-90').textContent=usd(m.p90,0);
+}
+
+const W=[["Additionality and over-crediting risk of the credit type",30],["ICVCM CCP status of the methodology",20],["Delivery record (realisation ratio)",15],["Vintage age",10],["Co-benefit label",10],["Activity status",10],["India Article 6 list match",5]];
+function calcInt(){
+  const rv=$('i-real').value.trim(),real=rv===''?null:parseFloat(rv),age=2026-num('i-vint',2026);
+  const p=[RISK[$('i-type').value]??.5,
+    {"approved":1,"under assessment":.6,"not assessed":.5,"does not meet":.1}[$('i-ccp').value],
+    real===null?.6:(real>=.6&&real<=1.3?1:(real<.6?.5:.6)),
+    age<=5?1:(age<=10?.5:.2),
+    $('i-cob').checked?1:.4,
+    {"active":1,"slowing":1,"no credits":.6,"dormant":.3,"withdrawn":0}[$('i-status').value],
+    $('i-a6').checked?1:.3];
+  let s=0,rows='<tr><th>Factor</th><th class="n">Weight</th><th class="n">Points</th></tr>';
+  W.forEach(([k,w],i)=>{s+=w*p[i];rows+=`<tr><td>${k}</td><td class="n">${w}</td><td class="n">${(w*p[i]).toFixed(1)}</td></tr>`});
+  $('ir-table').innerHTML=rows;
+  $('ir-score').textContent=s.toFixed(0);
+  $('ir-grade').textContent=s>=70?'A':s>=50?'B':'C';
+}
+function calcCbam(){
+  const t=num('c-t'),certs=Math.max(0,num('c-e')-num('c-f')*num('c-b'))*t,pr=num('c-p'),paid=num('c-paid');
+  const cost=certs*Math.max(0,pr-paid),full=certs*pr;
+  $('cr-cost').textContent=eur(cost);$('cr-cert').textContent=fmt(certs)+' tCO₂';
+  $('cr-pt').textContent=t?eur(cost/t):'–';$('cr-save').textContent=eur(full-cost);
+}
+function calcCcts(){
+  const tgt=num('s-base')*(1-num('s-cut')/100),c=(tgt-num('s-act'))*num('s-out'),px=num('s-px');
+  $('sr-ccc').textContent=(c>=0?'+':'−')+fmt(Math.abs(c));
+  $('sr-ccc').className='big '+(c>=0?'pos':'neg');
+  $('sr-lab').textContent=c>=0?'certificates earned (can sell)':'certificates needed (must buy)';
+  $('sr-tgt').textContent=tgt.toFixed(4)+' tCO₂e/t';
+  $('sr-val').textContent=inr(c*px);
+  $('sr-pen').textContent=c<0?inr(-2*px*c):'none';
+}
+
+document.querySelectorAll('[data-panel="price"] input,[data-panel="price"] select').forEach(e=>e.addEventListener('input',calcPrice));
+document.querySelectorAll('[data-panel="fin"] input').forEach(e=>e.addEventListener('input',ev=>{if(ev.target.id==='f-price')$('f-link').checked=false;calcFin()}));
+document.querySelectorAll('[data-panel="int"] input,[data-panel="int"] select').forEach(e=>e.addEventListener('input',calcInt));
+document.querySelectorAll('[data-panel="cbam"] input').forEach(e=>e.addEventListener('input',calcCbam));
+document.querySelectorAll('[data-panel="ccts"] input').forEach(e=>e.addEventListener('input',calcCcts));
+
+function show(tab){
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+  document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){location.hash=b.dataset.tab}}));
+const h=location.hash.slice(1);if(['price','fin','int','cbam','ccts'].includes(h))show(h);
+window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(['price','fin','int','cbam','ccts'].includes(k))show(k)});
+const qs=new URLSearchParams(location.search);
+if(qs.get('type')&&ML.T[qs.get('type')]){$('p-type').value=qs.get('type');$('i-type').value=qs.get('type')}
+if(qs.get('vint')&&+qs.get('vint')>2000){$('p-vint').value=qs.get('vint');$('i-vint').value=qs.get('vint')}
+calcPrice();calcInt();calcCbam();calcCcts();
+</script>
+</body>
+</html>

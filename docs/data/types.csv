@@ -1,0 +1,16 @@
+credit_type,price,p10,p90,confidence,wholesale_prices,old_vintage_mult,high_rating_mult,removal
+Renewable energy,0.6,0.21,1.098,Low,19,1.0,2.479,No
+"Household devices (cookstoves, lighting, water)",5.058,1.772,9.25,Low,22,0.465,2.241,No
+"Waste (methane, composting, waste-to-energy)",3.019,1.058,5.522,Low,11,0.197,2.479,No
+"Rice methane (AWD, DSR, SRI)",15.062,5.276,37.254,Low,2,0.203,2.479,No
+Soil carbon / regenerative agriculture,15.782,5.528,39.035,Low,4,0.203,2.479,Yes
+Livestock and other agriculture methane,5.893,2.064,14.575,Low,2,0.203,2.479,No
+Energy efficiency and fuel switching,2.261,0.792,5.592,Low,2,0.608,2.479,No
+Industrial and chemical processes,2.277,0.798,5.633,Low,3,0.608,2.479,No
+Transport,3.183,1.115,7.873,Low,1,0.608,2.479,No
+Afforestation / reforestation (ARR),9.784,3.427,17.895,Low,36,0.907,1.98,Yes
+Agroforestry,10.336,3.621,25.566,Low,3,0.566,2.047,Yes
+REDD+ (avoided deforestation),2.758,0.966,5.044,Low,44,0.329,2.057,No
+"Blue carbon (mangrove, wetland)",22.305,7.813,55.171,Low,4,0.566,2.047,Yes
+Biochar and engineered removal,114.016,39.939,208.529,High,24,0.608,2.479,Yes
+Other / not classified,5.522,1.934,10.1,Low,0,0.608,2.479,No

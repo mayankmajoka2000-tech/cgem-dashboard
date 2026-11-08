@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>India Carbon Price Dashboard</title>
+<meta name="description" content="C-GEM model v14: fair prices, ranges, integrity and demand for 5,013 Indian voluntary carbon credit projects.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: summary first (lede, four figures), then charts in two columns, then the full project register */
+:root{
+  --bg:#F5F3EC; --panel:#FFFDF7; --ink:#14302A; --muted:#55645E; --line:#DCD7C8; --grid:#E7E2D5;
+  --accent:#B5651D; --accent-soft:#F3E3D0; --deep:#14302A; --deep-ink:#F5F3EC; --deep-muted:#BFD8D5;
+  --series:#2F6FA8; --range:#9DB4AE; --good:#2F6F4F; --warn:#9A6B00; --bad:#A63D2F;
+  --f-display:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --f-body:'IBM Plex Sans', Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0F1F1B; --panel:#162A25; --ink:#E9EFEA; --muted:#A3B5AE; --line:#2C443D; --grid:#22362F;
+  --accent:#E8A25C; --accent-soft:#3A2C1C; --deep:#0A1714; --deep-ink:#E9EFEA; --deep-muted:#A9C7C2;
+  --series:#7DB3E8; --range:#4C6A62; --good:#6FC79A; --warn:#E6BE5A; --bad:#F08A7A; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.cta{display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;padding:9px 16px;border-radius:999px}
+.cta:hover{background:var(--accent);color:#fff}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,4.4vw,46px);line-height:1.08;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:70ch;font-size:16px}
+.lede b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));background:var(--deep);color:var(--deep-ink);border-radius:14px;overflow:hidden}
+.tile{padding:20px 22px;display:flex;flex-direction:column;gap:4px;min-width:0;border-right:1px solid color-mix(in srgb,var(--deep-muted) 22%,transparent)}
+.tile:last-child{border-right:none}
+.tile .lab{font-size:13px;color:var(--deep-muted)}
+.tile .num{font-family:var(--f-display);font-size:36px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .sub{font-size:12px;color:var(--deep-muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h2{font-family:var(--f-display);font-size:21px;font-weight:600;margin:0}
+.note{font-size:13px;color:var(--muted);margin:0;max-width:75ch}
+.chart{position:relative;min-height:200px}
+.chart svg{display:block;overflow:visible}
+.chart text{font-family:var(--f-body)}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:6px 10px;font-size:12px;white-space:nowrap;z-index:2}
+.tip .t1{color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.controls input,.controls select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-width:0}
+.controls input{flex:1 1 220px}
+.count{font-size:13px;color:var(--muted)}
+.tablebox{max-height:560px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{position:sticky;top:0;background:var(--panel);font-weight:600;z-index:1}
+th button{all:unset;cursor:pointer}
+th[aria-sort="ascending"] button::after{content:" ↑"} th[aria-sort="descending"] button::after{content:" ↓"}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-size:12.5px}
+.pill{display:inline-block;padding:0 .5em;border-radius:999px;border:1px solid currentColor;font-size:.9em;font-weight:600}
+.pill.A{color:var(--good)} .pill.B{color:var(--warn)} .pill.C{color:var(--bad)}
+td a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
+td a:hover{text-decoration:underline}
+details{font-size:13px;color:var(--muted)}
+details summary{cursor:pointer;color:var(--ink);font-weight:600}
+details dl{display:grid;grid-template-columns:minmax(120px,220px) 1fr;gap:6px 16px}
+@media (max-width:520px){details dl{grid-template-columns:1fr}}
+details dt{color:var(--ink);font-weight:500}
+details dd{margin:0}
+.eq{font-family:var(--f-mono);font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.fail{color:var(--bad);font-size:13px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-wrap:wrap;gap:6px 20px}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="eyebrow">C-GEM Research Team · Model v14 · November 2026</span>
+    <a class="cta" href="calculator.html">Open the calculator →</a>
+  </div>
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <h1>India Carbon Price Dashboard</h1>
+    <p class="lede">An Indian voluntary carbon credit is worth from <b id="loPrice">—</b> per tonne for renewable energy to <b id="hiPrice">—</b> for biochar at 2026 prices. On Indian deal prices the model is off by a median <b id="indErr">—</b>, so read every price with its range.</p>
+  </header>
+
+  <section class="tiles" aria-label="Headline figures">
+    <div class="tile"><span class="lab">Indian projects priced</span><span class="num" id="nProj">—</span><span class="sub">Every registry in the C-GEM mastersheet</span></div>
+    <div class="tile"><span class="lab">Median project price</span><span class="num" id="medPrice">—</span><span class="sub">US$ per tCO₂e, 2026</span></div>
+    <div class="tile"><span class="lab">Projects in integrity band A</span><span class="num" id="nA">—</span><span class="sub">Score 70 or more out of 100</span></div>
+    <div class="tile"><span class="lab">Expected annual sales value</span><span class="num" id="sales">—</span><span class="sub">US$, all Indian projects</span></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Price by credit type</h2>
+      <p class="note">Dot is the expected price; the bar runs from P10 to P90. Log scale, US$ per tCO₂e, Indian credit with a recent vintage and no rating.</p>
+      <div class="legend"><span><i style="background:var(--good)"></i>High confidence</span><span><i style="background:var(--muted)"></i>Low confidence</span><span><i style="background:var(--range)"></i>P10–P90 range</span></div>
+      <div class="chart" id="typeChart"></div>
+    </div>
+    <div class="card">
+      <h2>Like-for-like price index</h2>
+      <p class="note">Same credit, mix held constant; 2023 = 100. The band is the 90% bootstrap range.</p>
+      <div class="chart" id="indexChart"></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Demand against new supply</h2>
+      <p class="note">Retirements per year ÷ risk-adjusted new credits per year, Indian voluntary projects. Below 1 means new credits arrive faster than buyers retire them.</p>
+      <div class="chart" id="supplyChart"></div>
+    </div>
+    <div class="card">
+      <h2>How accurate the model is</h2>
+      <p class="note">Median error when the model predicts a price it did not see. Lower is better; the last row is coverage, where higher is better.</p>
+      <div class="tablebox" style="max-height:none">
+        <table><thead><tr><th>Test</th><th class="n">Result</th></tr></thead><tbody id="accRows"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Indian projects</h2>
+    <p class="note">Expected price, range, integrity score and expected annual sales value for every Indian project. Sort by any column, search by name, state or ID, and open any project in the calculator to add its rating or Article 6 status.</p>
+    <div class="controls">
+      <select id="typeFilter" aria-label="Credit type"><option value="">All credit types</option></select>
+      <select id="bandFilter" aria-label="Integrity band"><option value="">All bands</option><option>A</option><option>B</option><option>C</option></select>
+      <input id="projSearch" type="search" placeholder="Search projects, states or IDs" aria-label="Search projects">
+      <span class="count" id="projCount">—</span>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr>
+          <th><button data-sort="project_key">Registry and ID</button></th>
+          <th><button data-sort="project_name">Project</button></th>
+          <th><button data-sort="state">State</button></th>
+          <th><button data-sort="credit_type">Credit type</button></th>
+          <th class="n"><button data-sort="latest_vintage">Vintage</button></th>
+          <th class="n"><button data-sort="price">Price (US$/t)</button></th>
+          <th class="n"><button data-sort="p10">P10</button></th>
+          <th class="n"><button data-sort="p90">P90</button></th>
+          <th class="n"><button data-sort="integrity_score">Integrity</button></th>
+          <th><button data-sort="integrity_band">Band</button></th>
+          <th class="n"><button data-sort="demand_score">Demand</button></th>
+          <th class="n" aria-sort="descending"><button data-sort="annual_sales_value">Sales value (US$/yr)</button></th>
+          <th>Calculator</th>
+        </tr></thead>
+        <tbody id="projRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details>
+    <summary>The price equation</summary>
+    <p class="note" style="margin-block:8px">Robust hedonic model on log price: 0.8 × Huber regression + 0.2 × hierarchical ridge with literature priors, trained on 443 public prices (2020–2026, each older year weighted 0.7×).</p>
+    <div class="eq">ln(price) = 2.000 + 0.001 (2026) − 0.274 (Asia) + 0.152 (India) + type effect − 0.171 (recent vintage)
+          + 0.351 if removal credit
+          + old-vintage adjustment if vintage is more than 5 years old
+          + high-rating effect if rated high, or −0.350 if rated low
+          + 0.574 if Article 6 authorised / CORSIA
+price = exp(ln price) × 2.255 if ICVCM CCP-approved
+P10 = price × exp(−1.049)      P90 = price × exp(type p90_log)</div>
+    <p class="note" style="margin-top:8px">Every coefficient is in <a href="model/price_model.json">price_model.json</a>; the Python version is <a href="model/cgem_price_model.py">cgem_price_model.py</a>.</p>
+  </details>
+
+  <details>
+    <summary>Definitions and limits</summary>
+    <dl style="margin-top:8px">
+      <dt>Expected price</dt><dd>Wholesale price of the credit at 2026 market level from the C-GEM model. The register applies the credit type’s equation with a recent vintage and no rating; use the calculator for a project-specific price.</dd>
+      <dt>P10 and P90</dt><dd>One price in ten falls below P10 and one in ten above P90. Indian ranges are calibrated on Indian deal prices (82% inside the range when tested).</dd>
+      <dt>Integrity score</dt><dd>C-GEM screening score from public registry data: type risk, CCP status, delivery record, vintage, co-benefit label, activity and Article 6 match. Not a rating.</dd>
+      <dt>Demand score</dt><dd>Expected share of a project’s credits that get retired, from the C-GEM demand model.</dd>
+      <dt>Sales value</dt><dd>Expected price × risk-adjusted annual credits × demand score.</dd>
+      <dt>Left out</dt><dd>Private deals and paywalled assessment series; CCTS carbon credit certificates, which have no traded price yet.</dd>
+    </dl>
+  </details>
+
+  <footer>
+    <span>C-GEM Research Team. Estimates from public data; not investment advice.</span>
+    <span>Data: <a href="data/projects.csv">projects</a> · <a href="data/types.csv">types</a> · <a href="data/index.csv">index</a> · <a href="data/supply.csv">supply</a> · <a href="data/accuracy.csv">accuracy</a></span>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(async function () {
+  const num = (v) => (v === '' || v == null ? NaN : Number(v));
+  const usd = (v) => (isNaN(v) ? '—' : '$' + (v >= 100 ? d3.format(',.0f')(v) : d3.format(',.2f')(v)));
+  const compact = new Intl.NumberFormat('en', {notation: 'compact', maximumFractionDigits: 1});
+  const short = (s) => s.replace(/ \(.*\)/, '').replace('Livestock and other agriculture methane', 'Livestock methane').replace('Energy efficiency and fuel switching', 'Energy efficiency').replace('Industrial and chemical processes', 'Industrial').replace('Biochar and engineered removal', 'Biochar / removal').replace('Soil carbon / regenerative agriculture', 'Soil carbon').replace('Afforestation / reforestation', 'ARR').replace('Other / not classified', 'Other');
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  let D;
+  try {
+    const [types, index, supply, accuracy, projects] = await Promise.all(['types', 'index', 'supply', 'accuracy', 'projects'].map((f) => d3.csv('data/' + f + '.csv')));
+    D = {types, index, supply, accuracy, projects};
+  } catch (e) {
+    document.querySelectorAll('.chart,#projRows').forEach((el) => { el.innerHTML = '<p class="fail">Could not load the data files. Refresh the page to try again.</p>'; });
+    return;
+  }
+
+  const tByType = Object.fromEntries(D.types.map((r) => [r.credit_type, r]));
+  document.getElementById('loPrice').textContent = usd(num(tByType['Renewable energy']?.price));
+  document.getElementById('hiPrice').textContent = usd(num(tByType['Biochar and engineered removal']?.price));
+  const ie = D.accuracy.find((r) => r.test === 'LOO Indian deal prices');
+  document.getElementById('indErr').textContent = ie ? d3.format('.0%')(num(ie.median_error)) : '—';
+
+  const prices = D.projects.map((p) => num(p.price)).filter((x) => x > 0);
+  document.getElementById('nProj').textContent = d3.format(',')(D.projects.length);
+  document.getElementById('medPrice').textContent = usd(d3.median(prices));
+  document.getElementById('nA').textContent = d3.format(',')(D.projects.filter((p) => p.integrity_band === 'A').length);
+  document.getElementById('sales').textContent = '$' + compact.format(d3.sum(D.projects, (p) => num(p.annual_sales_value) || 0));
+
+  const tipBox = (el) => { const t = document.createElement('div'); t.className = 'tip'; t.hidden = true; el.append(t); return t; };
+  const showTip = (el, tip, ev, lines) => {
+    const [mx, my] = d3.pointer(ev, el); tip.replaceChildren();
+    lines.forEach((l, i) => { const d = document.createElement('div'); if (!i) d.className = 't1'; d.textContent = l; tip.append(d); });
+    tip.hidden = false; const tw = tip.offsetWidth; tip.style.left = Math.max(0, Math.min(el.clientWidth - tw, mx + 12)) + 'px'; tip.style.top = Math.max(0, my - 10) + 'px';
+  };
+  const labelWidth = (svg, rows) => { const probe = svg.append('g').attr('font-size', 12); let lw = 0; rows.forEach((r) => { lw = Math.max(lw, probe.append('text').text(short(r.credit_type)).node().getComputedTextLength()); }); probe.remove(); return lw; };
+
+  function typeChart() {
+    const el = document.getElementById('typeChart');
+    const rows = D.types.map((r) => ({...r, price: num(r.price), p10: num(r.p10), p90: num(r.p90)})).sort((a, b) => b.price - a.price);
+    el.replaceChildren();
+    const W = el.clientWidth || 600, rowH = 24, M = {t: 8, r: 18, b: 28};
+    const svg = d3.select(el).append('svg').attr('width', '100%');
+    M.l = Math.min(labelWidth(svg, rows) + 12, W * 0.45);
+    const H = M.t + M.b + rows.length * rowH;
+    svg.attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+    const x = d3.scaleLog(d3.extent(rows.flatMap((r) => [r.p10, r.p90])).map((v, i) => (i ? v * 1.15 : v / 1.15)), [M.l, W - M.r]);
+    const y = d3.scaleBand(rows.map((r) => r.credit_type), [M.t, H - M.b]).padding(0.35);
+    const ticks = [0.3, 1, 3, 10, 30, 100, 300].filter((v) => v >= x.domain()[0] && v <= x.domain()[1]);
+    svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x).attr('x2', x).attr('y1', M.t).attr('y2', H - M.b).attr('stroke', css('--grid'));
+    svg.append('g').selectAll('text').data(ticks).join('text').attr('x', x).attr('y', H - 8).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', css('--muted')).text((v) => '$' + v);
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', M.l - 8).attr('y', (r) => y(r.credit_type) + y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('font-size', 12).attr('fill', css('--ink')).text((r) => short(r.credit_type));
+    const g = svg.append('g').selectAll('g').data(rows).join('g');
+    g.append('rect').attr('x', (r) => x(r.p10)).attr('width', (r) => Math.max(2, x(r.p90) - x(r.p10))).attr('y', (r) => y(r.credit_type)).attr('height', y.bandwidth()).attr('rx', 3).attr('fill', css('--range'));
+    g.append('circle').attr('cx', (r) => x(r.price)).attr('cy', (r) => y(r.credit_type) + y.bandwidth() / 2).attr('r', 5).attr('fill', (r) => (r.confidence === 'High' ? css('--good') : css('--muted'))).attr('stroke', css('--panel')).attr('stroke-width', 1.5);
+    const tip = tipBox(el);
+    g.append('rect').attr('x', M.l).attr('width', W - M.l - M.r).attr('y', (r) => y(r.credit_type) - 3).attr('height', y.bandwidth() + 6).attr('fill', 'transparent')
+      .on('mousemove', (ev, r) => showTip(el, tip, ev, [r.credit_type, `${usd(r.price)} (P10 ${usd(r.p10)}, P90 ${usd(r.p90)})`, `${r.confidence} confidence · ${r.wholesale_prices} wholesale prices`]))
+      .on('mouseleave', () => { tip.hidden = true; });
+  }
+
+  function indexChart() {
+    const el = document.getElementById('indexChart');
+    const rows = D.index.map((r) => ({year: +r.year, v: num(r.index), lo: num(r.low), hi: num(r.high)}));
+    el.replaceChildren();
+    const W = el.clientWidth || 500, H = 260, M = {t: 12, r: 44, b: 26, l: 38};
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+    const x = d3.scaleLinear(d3.extent(rows, (r) => r.year), [M.l, W - M.r]);
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.hi) * 1.05], [H - M.b, M.t]).nice();
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y).attr('y2', y).attr('stroke', css('--grid'));
+    svg.append('g').selectAll('text').data(y.ticks(4)).join('text').attr('x', M.l - 6).attr('y', y).attr('dy', '0.35em').attr('text-anchor', 'end').attr('font-size', 11).attr('fill', css('--muted')).text((v) => v);
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', (r) => x(r.year)).attr('y', H - 8).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', css('--muted')).text((r) => r.year);
+    svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(100)).attr('y2', y(100)).attr('stroke', css('--muted')).attr('stroke-dasharray', '4 3');
+    svg.append('path').datum(rows).attr('d', d3.area().x((r) => x(r.year)).y0((r) => y(r.lo)).y1((r) => y(r.hi))).attr('fill', css('--series')).attr('opacity', 0.16);
+    svg.append('path').datum(rows).attr('d', d3.line().x((r) => x(r.year)).y((r) => y(r.v))).attr('fill', 'none').attr('stroke', css('--series')).attr('stroke-width', 2.2).attr('stroke-linejoin', 'round');
+    const last = rows[rows.length - 1];
+    svg.append('circle').attr('cx', x(last.year)).attr('cy', y(last.v)).attr('r', 4.5).attr('fill', css('--series'));
+    svg.append('text').attr('x', x(last.year) + 8).attr('y', y(last.v)).attr('dy', '0.35em').attr('font-size', 12).attr('font-weight', 600).attr('fill', css('--ink')).text(Math.round(last.v));
+    const tip = tipBox(el);
+    svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', (r) => x(r.year)).attr('cy', (r) => y(r.v)).attr('r', 12).attr('fill', 'transparent')
+      .on('mousemove', (ev, r) => showTip(el, tip, ev, [String(r.year), `Index ${Math.round(r.v)} (range ${Math.round(r.lo)}–${Math.round(r.hi)})`]))
+      .on('mouseleave', () => { tip.hidden = true; });
+  }
+
+  function supplyChart() {
+    const el = document.getElementById('supplyChart');
+    const rows = D.supply.map((r) => ({...r, ratio: num(r.demand_to_supply)})).filter((r) => !isNaN(r.ratio) && num(r.new_supply_per_year) > 0).sort((a, b) => b.ratio - a.ratio);
+    el.replaceChildren();
+    const W = el.clientWidth || 500, rowH = 24, M = {t: 8, r: 40, b: 28};
+    const svg = d3.select(el).append('svg').attr('width', '100%');
+    M.l = Math.min(labelWidth(svg, rows) + 12, W * 0.45);
+    const H = M.t + M.b + rows.length * rowH; svg.attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+    const x = d3.scaleLinear([0, Math.max(1.05, d3.max(rows, (r) => r.ratio) * 1.1)], [M.l, W - M.r]);
+    const y = d3.scaleBand(rows.map((r) => r.credit_type), [M.t, H - M.b]).padding(0.3);
+    svg.append('g').selectAll('text').data(x.ticks(5)).join('text').attr('x', x).attr('y', H - 8).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', css('--muted')).text((v) => d3.format('.1f')(v));
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', M.l - 8).attr('y', (r) => y(r.credit_type) + y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('font-size', 12).attr('fill', css('--ink')).text((r) => short(r.credit_type));
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', M.l).attr('y', (r) => y(r.credit_type)).attr('height', y.bandwidth()).attr('width', (r) => Math.max(1, x(r.ratio) - M.l)).attr('rx', 3).attr('fill', (r) => (r.ratio < 0.5 ? css('--range') : css('--series')));
+    svg.append('g').selectAll('text.v').data(rows).join('text').attr('x', (r) => x(r.ratio) + 4).attr('y', (r) => y(r.credit_type) + y.bandwidth() / 2).attr('dy', '0.35em').attr('font-size', 11).attr('fill', css('--muted')).text((r) => d3.format('.2f')(r.ratio));
+    svg.append('line').attr('x1', x(1)).attr('x2', x(1)).attr('y1', M.t).attr('y2', H - M.b).attr('stroke', css('--muted')).attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', x(1) - 4).attr('y', M.t + 10).attr('text-anchor', 'end').attr('font-size', 11).attr('fill', css('--muted')).text('Balanced');
+    const tip = tipBox(el);
+    svg.append('g').selectAll('rect.h').data(rows).join('rect').attr('x', M.l).attr('width', W - M.l - M.r).attr('y', (r) => y(r.credit_type)).attr('height', y.bandwidth()).attr('fill', 'transparent')
+      .on('mousemove', (ev, r) => showTip(el, tip, ev, [r.credit_type, `Retired ${compact.format(num(r.retirements_per_year))}/yr vs new ${compact.format(num(r.new_supply_per_year))}/yr`, `Stock still available: ${compact.format(num(r.credits_available))}`]))
+      .on('mouseleave', () => { tip.hidden = true; });
+  }
+
+  const acc = document.getElementById('accRows');
+  D.accuracy.forEach((r) => { const tr = acc.insertRow(); tr.insertCell().textContent = r.test; const c = tr.insertCell(); c.className = 'n'; c.textContent = d3.format('.0%')(num(r.median_error)); });
+
+  const S = {sort: 'annual_sales_value', dir: -1, type: '', band: '', q: ''};
+  const tf = document.getElementById('typeFilter');
+  D.types.map((r) => r.credit_type).sort().forEach((t) => tf.append(new Option(t, t)));
+  const LIMIT = 300;
+  const numeric = ['latest_vintage', 'price', 'p10', 'p90', 'integrity_score', 'demand_score', 'annual_sales_value'];
+  function rowsNow() {
+    const q = S.q.trim().toLowerCase();
+    const rows = D.projects.filter((r) => (!S.type || r.credit_type === S.type) && (!S.band || r.integrity_band === S.band) && (!q || (r.project_key + ' ' + r.project_name + ' ' + r.state).toLowerCase().includes(q)));
+    const isNum = numeric.includes(S.sort);
+    return rows.sort((a, b) => {
+      if (isNum) { const x = num(a[S.sort]), y = num(b[S.sort]); return ((isNaN(x) ? -Infinity : x) - (isNaN(y) ? -Infinity : y)) * S.dir || 0; }
+      return String(a[S.sort] || '').localeCompare(String(b[S.sort] || '')) * S.dir;
+    });
+  }
+  function drawTable() {
+    const rows = rowsNow(), tb = document.getElementById('projRows');
+    document.getElementById('projCount').textContent = rows.length > LIMIT ? `Showing ${d3.format(',')(LIMIT)} of ${d3.format(',')(rows.length)} projects; search or filter to narrow` : `${d3.format(',')(rows.length)} projects`;
+    const frag = document.createDocumentFragment();
+    rows.slice(0, LIMIT).forEach((r) => {
+      const tr = document.createElement('tr');
+      const td = (v, cls) => { const c = document.createElement('td'); if (cls) c.className = cls; c.textContent = v; tr.append(c); return c; };
+      td(r.project_key); td(r.project_name); td(r.state); td(short(r.credit_type)); td(r.latest_vintage || '', 'n');
+      td(usd(num(r.price)), 'n'); td(usd(num(r.p10)), 'n'); td(usd(num(r.p90)), 'n');
+      td(isNaN(num(r.integrity_score)) ? '' : d3.format('.0f')(num(r.integrity_score)), 'n');
+      const bc = td(''); if (r.integrity_band) { const p = document.createElement('span'); p.className = 'pill ' + r.integrity_band; p.textContent = r.integrity_band; bc.append(p); }
+      td(isNaN(num(r.demand_score)) ? '' : d3.format('.0%')(num(r.demand_score)), 'n');
+      td(isNaN(num(r.annual_sales_value)) ? '' : d3.format(',.0f')(num(r.annual_sales_value)), 'n');
+      const lc = td(''); const a = document.createElement('a');
+      const qs = new URLSearchParams({type: r.credit_type}); if (r.latest_vintage) qs.set('vint', r.latest_vintage);
+      a.href = 'calculator.html?' + qs.toString(); a.textContent = 'Price it →'; lc.append(a);
+      frag.append(tr);
+    });
+    tb.replaceChildren(frag);
+  }
+  tf.addEventListener('change', () => { S.type = tf.value; drawTable(); });
+  document.getElementById('bandFilter').addEventListener('change', (e) => { S.band = e.target.value; drawTable(); });
+  document.getElementById('projSearch').addEventListener('input', (e) => { S.q = e.target.value; drawTable(); });
+  document.querySelectorAll('th button[data-sort]').forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.sort;
+    S.dir = S.sort === k ? -S.dir : (numeric.includes(k) ? -1 : 1); S.sort = k;
+    document.querySelectorAll('th button[data-sort]').forEach((o) => o.closest('th').setAttribute('aria-sort', o.dataset.sort === k ? (S.dir > 0 ? 'ascending' : 'descending') : 'none'));
+    drawTable();
+  }));
+
+  const drawCharts = () => { typeChart(); indexChart(); supplyChart(); };
+  drawCharts(); drawTable();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawCharts, 150); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawCharts);
+})();
+</script>
+</body>
+</html>
