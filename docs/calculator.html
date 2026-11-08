@@ -82,7 +82,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 </head>
 <body>
 <div class="wrap">
-<p class="topnav"><a href="./">← Price dashboard</a> · <a href="methodology.html">Methodology &amp; data</a> · <a href="methodology.html#feed">Price feed</a></p>
+<p class="topnav"><a href="./">← Price dashboard</a> · <a href="methodology.html">Methodology &amp; data</a> · <a href="weekly.html">Weekly index</a> · <a href="methodology.html#feed">Price feed</a></p>
 <header>
   <span class="eyebrow">C-GEM Research Team · Model v18</span>
   <h1>India Carbon Credit Calculator</h1>
@@ -91,6 +91,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 
 <nav role="tablist" aria-label="Calculators">
   <button role="tab" id="t-price" aria-selected="true" data-tab="price">Credit price</button>
+  <button role="tab" id="t-quote" aria-selected="false" data-tab="quote">Quote check</button>
   <button role="tab" id="t-fin" aria-selected="false" data-tab="fin">Project finance &amp; risk</button>
   <button role="tab" id="t-int" aria-selected="false" data-tab="int">Integrity score</button>
   <button role="tab" id="t-cbam" aria-selected="false" data-tab="cbam">CBAM cost</button>
@@ -249,6 +250,41 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <dt>Value at market price</dt><dd id="sr-val">–</dd>
       <dt>Penalty if not covered</dt><dd id="sr-pen">–</dd>
     </dl>
+  </div>
+</section>
+
+<!-- QUOTE CHECK -->
+<section class="grid" data-panel="quote" hidden>
+  <div class="card">
+    <h2>The quote you were given</h2>
+    <div class="fields">
+      <label class="full">Credit type<select id="q-type"></select></label>
+      <label>Quoted price (US$ per tCO₂e)<input id="q-price" type="number" step="0.01" min="0" value="6.50"></label>
+      <label>Volume (tCO₂e)<input id="q-vol" type="number" min="0" value="20000"></label>
+      <label>Vintage year<input id="q-vint" type="number" min="2005" max="2026" value="2023"></label>
+      <label>Registry<select id="q-reg"><option value="">Not known / other</option><option value="Verra">Verra</option><option value="Gold Standard">Gold Standard</option><option value="CDM">CDM</option><option value="PlanVivo">PlanVivo</option><option value="Cercarbono">Cercarbono</option></select></label>
+      <label>Rating<select id="q-rating"><option value="">Not rated / average</option><option value="high">High (e.g. A or above)</option><option value="low">Low (e.g. C or below)</option></select></label>
+      <label class="check full"><input id="q-auth" type="checkbox"> Article 6 authorised / CORSIA eligible</label>
+      <label class="check full"><input id="q-ccp" type="checkbox"> ICVCM CCP-approved methodology</label>
+    </div>
+    <p class="note">The model’s P10–P90 range is treated as a log-normal spread around its middle price. The percentile says what share of comparable Indian credits would trade below this quote.</p>
+  </div>
+  <div class="card result" aria-live="polite">
+    <h2>Verdict</h2>
+    <div><span class="big" id="qr-verdict" style="font-size:40px">–</span></div>
+    <p class="sub" id="qr-why"></p>
+    <div>
+      <div class="band"><div class="track"></div><div class="range" id="qr-range"></div><div class="mid" id="qr-mid"></div><div class="mid" id="qr-q" style="background:var(--deep-ink);width:4px"></div></div>
+      <div class="band-labels"><span id="qr-lo">P10</span><span id="qr-hi">P90</span></div>
+    </div>
+    <dl class="kv">
+      <dt>Model middle price</dt><dd id="qr-m">–</dd>
+      <dt>Quote vs middle</dt><dd id="qr-diff">–</dd>
+      <dt>Percentile of the quote</dt><dd id="qr-pct">–</dd>
+      <dt>Saving if bought at the middle</dt><dd id="qr-save">–</dd>
+      <dt>Fair counter-offer range</dt><dd id="qr-counter">–</dd>
+    </dl>
+    <p class="note">A quote below P10 is not automatically a bargain: check the vintage, registry status and any reversal or over-crediting concerns before buying.</p>
   </div>
 </section>
 
@@ -499,6 +535,31 @@ function calcBuy(){
   $('br-note').textContent=note.join(' ');
 }
 document.querySelectorAll('[data-panel="buy"] input').forEach(e=>e.addEventListener('input',calcBuy));
+(function(){const sel=$('q-type');Object.keys(ML.T).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o)});sel.value="Household devices (cookstoves, lighting, water)";})();
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p};
+function calcQuote(){
+  const r=mlPrice($('q-type').value,num('q-vint'),$('q-rating').value,$('q-auth').checked,$('q-ccp').checked,$('q-reg').value);
+  const q=num('q-price'),vol=num('q-vol');
+  const sLo=(Math.log(r.mid)-Math.log(r.lo))/1.2816,sHi=(Math.log(r.hi)-Math.log(r.mid))/1.2816;
+  const lz=Math.log(Math.max(q,1e-6)/r.mid),z=lz<0?lz/sLo:lz/sHi,pct=Phi(z);
+  let v,why;
+  if(q<r.lo){v='Unusually cheap';why='Below P10. Check quality, vintage and registry status before buying.'}
+  else if(q<=r.mid){v='Good value';why='Between P10 and the middle price.'}
+  else if(q<=r.hi){v='Fair but high';why='Between the middle price and P90. There is room to negotiate.'}
+  else{v='Expensive';why='Above P90. Ask for a lower price or a better-rated credit.'}
+  $('qr-verdict').textContent=v;$('qr-why').textContent=why;
+  $('qr-m').textContent=usd(r.mid,2)+' (P10 '+usd(r.lo,2)+', P90 '+usd(r.hi,2)+')';
+  $('qr-diff').textContent=(q>=r.mid?'+':'−')+Math.abs((q/r.mid-1)*100).toFixed(0)+'%';
+  $('qr-pct').textContent=Math.round(pct*100)+'th';
+  $('qr-save').textContent=q>r.mid?usd((q-r.mid)*vol,0):'none';
+  $('qr-counter').textContent=usd(Math.exp(Math.log(r.mid)-0.25*sLo*1.2816),2)+' – '+usd(r.mid,2);
+  const L=Math.log(Math.min(r.lo,q)/1.5),H=Math.log(Math.max(r.hi,q)*1.5),pos=x=>((Math.log(x)-L)/(H-L)*100);
+  $('qr-range').style.left=pos(r.lo)+'%';$('qr-range').style.width=(pos(r.hi)-pos(r.lo))+'%';
+  $('qr-mid').style.left='calc('+pos(r.mid)+'% - 1px)';$('qr-q').style.left='calc('+pos(q)+'% - 2px)';
+  $('qr-lo').textContent='P10 '+usd(r.lo,2);$('qr-hi').textContent='P90 '+usd(r.hi,2);
+}
+document.querySelectorAll('[data-panel="quote"] input,[data-panel="quote"] select').forEach(e=>e.addEventListener('input',calcQuote));
+
 (function(){const sel=$('w-type');Object.keys(ML.T).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o)});sel.value="Household devices (cookstoves, lighting, water)";})();
 function calcFwd(){
   const t=$('w-type').value,r=mlPrice(t,2024,$('w-rated').checked?'high':'',$('w-auth').checked,false,'');
@@ -528,13 +589,13 @@ function show(tab){
   document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){location.hash=b.dataset.tab}}));
-const h=location.hash.slice(1);if(['price','fin','int','cbam','ccts','buy','fwd'].includes(h))show(h);
-window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(['price','fin','int','cbam','ccts','buy','fwd'].includes(k))show(k)});
+const h=location.hash.slice(1);if(['price','quote','fin','int','cbam','ccts','buy','fwd'].includes(h))show(h);
+window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(['price','quote','fin','int','cbam','ccts','buy','fwd'].includes(k))show(k)});
 const qs=new URLSearchParams(location.search);
 if(qs.get('type')&&ML.T[qs.get('type')]){$('p-type').value=qs.get('type');$('i-type').value=qs.get('type')}
 if(qs.get('reg')&&REGF[qs.get('reg')])$('p-reg').value=qs.get('reg');
 if(qs.get('vint')&&+qs.get('vint')>2000){$('p-vint').value=qs.get('vint');$('i-vint').value=qs.get('vint')}
-calcPrice();calcInt();calcCbam();calcCcts();calcBuy();calcFwd();
+calcPrice();calcInt();calcCbam();calcCcts();calcBuy();calcFwd();calcQuote();
 </script>
 </body>
 </html>
