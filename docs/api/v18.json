@@ -1,0 +1,186 @@
+{
+ "model": "C-GEM India carbon credit price model",
+ "version": 18,
+ "released": "2026-11-08",
+ "basis": "Indian credit, 2026 market level, recent vintage, no rating, US$ per tCO2e",
+ "training_prices": 472,
+ "tests": {
+  "LOO deal prices (all)": 0.2634,
+  "LOO Indian deal prices": 0.2447,
+  "v17 on the same Indian deal prices": 0.2546,
+  "v16 on the same Indian deal prices": 0.2749,
+  "v14 on the same Indian deal prices": 0.2922,
+  "LOO new research prices (Nov 2026)": 0.3246,
+  "v14 honest error on those new prices": 0.3687,
+  "Leave-one-publisher-out": 0.2726,
+  "Time split (to 2024 \u2192 2025\u201326)": 0.4229,
+  "LOO marketplace listings": 0.2496,
+  "Indian deal prices inside P10\u2013P90 (target 80%)": 0.8056
+ },
+ "equation": "ln(price) = 1.996 + 0.045 (2026) \u2212 0.300 (Asia) + 0.117 (India) + type effect \u2212 0.156 (recent vintage)\n          + 0.386 if removal credit\n          + old-vintage adjustment if vintage is more than 5 years old\n          + high-rating effect if rated high, or \u2212 0.370 if rated low\n          + 0.414 if Article 6 authorised / CORSIA (2026 effect; +0.345 more for cookstoves)\nprice = exp(ln price) \u00d7 2.365 if ICVCM CCP-approved\nP10 = price \u00d7 exp(type p10_log)      P90 = price \u00d7 exp(type p90_log)",
+ "ccp_premium": 2.365,
+ "types": {
+  "Renewable energy": {
+   "price": 0.708,
+   "p10": 0.373,
+   "p90": 1.28,
+   "confidence": "Low",
+   "wholesale_prices": 21,
+   "old_vintage_mult": 1.0,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Household devices (cookstoves, lighting, water)": {
+   "price": 4.675,
+   "p10": 2.463,
+   "p90": 8.448,
+   "confidence": "Low",
+   "wholesale_prices": 24,
+   "old_vintage_mult": 0.525,
+   "high_rating_mult": 2.077,
+   "removal": false
+  },
+  "Waste (methane, composting, waste-to-energy)": {
+   "price": 2.693,
+   "p10": 1.419,
+   "p90": 4.865,
+   "confidence": "Low",
+   "wholesale_prices": 13,
+   "old_vintage_mult": 0.22,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Rice methane (AWD, DSR, SRI)": {
+   "price": 15.947,
+   "p10": 6.412,
+   "p90": 38.736,
+   "confidence": "Medium",
+   "wholesale_prices": 4,
+   "old_vintage_mult": 0.201,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Soil carbon / regenerative agriculture": {
+   "price": 20.808,
+   "p10": 10.963,
+   "p90": 37.6,
+   "confidence": "Medium",
+   "wholesale_prices": 10,
+   "old_vintage_mult": 0.201,
+   "high_rating_mult": 2.44,
+   "removal": true
+  },
+  "Livestock and other agriculture methane": {
+   "price": 7.252,
+   "p10": 2.916,
+   "p90": 17.615,
+   "confidence": "Low",
+   "wholesale_prices": 2,
+   "old_vintage_mult": 0.201,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Energy efficiency and fuel switching": {
+   "price": 2.227,
+   "p10": 0.895,
+   "p90": 5.41,
+   "confidence": "Low",
+   "wholesale_prices": 2,
+   "old_vintage_mult": 0.605,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Industrial and chemical processes": {
+   "price": 2.561,
+   "p10": 1.03,
+   "p90": 6.221,
+   "confidence": "Low",
+   "wholesale_prices": 5,
+   "old_vintage_mult": 0.605,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Transport": {
+   "price": 2.996,
+   "p10": 1.204,
+   "p90": 7.277,
+   "confidence": "Low",
+   "wholesale_prices": 2,
+   "old_vintage_mult": 0.605,
+   "high_rating_mult": 2.44,
+   "removal": false
+  },
+  "Afforestation / reforestation (ARR)": {
+   "price": 10.415,
+   "p10": 5.487,
+   "p90": 18.82,
+   "confidence": "Low",
+   "wholesale_prices": 38,
+   "old_vintage_mult": 0.881,
+   "high_rating_mult": 1.967,
+   "removal": true
+  },
+  "Agroforestry": {
+   "price": 19.314,
+   "p10": 7.765,
+   "p90": 46.914,
+   "confidence": "Low",
+   "wholesale_prices": 3,
+   "old_vintage_mult": 0.562,
+   "high_rating_mult": 1.964,
+   "removal": true
+  },
+  "REDD+ (avoided deforestation)": {
+   "price": 2.461,
+   "p10": 1.297,
+   "p90": 4.447,
+   "confidence": "Low",
+   "wholesale_prices": 48,
+   "old_vintage_mult": 0.332,
+   "high_rating_mult": 1.98,
+   "removal": false
+  },
+  "Blue carbon (mangrove, wetland)": {
+   "price": 39.969,
+   "p10": 21.059,
+   "p90": 72.225,
+   "confidence": "Low",
+   "wholesale_prices": 6,
+   "old_vintage_mult": 0.562,
+   "high_rating_mult": 1.964,
+   "removal": true
+  },
+  "Biochar and engineered removal": {
+   "price": 122.3,
+   "p10": 64.437,
+   "p90": 220.996,
+   "confidence": "High",
+   "wholesale_prices": 25,
+   "old_vintage_mult": 0.605,
+   "high_rating_mult": 2.44,
+   "removal": true
+  },
+  "Other / not classified": {
+   "price": 5.484,
+   "p10": 2.89,
+   "p90": 9.91,
+   "confidence": "Low",
+   "wholesale_prices": 0,
+   "old_vintage_mult": 0.605,
+   "high_rating_mult": 2.44,
+   "removal": false
+  }
+ },
+ "licence": "Reuse with attribution to the C-GEM Research Team. Not investment advice.",
+ "registry_adjustment": {
+  "reference_log": -0.111,
+  "factors": {
+   "Verra": 0.7057,
+   "Gold Standard": 1.3206,
+   "CDM": 0.2869,
+   "PlanVivo": 1.7111,
+   "Cercarbono": 0.6287
+  },
+  "note": "Project price = credit-type price \u00d7 registry factor. Factor = exp(standard effect \u2212 average standard effect of Indian deal prices). Registries without a fitted effect (GCC, UCR, Isometric, Puro and others) use 1.0. On 9 Indian deal prices with a known standard, the adjustment cut median error from 40% to 26% (in-sample)."
+ }
+}

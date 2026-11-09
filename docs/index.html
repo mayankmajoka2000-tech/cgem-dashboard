@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C-GEM India Carbon Price Platform</title>
+<meta name="description" content="Open price model, weekly index, project register and decision tools for Indian voluntary carbon credits, by the C-GEM Research Team.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: platform home. Live numbers first, then every tool grouped by the job it does, then downloads and the feed */
+:root{
+  --bg:#0C1714; --panel:#12211D; --panel2:#172A25; --ink:#E8EFEA; --muted:#93A8A0; --line:#24382F;
+  --accent:#E8A25C; --good:#5CC48E; --glow:rgba(232,162,92,.18);
+  --f-display:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --f-body:'IBM Plex Sans', Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', 'Courier New', monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root{
+  --bg:#F4F2EB; --panel:#FFFDF7; --panel2:#F6F2E8; --ink:#14302A; --muted:#586862; --line:#DAD5C6;
+  --accent:#B5651D; --good:#2E7D52; --glow:rgba(181,101,29,.10); color-scheme:light}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px;
+  background-image:radial-gradient(1200px 520px at 80% -10%,var(--glow),transparent 60%)}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:32px;align-items:center;padding-top:28px}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(34px,5.4vw,60px);line-height:1.02;margin:10px 0 14px;text-wrap:balance}
+.lede{font-size:17px;color:var(--muted);max-width:56ch;margin:0}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;padding:10px 18px;border-radius:999px}
+.btn.primary{background:var(--accent);color:#14110C}
+.btn.ghost{border:1px solid var(--line);color:var(--ink)}
+.btn:hover{filter:brightness(1.08)}
+.live{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.live .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border-radius:10px;overflow:hidden}
+.live .cell{background:var(--panel);padding:12px 14px;min-width:0}
+.live .lab{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.live .num{font-family:var(--f-mono);font-size:24px;line-height:1.2}
+.live .num.acc{color:var(--accent)}
+.live .foot{font-size:12.5px;color:var(--muted)}
+h2{font-family:var(--f-display);font-weight:600;font-size:26px;margin:0 0 6px;text-wrap:balance}
+.sec p.note{color:var(--muted);margin:0 0 14px;max-width:72ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--ink);min-width:0;transition:border-color .15s}
+.card:hover{border-color:var(--accent)}
+.card .t{font-weight:600;font-size:16px}
+.card .d{font-size:13.5px;color:var(--muted)}
+.card .who{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-top:auto;padding-top:6px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel);font-size:12px;color:var(--muted);font-weight:600}
+td.n{text-align:right;font-family:var(--f-mono);white-space:nowrap}
+pre{font-family:var(--f-mono);font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0 0}
+footer{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between}
+@media (prefers-reduced-motion: reduce){.card{transition:none}}
+/* site navigation (same on every page) */
+.sitenav{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.sitenav .in{max-width:1160px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.sitenav .brand{font-family:var(--f-display);font-weight:600;font-size:17px;color:var(--ink);text-decoration:none;margin-right:auto}
+.sitenav a.l{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}
+.sitenav a.l:hover,.sitenav a.l[aria-current="page"]{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="sitenav" aria-label="Site"><div class="in"><a class="brand" href="./">C-GEM Carbon Price</a><a class="l" href="./" aria-current="page">Home</a><a class="l" href="dashboard.html">Dashboard</a><a class="l" href="calculator.html">Calculator</a><a class="l" href="weekly.html">Weekly index</a><a class="l" href="methodology.html">Methodology</a><a class="l" href="contribute.html">Contribute</a><a class="l" href="./#downloads">Downloads</a></div></nav>
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">C-GEM Research Team · open data · model v<span id="ver">18</span></span>
+      <h1>What an Indian carbon credit is worth, and how sure we are</h1>
+      <p class="lede">An open price model, a weekly index, a register of 5,013 Indian projects and eight decision tools for buyers, investors, developers, traders and policy teams. Every price comes with a P10–P90 range, and every number can be traced to its source.</p>
+      <div class="ctas"><a class="btn primary" href="dashboard.html">Open the dashboard</a><a class="btn ghost" href="calculator.html#quote">Check a quote</a><a class="btn ghost" href="weekly.html">This week’s index</a><a class="btn ghost" href="contribute.html">Contribute a price</a></div>
+    </div>
+    <div class="live" aria-live="polite">
+      <div class="row">
+        <div class="cell"><div class="lab">India Basket</div><div class="num acc" id="hBasket">—</div></div>
+        <div class="cell"><div class="lab">Index level</div><div class="num" id="hLevel">—</div></div>
+        <div class="cell"><div class="lab">Error on Indian deals</div><div class="num" id="hErr">—</div></div>
+        <div class="cell"><div class="lab">Indian deals in range</div><div class="num" id="hCov">—</div></div>
+        <div class="cell"><div class="lab">Training prices</div><div class="num" id="hN">—</div></div>
+        <div class="cell"><div class="lab">Projects priced</div><div class="num">5,013</div></div>
+      </div>
+      <div class="foot" id="hFoot">Loading the latest model and index…</div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>See the market</h2>
+    <p class="note">Prices, ranges and where the money is, for every Indian credit type and project.</p>
+    <div class="cards">
+      <a class="card" href="dashboard.html"><span class="t">Price dashboard</span><span class="d">Price ladder by type, sales-value treemap, integrity against sales, index, demand against supply and the 5,013-project register. Click a type to filter everything.</span><span class="who">Everyone</span></a>
+      <a class="card" href="weekly.html"><span class="t">C-GEM India Carbon Index</span><span class="d">Weekly India Basket with Removals, Avoidance and Nature-based sub-indices, every type’s price and an archive of issues.</span><span class="who">Traders · analysts</span></a>
+      <a class="card" href="dashboard.html#projRows"><span class="t">Project register</span><span class="d">Every Indian project with its model price, range, integrity grade, demand score and expected sales value. Search, sort and open any project in the calculator.</span><span class="who">Buyers · developers</span></a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Make a decision</h2>
+    <p class="note">Eight tools on the same model, so a price, a portfolio and a project case never disagree.</p>
+    <div class="cards">
+      <a class="card" href="calculator.html#price"><span class="t">Credit price</span><span class="d">Fair price and P10–P90 for any credit: type, vintage, registry, rating, Article 6 and CCP label.</span><span class="who">Everyone</span></a>
+      <a class="card" href="calculator.html#quote"><span class="t">Quote check</span><span class="d">Paste a broker quote: verdict, percentile, possible saving and a counter-offer range.</span><span class="who">Buyers</span></a>
+      <a class="card" href="calculator.html#buy"><span class="t">Buyer portfolio</span><span class="d">Cheapest mix for a budget, removal share and quality floor, with cost at P90 and value at risk.</span><span class="who">Corporate buyers</span></a>
+      <a class="card" href="calculator.html#fin"><span class="t">Project finance and risk</span><span class="d">NPV, IRR, cost per credit, offtake value and a 1,000-draw risk simulation.</span><span class="who">Investors · developers</span></a>
+      <a class="card" href="calculator.html#fwd"><span class="t">Forward curve</span><span class="d">2026–2030 price scenario from your demand, supply and policy assumptions, with a widening band.</span><span class="who">Traders · investors</span></a>
+      <a class="card" href="calculator.html#int"><span class="t">Integrity score</span><span class="d">0–100 screening score and A/B/C grade, factor by factor.</span><span class="who">Buyers · rating teams</span></a>
+      <a class="card" href="calculator.html#cbam"><span class="t">CBAM cost</span><span class="d">EU border cost on an export shipment and the saving from a carbon price paid in India.</span><span class="who">Exporters</span></a>
+      <a class="card" href="calculator.html#ccts"><span class="t">CCTS balance</span><span class="d">Certificates earned or owed under India’s Carbon Credit Trading Scheme, their value and the penalty.</span><span class="who">Policy · obligated entities</span></a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Trust the numbers</h2>
+    <p class="note">Method, tests, version history and every training price are public, including the versions that were tested and rejected.</p>
+    <div class="cards">
+      <a class="card" href="methodology.html"><span class="t">Methodology</span><span class="d">How the model works, how it differs from paid benchmarks, and its limits.</span><span class="who">Analysts · auditors</span></a>
+      <a class="card" href="methodology.html#tests"><span class="t">Accuracy tests</span><span class="d">Leave-one-out, publisher-out and time-split errors, with the version that set each.</span><span class="who">Analysts</span></a>
+      <a class="card" href="methodology.html#data"><span class="t">Training data</span><span class="d">All training prices with their source links, searchable by type and class.</span><span class="who">Researchers</span></a>
+    </div>
+  </section>
+
+  <section class="sec" id="downloads">
+    <h2>Downloads and price feed</h2>
+    <p class="note">Take the model into your own systems. Files update with each release; the version is inside each one.</p>
+    <div class="tw"><table>
+      <thead><tr><th>File</th><th>What it holds</th><th>Size</th></tr></thead>
+      <tbody>
+        <tr><td><a href="downloads/India_VCM_Price_Model_FINAL_v22.xlsx">India_VCM_Price_Model_FINAL_v22.xlsx</a></td><td>The full workbook: 28 sheets, every tool as live formulas, project register, training data, model card</td><td class="n">2.9 MB</td></tr>
+        <tr><td><a href="downloads/projects.csv">projects.csv</a></td><td>5,013 Indian projects with model price, range, integrity, demand and sales value</td><td class="n">0.9 MB</td></tr>
+        <tr><td><a href="downloads/training_data.csv">training_data.csv</a></td><td>All training prices with sources</td><td class="n">108 KB</td></tr>
+        <tr><td><a href="downloads/price_model.json">price_model.json</a></td><td>Every coefficient, P10/P90 rule and registry factor</td><td class="n">16 KB</td></tr>
+        <tr><td><a href="downloads/cgem_price_model.py">cgem_price_model.py</a></td><td>Python: price, project finance, CCTS, CBAM, portfolio risk, integrity</td><td class="n">13 KB</td></tr>
+        <tr><td><a href="downloads/train_price_model.py">train_price_model.py</a></td><td>Retrains the model from training_data.csv</td><td class="n">9 KB</td></tr>
+        <tr><td><a href="api/latest.json">api/latest.json</a></td><td>Live feed: version, tests and every type’s price, P10, P90 and confidence</td><td class="n">JSON</td></tr>
+        <tr><td><a href="api/weekly/latest.json">api/weekly/latest.json</a></td><td>Latest weekly index issue; the archive is in api/weekly/index.json</td><td class="n">JSON</td></tr>
+      </tbody>
+    </table></div>
+    <pre>const m = await (await fetch('https://cgem-price-model.onrender.com/api/latest.json')).json();
+console.log(m.version, m.types['Renewable energy'].price);</pre>
+  </section>
+
+  <footer>
+    <span>C-GEM Research Team. Estimates from public data; not investment advice. Reuse with attribution.</span>
+    <span><a href="contribute.html">Contribute deal prices</a> in confidence to make the benchmark sharper for everyone.</span>
+  </footer>
+</div>
+<script>
+(async function(){
+  try{
+    const [a,w]=await Promise.all([fetch('api/latest.json').then(r=>r.json()),fetch('api/weekly/latest.json').then(r=>r.json())]);
+    const pct=v=>(v*100).toFixed(1)+'%';
+    document.getElementById('ver').textContent=a.version;
+    document.getElementById('hBasket').textContent='$'+w.basket_price.toFixed(2);
+    document.getElementById('hLevel').textContent=w.level.toFixed(1);
+    document.getElementById('hErr').textContent=pct(a.tests['LOO Indian deal prices']);
+    document.getElementById('hCov').textContent=Math.round(a.tests['Indian deal prices inside P10–P90 (target 80%)']*100)+'%';
+    document.getElementById('hN').textContent=a.training_prices;
+    const d=new Date(w.date+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+    document.getElementById('hFoot').textContent=`Model v${a.version} · index issue ${w.issue}, week of ${d} · US$ per tCO₂e`;
+  }catch(e){document.getElementById('hFoot').textContent='Live numbers could not load. Refresh the page to try again.';}
+})();
+</script>
+</body>
+</html>

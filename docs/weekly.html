@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C-GEM India Carbon Index</title>
+<meta name="description" content="Weekly model-based index of Indian voluntary carbon credit prices: India Basket, removals, avoidance and nature-based sub-indices, and every credit type.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a weekly bulletin. Masthead with issue number, headline level, four sub-index tiles, the type table, then the archive */
+:root{
+  --bg:#0C1714; --panel:#12211D; --panel2:#172A25; --ink:#E8EFEA; --muted:#93A8A0; --line:#24382F;
+  --accent:#E8A25C; --good:#5CC48E; --bad:#EE7F6B;
+  --f-display:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --f-body:'IBM Plex Sans', Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', 'Courier New', monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root{
+  --bg:#F4F2EB; --panel:#FFFDF7; --panel2:#F6F2E8; --ink:#14302A; --muted:#586862; --line:#DAD5C6;
+  --accent:#B5651D; --good:#2E7D52; --bad:#B4452F; color-scheme:light}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:12px}
+.top .links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+.top .links a{text-decoration:none;font-weight:500}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.mast{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;align-items:end}
+@media (max-width:760px){.mast{grid-template-columns:minmax(0,1fr)}}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,4.6vw,48px);line-height:1.05;margin:0}
+.issue{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-top:8px}
+.head{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.head .lab{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.head .lvl{font-family:var(--f-mono);font-size:44px;line-height:1.1;color:var(--accent)}
+.head .sub{font-size:13px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile{background:var(--panel);padding:14px 16px;min-width:0}
+.tile .lab{font-size:12px;color:var(--muted)}
+.tile .num{font-family:var(--f-mono);font-size:24px}
+.tile .sub{font-size:12px;color:var(--muted)}
+h2{font-family:var(--f-display);font-weight:600;font-size:22px;margin:0 0 8px}
+.note{font-size:13px;color:var(--muted);margin:0;max-width:78ch}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--panel);font-size:12px;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--f-mono)}
+.wbar{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;margin-right:6px}
+.up{color:var(--good)}.down{color:var(--bad)}
+.fail{color:var(--bad)}
+pre{font-family:var(--f-mono);font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:8px 0 0}
+footer{border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:13px}
+
+/* site navigation (same on every page) */
+body{padding-top:0!important}
+.sitenav{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 20px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.sitenav .in{max-width:1320px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.sitenav .brand{font-family:'Source Serif 4', Georgia, serif;font-weight:600;font-size:17px;color:var(--ink);text-decoration:none;margin-right:auto}
+.sitenav a.l{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}
+.sitenav a.l:hover,.sitenav a.l[aria-current="page"]{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="sitenav" aria-label="Site"><div class="in"><a class="brand" href="./">C-GEM Carbon Price</a><a class="l" href="./">Home</a><a class="l" href="dashboard.html">Dashboard</a><a class="l" href="calculator.html">Calculator</a><a class="l" href="weekly.html" aria-current="page">Weekly index</a><a class="l" href="methodology.html">Methodology</a><a class="l" href="contribute.html">Contribute</a><a class="l" href="./#downloads">Downloads</a></div></nav>
+<div class="wrap">
+  <div class="top">
+    <span class="eyebrow">C-GEM Research Team · weekly</span>
+    <span class="links"><a href="dashboard.html">Dashboard</a><a href="calculator.html">Calculator</a><a href="methodology.html">Methodology</a><a href="api/weekly/latest.json">JSON</a></span>
+  </div>
+
+  <section class="mast">
+    <div>
+      <h1>C-GEM India Carbon Index</h1>
+      <div class="issue" id="issueLine">Loading the latest issue…</div>
+    </div>
+    <div class="head">
+      <div class="lab">India Basket · level</div>
+      <div class="lvl" id="level">—</div>
+      <div class="sub" id="basket">—</div>
+    </div>
+  </section>
+
+  <section class="tiles" id="subs" aria-label="Sub-indices"></section>
+
+  <section>
+    <h2>Credit types this week</h2>
+    <p class="note">Model price for an Indian credit, recent vintage, no rating, US$ per tCO₂e. Weight = the type’s share of risk-adjusted annual credits across 5,013 Indian projects, which is how the India Basket is built.</p>
+    <div class="tw" style="margin-top:10px"><table>
+      <thead><tr><th>Credit type</th><th>Weight in basket</th><th class="n">Price</th><th class="n">P10</th><th class="n">P90</th><th class="n">Change vs last issue</th><th>Confidence</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Archive</h2>
+    <div class="tw"><table>
+      <thead><tr><th class="n">Issue</th><th>Week of</th><th class="n">Model</th><th class="n">Basket US$/t</th><th class="n">Level</th><th>File</th></tr></thead>
+      <tbody id="arch"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>How the index is made</h2>
+    <p class="note">Every Monday the current C-GEM model (see <a href="methodology.html">methodology</a>) prices each Indian credit type. The India Basket is the geometric mean of those prices, weighted by how many risk-adjusted credits each type supplies in India; issue 1 (9 Nov 2026) = 100. Removals, Avoidance and Nature-based use the same rule over their types. When the model version changes between issues, the change column says so, because part of the move is the model rather than the market. This is a model-based index from public data, not a traded price.</p>
+    <pre>fetch('https://cgem-price-model.onrender.com/api/weekly/latest.json').then(r =&gt; r.json()).then(i =&gt; console.log(i.date, i.level, i.basket_price));</pre>
+  </section>
+
+  <footer>C-GEM Research Team. Reuse with attribution. Not investment advice.</footer>
+</div>
+<script>
+(async function(){
+  const usd=v=>v==null||isNaN(v)?'—':'$'+(v>=100?v.toFixed(0):v.toFixed(2));
+  const pct=v=>v==null?'—':(v>=0?'+':'−')+Math.abs(v*100).toFixed(1)+'%';
+  let L,A;
+  try{[L,A]=await Promise.all([fetch('api/weekly/latest.json').then(r=>r.json()),fetch('api/weekly/index.json').then(r=>r.json())]);}
+  catch(e){document.getElementById('issueLine').innerHTML='<span class="fail">Could not load the index files. Refresh the page to try again.</span>';return;}
+  const d=new Date(L.date+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+  document.getElementById('issueLine').textContent=`Issue ${L.issue} · week of ${d} · model v${L.model_version}`;
+  document.getElementById('level').textContent=L.level.toFixed(1);
+  const ch=L.change_vs_previous;
+  document.getElementById('basket').textContent=`Basket price ${usd(L.basket_price)} per tCO₂e`+(ch?` · ${pct(ch.basket)} vs last issue`+(ch.model_changed?' (model changed)':''):' · base issue');
+  const S=document.getElementById('subs');
+  const desc={'India Basket':'All Indian credit types','Removals':'Biochar, ARR, soil, agroforestry, blue carbon','Avoidance':'Renewables, cookstoves, waste, industrial and others','Nature-based':'ARR, REDD+, agroforestry, blue carbon, soil'};
+  Object.entries(L.sub_indices).forEach(([k,v])=>{const t=document.createElement('div');t.className='tile';t.innerHTML=`<div class="lab"></div><div class="num"></div><div class="sub"></div>`;t.children[0].textContent=k;t.children[1].textContent=usd(v);t.children[2].textContent=desc[k]||'';S.append(t);});
+  const tb=document.getElementById('rows');const maxW=Math.max(...Object.values(L.weights));
+  Object.entries(L.types).filter(([k])=>k!=='Other / not classified').sort((a,b)=>(L.weights[b[0]]||0)-(L.weights[a[0]]||0)).forEach(([k,v])=>{
+    const tr=tb.insertRow();const c=(t,cl)=>{const e=tr.insertCell();if(cl)e.className=cl;e.textContent=t;return e;};
+    c(k);const w=c('');const bar=document.createElement('span');bar.className='wbar';bar.style.width=Math.max(2,(L.weights[k]||0)/maxW*90)+'px';w.append(bar,((L.weights[k]||0)*100).toFixed(1)+'%');
+    c(usd(v.price),'n');c(usd(v.p10),'n');c(usd(v.p90),'n');
+    const cv=ch&&ch.types?ch.types[k]:null;const e=c(cv==null?'—':pct(cv),'n');if(cv)e.classList.add(cv>0?'up':'down');
+    c(v.confidence);});
+  const ab=document.getElementById('arch');
+  A.issues.slice().reverse().forEach(i=>{const tr=ab.insertRow();[[i.issue,'n'],[i.date],['v'+i.model_version,'n'],[usd(i.basket_price),'n'],[i.level.toFixed(1),'n']].forEach(([t,cl])=>{const e=tr.insertCell();if(cl)e.className=cl;e.textContent=t;});
+    const f=tr.insertCell();const a=document.createElement('a');a.href='api/weekly/'+i.date+'.json';a.textContent=i.date+'.json';f.append(a);});
+})();
+</script>
+</body>
+</html>

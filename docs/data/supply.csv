@@ -1,0 +1,16 @@
+credit_type,projects,credits_issued,credits_retired,credits_available,retirements_per_year,years_of_cover,new_supply_per_year,demand_to_supply
+Renewable energy,2044,480949575,240380827,240568748,26600765,9.0,67707368,0.393
+"Household devices (cookstoves, lighting, water)",539,31637765,15680305,15957460,3376029,4.7,16467330,0.205
+"Waste (methane, composting, waste-to-energy)",94,2059025,231306,1827719,36252,50.4,255487,0.142
+"Rice methane (AWD, DSR, SRI)",82,29537,10852,18685,10852,1.7,149683,0.073
+Soil carbon / regenerative agriculture,81,552323,86149,323390,66146,4.9,1266304,0.052
+Livestock and other agriculture methane,28,448201,420937,27264,27562,1.0,213123,0.129
+Energy efficiency and fuel switching,93,2430832,355976,2074856,21329,97.3,1437560,0.015
+Industrial and chemical processes,30,4784821,3036670,1748151,270079,6.5,443329,0.609
+Transport,34,4749987,96488,4653499,6722,692.2,494164,0.014
+Afforestation / reforestation (ARR),125,2769499,1863183,558622,230815,2.4,1789781,0.129
+Agroforestry,65,706717,488154,110776,173454,0.6,235546,0.736
+REDD+ (avoided deforestation),7,571470,257510,313960,0,,38446,0
+"Blue carbon (mangrove, wetland)",7,0,0,0,0,,3988,0
+Biochar and engineered removal,61,734201,292720,441108,12362,35.7,70078,0.176
+Other / not classified,4,0,0,0,0,,21588,0
