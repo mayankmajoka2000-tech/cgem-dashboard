@@ -215,6 +215,19 @@ body{padding-top:0!important}
     </div>
   </section>
 
+  <section class="card" id="survival">
+    <header><h2>Do state plantations survive?</h2><span class="count" id="svMed">—</span></header>
+    <p class="note">Plantation survival from state forest department audits and CAMPA monitoring, the main delivery risk for Indian afforestation and reforestation (ARR) credits. Independent evaluations (third-party, Forest Survey of India, CAG audit) usually report far lower survival than the departments' own early counts. The dashed line marks the 60% survival the CAMPA rules expect.</p>
+    <div id="svChart" role="img" aria-label="Bar chart of plantation survival by state"></div>
+    <div class="tablebox" style="max-height:none">
+      <table>
+        <thead><tr><th>State</th><th>Cohort</th><th class="n">Survival</th><th>Evaluation</th><th>Source document</th><th>Note</th><th>Source</th></tr></thead>
+        <tbody id="svRows"><tr><td colspan="7">Loading…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="note">What this means: for Indian ARR, plan on roughly half of planted trees surviving unless a project shows independent monitoring. When valuing an ARR project in the calculator's finance tab, raise the buffer pool to reflect this; buyers should ask for third-party survival data before paying a forestry premium. Source: Forest Department audit workbook (batch 12) compiled by the C-GEM team from state reports.</p>
+  </section>
+
   <section class="card" id="evidence">
     <header><h2>Government and donor evidence</h2><span class="count" id="evCount">—</span></header>
     <p class="note">What Indian forest departments, JICA, GIZ, ADB and other public sources say about carbon credit prices, checked against the original documents. Only prices marked “Used in model” enter the price model; the rest are kept here so the gaps are visible.</p>
@@ -657,6 +670,27 @@ P10 = price × exp(type p10_log)      P90 = price × exp(type p90_log)</div>
     cnt.textContent=sel.length+' of '+rows.length+' sources';}
   groups.forEach(([n,f],i)=>{const b=document.createElement('button');b.type='button';b.className='evbtn';b.textContent=n;b.setAttribute('aria-pressed',i===0);b.onclick=()=>{fl.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');draw(f);};fl.appendChild(b);});
   draw(groups[0][1]);
+})();
+</script>
+<script>
+(async function(){
+  const tb=document.getElementById('svRows'),box=document.getElementById('svChart');let R=[];
+  try{R=await d3.csv('data/state_forest_survival.csv',d=>({...d,v:+d.survival_pct}));}catch(e){tb.innerHTML='<tr><td colspan="7">Could not load the survival file. Refresh the page to try again.</td></tr>';return;}
+  const ind=R.filter(r=>r.evaluation==='Independent').map(r=>r.v).sort(d3.ascending);
+  document.getElementById('svMed').textContent='Median independent survival '+d3.median(ind).toFixed(0)+'%';
+  tb.textContent='';
+  R.forEach(r=>{const tr=document.createElement('tr');[r.state,r.cohort,r.v.toFixed(1)+'%',r.evaluation,r.source_document,r.note].forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===2)td.className='n';tr.appendChild(td);});
+    const td=document.createElement('td');if(r.source_url){const a=document.createElement('a');a.href=r.source_url;a.target='_blank';a.rel='noopener';a.textContent='Portal';td.appendChild(a);}else td.textContent='Audit file';tr.appendChild(td);tb.appendChild(tr);});
+  function draw(){box.textContent='';const W=Math.max(300,box.clientWidth),rowH=26,m={l:Math.min(150,W*0.36),r:44,t:8,b:26},H=m.t+m.b+R.length*rowH;
+    const sv=d3.select(box).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+    const x=d3.scaleLinear([0,100],[m.l,W-m.r]),y=d3.scaleBand(R.map((r,i)=>i),[m.t,H-m.b]).padding(.28);
+    sv.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x).ticks(5).tickFormat(d=>d+'%')).call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--line)'));
+    sv.selectAll('rect').data(R).join('rect').attr('x',x(0)).attr('y',(d,i)=>y(i)).attr('height',y.bandwidth()).attr('width',d=>x(d.v)-x(0)).attr('rx',3).attr('fill',d=>d.evaluation==='Independent'?'var(--A)':'var(--muted)').attr('opacity',d=>d.evaluation==='Independent'?1:.55);
+    sv.selectAll('text.lb').data(R).join('text').attr('class','lb').attr('x',m.l-8).attr('y',(d,i)=>y(i)+y.bandwidth()/2).attr('dy','.35em').attr('text-anchor','end').attr('fill','var(--ink)').attr('font-size',12).text(d=>d.state+(d.evaluation==='Department'?' (dept)':''));
+    sv.selectAll('text.vl').data(R).join('text').attr('class','vl').attr('x',d=>x(d.v)+5).attr('y',(d,i)=>y(i)+y.bandwidth()/2).attr('dy','.35em').attr('fill','var(--muted)').attr('font-size',12).attr('font-family','var(--f-mono)').text(d=>d.v.toFixed(0)+'%');
+    sv.append('line').attr('x1',x(60)).attr('x2',x(60)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--accent)').attr('stroke-dasharray','4 3');
+    sv.append('text').attr('x',x(60)+4).attr('y',m.t+10).attr('fill','var(--accent)').attr('font-size',11).text('60% expected');}
+  draw();let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150);});
 })();
 </script>
 </body>
