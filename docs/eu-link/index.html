@@ -67,6 +67,25 @@ td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td.n{
 .ul{margin:8px 0 0;padding-left:18px}.ul li{margin:6px 0}
 .calc input:disabled{cursor:not-allowed}
 @media (max-width:860px){.tiles{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr}}
+.askbox{background:linear-gradient(135deg,var(--card),var(--soft));border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 10px 40px rgba(14,20,16,.06)}
+.askhead{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--leaf);display:flex;align-items:center;gap:8px}
+.askhead .dot{width:8px;height:8px;border-radius:50%;background:var(--leaf);box-shadow:0 0 0 4px rgba(44,122,61,.18);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(44,122,61,0)}}
+.askrow{display:flex;gap:8px}.askrow input{flex:1;min-width:0;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:500 16px Geist,sans-serif}
+.askrow input:focus{outline:none;border-color:var(--leaf)}.askrow button,.go{background:var(--leaf);color:#fff;border:0;border-radius:12px;padding:0 22px;font:600 15px Geist,sans-serif;cursor:pointer}
+.go{padding:9px 16px;font-size:13.5px;border-radius:20px;margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:6px 12px;font:500 12.5px Geist,sans-serif;cursor:pointer}
+.chips button:hover{border-color:var(--leaf);color:var(--leaf)}
+.ans{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--leaf);border-radius:14px;padding:16px 18px;margin-top:14px;animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+.ans .aq{font-size:12px;color:var(--mut);margin-bottom:6px}.big2{font:600 30px/1.1 "Geist Mono",monospace;color:var(--clay)}.mut{color:var(--mut);margin:4px 0 0;font-size:13.5px}
+table.mini{font-size:13px;margin-top:8px}table.mini th{position:static}
+.ins{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.in1{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.in1:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--leaf)}.in1.clay:before{background:var(--clay)}.in1.harvest:before{background:var(--harvest)}
+.in1 .n{font:600 12px "Geist Mono",monospace;color:var(--mut)}.in1 b{display:block;font:500 18px/1.25 Newsreader,Georgia,serif;margin:6px 0}.in1 p{margin:0;font-size:13px;color:var(--mut)}
+@media (max-width:860px){.ins{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.ins{grid-template-columns:1fr}.askrow button{padding:0 14px}}
 @media (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:210px}.grid2{grid-template-columns:1fr}.cd{grid-template-columns:1fr 1fr}.res{grid-template-columns:1fr 1fr 1fr}}
 @media (max-width:520px){.cd{grid-template-columns:1fr}.res{grid-template-columns:1fr}.kpi .v{font-size:22px}}
 </style>
@@ -90,6 +109,23 @@ td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td.n{
 </div>
 
 <main class="w">
+<section class="reveal in" id="ask">
+  <div class="askbox">
+    <div class="askhead"><span class="dot"></span>Ask the data</div>
+    <h2 style="margin-top:6px">Ask anything about Europe's carbon rules and India</h2>
+    <p class="sub">Type a question in English or Hinglish. The answer is worked out from the data on this page: CBAM bills, EU default values, trade, carbon prices, Article 6 deals and 458 Indian projects.</p>
+    <form id="askf" class="askrow" autocomplete="off"><input id="askq" placeholder="e.g. 20,000 t hot-rolled steel ka 2030 mein CBAM bill kitna?" aria-label="Ask a question"><button type="submit">Ask</button></form>
+    <div class="chips" id="chips"></div>
+    <div id="answers"></div>
+  </div>
+</section>
+
+<section class="reveal">
+  <h2>What the data says</h2>
+  <p class="sub">Eight findings, calculated live from the figures on this page. Change the rupee rate or India's carbon price in the calculator and they update.</p>
+  <div class="ins" id="ins"></div>
+</section>
+
 
 <section class="reveal">
   <h2>The clock is already running</h2>
@@ -260,7 +296,7 @@ const D={"ets":[[2005,19.04],[2006,32.24],[2007,1.25],[2008,34.48],[2009,15.55],
 const $=s=>document.querySelector(s);
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const fmt=(x,d=0)=>Number(x).toLocaleString('en-IN',{maximumFractionDigits:d,minimumFractionDigits:d});
-const eur=x=>'€'+(Math.abs(x)>=1e6?(x/1e6).toFixed(2)+'M':fmt(x));
+const eur=x=>'€'+(Math.abs(x)>=1e9?(x/1e9).toFixed(2)+'bn':Math.abs(x)>=1e6?(x/1e6).toFixed(2)+'M':fmt(x));
 const charts={};
 const mk=(id)=>{charts[id]?.dispose();charts[id]=echarts.init(document.getElementById(id),null,{renderer:'canvas'});return charts[id]};
 const T=()=>({text:css('--ink'),mut:css('--mut'),line:css('--line'),card:css('--card'),leaf:css('--leaf'),land:css('--land')});
@@ -498,6 +534,112 @@ function table(){
 }
 $('#q').addEventListener('input',table);
 
+/* ---------- ask and analyse ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STATES=[...new Set(D.a6.flatMap(r=>(r[2]||'').split(',').map(s=>s.trim())).filter(s=>s&&s!=='Not recorded'))].sort((a,b)=>b.length-a.length);
+const TYPES=[...new Set(D.a6.map(r=>r[4]).filter(Boolean))].sort((a,b)=>b.length-a.length);
+const SECTORS=[...new Set(D.a6.map(r=>r[3]).filter(Boolean))];
+const PKEY=[['semi',/semi|billet|slab|bloom|7207/],['hr',/hot.?roll|flat|coil|7208|steel|iron|loha|ispat/],['alu',/alumin|7601|76\d\d/],['urea',/urea|fertili[sz]|ammonia|3102|khad/],['cem',/cement|clinker|2523/]];
+const WPX={'eu':['EU ETS (Oct 2026)',102.4],'europe':['EU ETS (Oct 2026)',102.4],'swiss':['Switzerland ETS',91.9],'switzerland':['Switzerland ETS',91.9],'washington':['Washington',70.53],'uk':['UK ETS',57.2],'britain':['UK ETS',57.2],'rggi':['RGGI',29.14],'california':['California',29.06],'quebec':['Québec',27.95],'new zealand':['New Zealand ETS',24.34],'china':['China national ETS',11.63],'korea':['Korea ETS',10.69]};
+const A6C={japan:32,singapore:28,switzerland:20,korea:14,'south korea':14,norway:9,india:2};
+function qty(s){const m=s.replace(/,/g,'').match(/(\d+(?:\.\d+)?)\s*(lakh|lac|crore|cr|thousand|kt|k|million|mn|mt|m)?\s*(?:t\b|tonnes?|tons?|ton\b)?/i);
+  if(!m)return null;let v=+m[1];const u=(m[2]||'').toLowerCase();
+  if(/^(lakh|lac)$/.test(u))v*=1e5;else if(/^(crore|cr)$/.test(u))v*=1e7;else if(/^(thousand|kt|k)$/.test(u))v*=1e3;else if(/^(million|mn|mt|m)$/.test(u))v*=1e6;
+  return v>=1?v:null}
+function yearOf(s){const m=s.match(/\b20(2[6-9]|3[0-4])\b/);return m?+m[0]:null}
+function prodOf(s){for(const [k,re] of PKEY)if(re.test(s))return k;return null}
+function card(title,body,extra=''){return `<div class="ans"><div class="aq">${esc(title)}</div>${body}${extra}</div>`}
+function li(a){return '<ul class="ul">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>'}
+function setCalc(p,q,y){P=p;document.querySelectorAll('#prod button').forEach(x=>x.classList.toggle('on',x.dataset.p===p));$('#mode').value='d';
+  if(q)$('#qty').value=Math.min(500000,Math.max(1000,Math.round(q/1000)*1000));if(y)$('#yr').value=y;calc();document.querySelector('#prod').scrollIntoView({behavior:'smooth',block:'center'})}
+function answer(raw){
+  const s=raw.toLowerCase().trim(),y=yearOf(s),p=prodOf(s),cc=+$('#ccts').value,fx=+$('#fx').value||100,pr=+$('#eua').value;
+  // 1. a project id
+  const idm=raw.match(/CDM[-\s]?(PoA)?\s?-?\d+/i);
+  if(idm){const k=idm[0].replace(/\s/g,'').toUpperCase().replace('CDMPOA','CDM-POA');const r=D.a6.find(x=>x[0].toUpperCase().replace(/\s/g,'')===k||x[0].toUpperCase()===k);
+    if(r)return card(raw,`<p><b>${esc(r[1])}</b></p>`+li([`ID ${r[0]}, ${esc(r[2]||'state not recorded')}, ${esc(r[3])} / ${esc(r[4])}`,`${fmt(r[5])} credits issued, ${fmt(r[6])} retired, so about ${fmt(Math.max(0,r[5]-r[6]))} not yet retired`,`Registered ${r[8]||'-'}; ${esc(r[7].split(';')[0])}`,`It has asked to move to Article 6.4, so its future credits could count under the Paris Agreement.`]))}
+  // 9. concepts
+  if(/what is|kya hai|kya h\b|meaning|explain|samjha|matlab/.test(s)&&!qty(s)&&!/default|price|project/.test(s)){
+    if(/crcf|removal|biochar/.test(s))return card(raw,`<p>The EU's Carbon Removals and Carbon Farming certification (CRCF), in force since 7 May 2026, certifies permanent removals such as biochar, direct air capture and BioCCS under one public method. Its location rules favour EU projects, so Indian projects cannot use it directly yet, but European buyers compare Indian removal credits against it.</p>`);
+    if(/ccts/.test(s))return card(raw,`<p>India's Carbon Credit Trading Scheme sets emission-intensity targets for heavy industry (aluminium, cement, chlor-alkali, pulp and paper, refinery, petrochemicals, textiles, with steel in draft). Plants that beat their target earn carbon credit certificates they can sell. A carbon price paid under it may be deductible from the CBAM bill.</p>`);
+    return card(raw,`<p>CBAM, the EU's Carbon Border Adjustment Mechanism, charges importers for the carbon emitted making steel, aluminium, cement, fertilisers, hydrogen and electricity, at the EU carbon price. It stops EU producers being undercut by goods made where carbon is cheaper. Charges began on 1 January 2026; the first bill is paid in 2027.</p>`)}
+  // 2. CBAM bill for a product
+  const wantBill=/bill|cost|kitna|kitne|pay|charge|kharch|lagega|dena|cbam/.test(s);
+  if(p&&(wantBill||qty(s))&&!/default/.test(s)){
+    const q=qty(s.replace(/\b20(2[6-9]|3[0-4])\b/g,''))||+$('#qty').value,yy=y||2027,mode=$('#mode').value;$('#mode').value='d';
+    const b=bill(yy,p,q,pr),b34=bill(2034,p,q,pr),b26=bill(2026,p,q,pr);$('#mode').value=mode;
+    const ded=Math.min(b.gross,q*b.ch*cc/fx);
+    return card(raw,`<div class="big2">${eur(b.gross)}</div><p class="mut">CBAM bill in ${yy} for ${fmt(q)} t of ${PR[p].n.toLowerCase()}, before any deduction for India's carbon price</p>`+
+      li([`That is <b>€${(b.gross/q).toFixed(2)} a tonne</b>: ${b.em.toFixed(3)} t CO2 per tonne (EU default for India with mark-up) minus a free allowance of ${b.free.toFixed(3)} t, charged at €${pr.toFixed(2)}.`,
+        `If India's carbon price of ₹${fmt(cc)} is accepted, about <b>${eur(ded)}</b> comes off, leaving ${eur(b.gross-ded)}.`,
+        `The same tonnes cost ${eur(b26.gross)} in 2026 and <b>${eur(b34.gross)}</b> in 2034, when the free allowance ends (${(b34.gross/b26.gross).toFixed(1)} times the 2026 bill).`,
+        `With the plant's own verified emissions the bill is usually lower. Every 0.1 t CO2 per tonne less saves about ${eur(q*0.1*pr)} a year.`]),
+      `<button class="go" onclick="setCalc('${p}',${q},${yy})">Open this in the calculator</button>`)}
+  // 3. default value
+  if(/default|benchmark|emission factor|intensity/.test(s)){
+    const rows=DV.filter(r=>{const t=(r[0]+' '+r[1]).toLowerCase();return p?(p==='hr'?/flat|steel|iron|wire/.test(t)&&!/semi/.test(t):p==='semi'?/semi/.test(t):p==='alu'?/alumin/.test(t):p==='urea'?/urea|ammon|nitric|phosph/.test(t):/cement|clinker/.test(t)):true}).slice(0,8);
+    return card(raw,`<p>EU default values for India (t CO2 per tonne of product). The EU uses these when an exporter has no verified data.</p><table class="mini"><tr><th>CN</th><th>Product</th><th>2026</th><th>2028 on</th></tr>${rows.map(r=>`<tr><td class="id">${r[0]}</td><td>${r[1]}</td><td class="n">${r[4]}</td><td class="n"><b>${r[6]}</b></td></tr>`).join('')}</table>`+
+      (p&&PR[p]?`<p class="mut">The free allowance (EU benchmark) for ${PR[p].n.toLowerCase()} is ${PR[p].bm} t CO2 per tonne, cut to zero by 2034.</p>`:''))}
+  // 4. projects by state / type / sector
+  const st=STATES.find(x=>s.includes(x.toLowerCase()));const tw=['wind','solar','hydro','biomass','waste','methane','cookstove','afforest','mass transit','metro','energy efficiency','cement','bundled','landfill','biogas'].find(w=>s.includes(w));const ty=tw?(tw==='metro'?'mass transit':tw):null;
+  if(st||ty||/project|credit|article 6\.4|a6\.4|pacm|transition/.test(s)&&!/agreement|deal|itmo/.test(s)){
+    let rows=D.a6.filter(r=>(!st||(r[2]||'').includes(st))&&(!ty||(r[4]+' '+r[1]).toLowerCase().includes(ty)));
+    const iss=rows.reduce((a,r)=>a+(r[5]||0),0),ret=rows.reduce((a,r)=>a+(r[6]||0),0),top=[...rows].sort((a,b)=>b[5]-a[5]).slice(0,5);
+    const lab=(ty?ty[0].toUpperCase()+ty.slice(1)+' projects':'Projects')+(st?' in '+st:'');
+    if(st)setF({k:'state',v:st});else setF(null);if(ty&&!st){$('#q').value=ty;table()}
+    const share=D.a6.length?rows.length/D.a6.length*100:0;
+    return card(raw,`<div class="big2">${rows.length} projects</div><p class="mut">${esc(lab)} that have asked to move to Article 6.4 (${share.toFixed(1)}% of India's ${D.a6.length})</p>`+
+      li([`${fmt(iss)} credits issued, ${fmt(ret)} retired (${iss?(ret/iss*100).toFixed(0):0}%)`,`Largest: `+top.map(r=>`${esc(r[1].slice(0,60))} (${fmt(r[5])})`).join('; ')]),
+      `<button class="go" onclick="document.querySelector('#tbl').scrollIntoView({behavior:'smooth'})">See the list (filtered)</button>`)}
+  // 5. Article 6 deals
+  if(/agreement|deal|bilateral|itmo|article 6|6\.2|jcm|japan|singapore|norway/.test(s)){
+    const c=Object.keys(A6C).find(k=>s.includes(k));
+    return card(raw,(c?`<div class="big2">${A6C[c]} agreements</div><p class="mut">${c[0].toUpperCase()+c.slice(1)} under Article 6.2 (UNEP pipeline, 5 Nov 2026)</p>`:'')+
+      li([`112 bilateral agreements worldwide, involving 65 countries. Leading buyers: Japan 32, Singapore 28, Switzerland 20, South Korea 14, Norway 9.`,`35.6 million credits (ITMOs) have been transferred; Guyana alone 24.9 million.`,`India has 2: Japan's Joint Crediting Mechanism (agreed Aug 2025, rules June 2026) and a reported deal with South Korea (Apr 2026).`,`416 activities are approved under Article 6.4 in 57 countries; Brazil leads with 93. None from India yet, but 458 Indian CDM projects have applied to move.`]))}
+  // 6. prices
+  if(/price|rate|keemat|daam|ets|carbon tax|uka|eua|ccts/.test(s)){
+    const k=Object.keys(WPX).find(x=>new RegExp('\\b'+x+'\\b').test(s)),inr=x=>'₹'+fmt(x*fx/1.165);
+    return card(raw,(k?`<div class="big2">$${WPX[k][1].toFixed(2)}</div><p class="mut">${WPX[k][0]} per tonne CO2 (about ${inr(WPX[k][1])})</p>`:'')+
+      li([`EU carbon price: €87.87 on 12 Oct 2026. CBAM certificates: €75.36 (Q1 2026), €75.28 (Q2), €82.32 (Q3).`,`India's CCTS has no market price yet; analysts expect ₹250 to ₹1,500 a tonne, so Europe's price is about ${Math.round(87.87*fx/1500)} to ${Math.round(87.87*fx/250)} times higher.`,`Other systems (April 2026): Switzerland $91.90, UK $57.20, California $29.06, China $11.63, Korea $10.69.`,`87 carbon pricing instruments now cover 29% of world emissions; the average price is about $21.`]))}
+  // 7. trade
+  if(/export|trade|niryat|ship|volume|kitna maal|tonnage/.test(s))
+    return card(raw,`<div class="big2">€5.30bn</div><p class="mut">CBAM goods India exported to the EU in 2025</p>`+li([`Iron and steel €4.39bn (4.01 Mt, down from 4.60 Mt in 2024). Aluminium €904m (313 kt). Fertilisers €4.4m; cement under €1m.`,`Largest products: coated flat steel 833 kt, hot-rolled 790 kt, cold-rolled 478 kt.`,`India is the 3rd largest source of CBAM goods for the EU. Steel and aluminium exports fell 24.4% in 2024-25 (GTRI).`]));
+  // 8. dates
+  if(/when|kab|date|deadline|timeline|start|shuru|2027|declaration/.test(s))
+    return card(raw,li([`<b>1 Jan 2026</b>: CBAM charges apply to imports (steel, aluminium, cement, fertilisers, electricity, hydrogen).`,`<b>1 Feb 2027</b>: certificates go on sale, for goods imported in 2026.`,`<b>30 Sep 2027</b>: first annual CBAM declaration and certificate surrender.`,`<b>2026 to 2034</b>: free allowance falls from 97.5% to 0, so bills rise each year.`,`<b>2036</b>: Paris Agreement credits may count toward up to 5% of the EU 2040 target.`]));
+  return null}
+const SUG=['50,000 t hot-rolled steel ka 2030 mein CBAM bill?','10,000 t aluminium cost in 2034','Default value for urea','Wind projects in Gujarat','India agreements under Article 6','UK carbon price','India exports to EU','CBAM deadlines kab hain?','CDM4776'];
+$('#chips').innerHTML=SUG.map(q=>`<button type="button">${esc(q)}</button>`).join('');
+$('#chips').onclick=e=>{if(e.target.tagName==='BUTTON'){$('#askq').value=e.target.textContent;ask()}};
+function ask(){const q=$('#askq').value.trim();if(!q)return;let h=answer(q);
+  if(!h){const hit=D.a6.filter(r=>r[1].toLowerCase().includes(q.toLowerCase())).slice(0,5);
+    h=hit.length?card(q,'<p>Projects matching your words:</p>'+li(hit.map(r=>`${r[0]}: ${esc(r[1])} (${fmt(r[5])} credits)`)))
+      :card(q,`<p>The page's data does not cover that question. Try asking about a CBAM bill (product, tonnes, year), EU default values, a state or project type, carbon prices, Article 6 deals, India's exports or the deadlines.</p>`)}
+  const box=$('#answers');box.insertAdjacentHTML('afterbegin',h);while(box.children.length>4)box.lastChild.remove()}
+$('#askf').onsubmit=e=>{e.preventDefault();ask()};
+
+function insights(){
+  const fx=+$('#fx').value||100,cc=+$('#ccts').value,mode=$('#mode').value;$('#mode').value='d';
+  const s26=bill(2026,'hr',4.01e6,82.32).gross,s34=bill(2034,'hr',4.01e6,82.32).gross,a34=bill(2034,'alu',313e3,82.32).gross;
+  const t26=bill(2026,'hr',1,82.32).gross,t34=bill(2034,'hr',1,82.32).gross,ch=bill(2030,'hr',1,82.32).ch;$('#mode').value=mode;
+  const ded=Math.min(1,cc/fx/82.32)*100;
+  const sc={};D.a6.forEach(r=>(r[2]||'').split(',').map(x=>x.trim()).filter(x=>x&&x!=='Not recorded').forEach(x=>sc[x]=(sc[x]||0)+1));
+  const topS=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,3),tot=D.a6.length;
+  const iss=D.a6.reduce((a,r)=>a+(r[5]||0),0),ret=D.a6.reduce((a,r)=>a+(r[6]||0),0);
+  const re=D.a6.filter(r=>r[3]==='Renewable Energy').reduce((a,r)=>a+(r[5]||0),0);
+  const I=[
+    ['Verified data could save about €'+((s34-734e6)/1e9).toFixed(1)+'bn a year',`At EU default values India's steel exports would owe about ${eur(s34)} in 2034. Sandbag's estimate using India's real average emissions is €734m. Proving actual emissions is the single biggest saving.`,'clay'],
+    ['The bill rises '+(t34/t26).toFixed(1)+'x without any change',`Hot-rolled steel pays €${t26.toFixed(0)} a tonne in 2026 and €${t34.toFixed(0)} in 2034 at today's price, only because the EU free allowance is phased out.`,'clay'],
+    ['India\'s own carbon price could cut '+ded.toFixed(0)+'% of it',`At ₹${fmt(cc)} a tonne and ₹${fx} per euro, India's CCTS price equals about ${ded.toFixed(0)}% of the CBAM price, if the EU accepts the deduction.`,'leaf'],
+    ['Europe\'s price is about '+Math.round(87.87*fx/cc)+'x India\'s',`€87.87 in the EU against an expected ₹${fmt(cc)} under India's CCTS. That gap is what Indian exporters still pay at the EU border.`,'harvest'],
+    ['Steel is 83% of the exposure',`Of €5.30bn of CBAM goods India sent to the EU in 2025, €4.39bn was iron and steel. Aluminium (${eur(a34)} a year by 2034 at defaults) is the second risk.`,'harvest'],
+    [topS.map(x=>x[0]).join(', ')+' lead',`${topS.map(x=>`${x[0]} ${x[1]}`).join(', ')} of the ${tot} Indian projects asking to move to Article 6.4; together ${(topS.reduce((a,x)=>a+x[1],0)/tot*100).toFixed(0)}%.`,'leaf'],
+    [(re/iss*100).toFixed(0)+'% of the credits are renewable energy',`Of ${fmt(iss)} credits issued by these projects, ${fmt(re)} came from renewable power. Buyers seeking removals or methane cuts will find few Indian options here.`,'leaf'],
+    ['India has 2 Article 6 deals; Japan has 32',`112 bilateral agreements exist worldwide. India's small share and its ${tot} transition requests mean room to grow as EU demand (about 932M credits for 2036 to 2040) arrives.`,'harvest']];
+  $('#ins').innerHTML=I.map(([h,b,c],i)=>`<div class="in1 ${c}"><div class="n">0${i+1}</div><b>${esc(h)}</b><p>${b}</p></div>`).join('');
+}
+['#fx','#ccts'].forEach(s=>$(s).addEventListener('input',insights));
+
 /* ---------- motion ---------- */
 function counters(){document.querySelectorAll('[data-count]').forEach(el=>{const end=+el.dataset.count,dec=+(el.dataset.dec||0),pre=el.dataset.pre||'',suf=el.dataset.suf||'';
   if(reduce){el.textContent=pre+end.toFixed(dec)+suf;return}const t0=performance.now();
@@ -506,7 +648,7 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
 function all(){hero();sankey();calc();trade();price();world();a6();map();tree()}
-countdown();all();table();dtable();counters();
+countdown();all();table();dtable();insights();counters();
 let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{hero();Object.values(charts).forEach(c=>c.resize())},150)});
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',all);
 </script>
