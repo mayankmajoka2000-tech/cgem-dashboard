@@ -2,6 +2,8 @@
 Start rotation works at any zoom; the buttons move clear of the profile panel)."""
 import json, html as _h
 FIX = [
+('<div id="nogl">',
+ '<div id="gver" style="position:absolute;z-index:5;left:50%;bottom:6px;transform:translateX(-50%);font:600 10.5px Inter,Segoe UI,Arial,sans-serif;color:#24425a;background:rgba(255,255,255,.75);padding:2px 8px;border-radius:8px;pointer-events:none">Globe v88: drag to turn</div><div id="nogl">'),
 ("function grab(){busy=true;touched=true;clearTimeout(resumeT);map.stop();var h=$('drag');if(h)h.style.opacity=0;}",
  "function grab(){busy=true;touched=true;clearTimeout(resumeT);var h=$('drag');if(h)h.style.opacity=0;}"),
 ("[].forEach.call(document.querySelectorAll('#pad button'),function(b){var t=null;b.onmousedown=function(e){e.preventDefault();turn(b.dataset.k);if(['left','right','up','down'].indexOf(b.dataset.k)>=0)t=setInterval(function(){turn(b.dataset.k);},380);};\n b.onmouseup=b.onmouseleave=function(){clearInterval(t);};});",
