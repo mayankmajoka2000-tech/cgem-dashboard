@@ -1,7 +1,9 @@
-"""C-GEM online site: 3D globe controls fixed (turn and zoom buttons work with mouse, touch and keyboard;
+"""C-GEM online site: 3D globe controls fixed (dragging with the mouse turns the globe again; turn and zoom buttons work with mouse, touch and keyboard;
 Start rotation works at any zoom; the buttons move clear of the profile panel)."""
 import json, html as _h
 FIX = [
+("function grab(){busy=true;touched=true;clearTimeout(resumeT);map.stop();var h=$('drag');if(h)h.style.opacity=0;}",
+ "function grab(){busy=true;touched=true;clearTimeout(resumeT);var h=$('drag');if(h)h.style.opacity=0;}"),
 ("[].forEach.call(document.querySelectorAll('#pad button'),function(b){var t=null;b.onmousedown=function(e){e.preventDefault();turn(b.dataset.k);if(['left','right','up','down'].indexOf(b.dataset.k)>=0)t=setInterval(function(){turn(b.dataset.k);},380);};\n b.onmouseup=b.onmouseleave=function(){clearInterval(t);};});",
  "[].forEach.call(document.querySelectorAll('#pad button'),function(b){var t=null;function end(){clearInterval(t);t=null;b.classList.remove('dn');}\n b.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagation();b._pd=Date.now();b.classList.add('dn');turn(b.dataset.k);var h=$('drag');if(h)h.style.opacity=0;clearInterval(t);if(['left','right','up','down'].indexOf(b.dataset.k)>=0)t=setInterval(function(){turn(b.dataset.k);},380);});\n ['pointerup','pointerleave','pointercancel','blur'].forEach(function(v){b.addEventListener(v,end);});\n b.addEventListener('click',function(e){if(Date.now()-(b._pd||0)>700)turn(b.dataset.k);});});"),
 ("$('bSpin').onclick=function(){if(spinning)stopSpin();else{spinning=true;this.classList.add('on');this.textContent='Stop rotation';spin();}};",
