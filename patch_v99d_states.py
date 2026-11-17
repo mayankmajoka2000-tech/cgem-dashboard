@@ -87,7 +87,7 @@ def template():
             '<div class="hl"><b>{{t3i}}%</b><small>of credits issued come from 3 states: {{t3in}}</small></div></div>'
             f'<div class="tabs"><span class="tl">Rank by</span>{tabs}</div><div class="lg">{leg}</div>'
             '<div class="lh"><span>#</span><span>State</span><span>Projects, coloured by IPCC sector</span><span>Credits issued</span><span>Retired</span><span>Credits per project</span></div>'
-            '<div class="tbl">{{{rows}}}</div>'
+            '<div class="hn">Showing the top 5. Scroll inside the list to see all {{ns}} states &#8595;</div><div class="tbl">{{{rows}}}</div>'
             '<div class="nt">Bar length = number of projects. Credits per project is compared with the India average (▲ above, ▼ below). {{un}} projects ({{unp}}%) have no state recorded in the registry and are not in this ranking. '
             'Sectors follow the IPCC 2006 Guidelines.</div></div>' + '{{/each}}')
 
@@ -112,7 +112,8 @@ STYLE = (
     f'.{CLS} .lg{{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:#444;margin:0 0 10px}}.{CLS} .lg i,.{CLS} .ml i{{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}}'
     f'.{CLS} .lh,.{CLS} .rw{{display:grid;grid-template-columns:34px 190px minmax(160px,1fr) 108px 96px 112px;gap:12px;align-items:center}}'
     f'.{CLS} .lh{{font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.05em;padding:0 8px 6px;border-bottom:1px solid #E3E5DE}}'
-    f'.{CLS} .tbl{{display:flex;flex-direction:column;max-height:660px;overflow-y:auto;padding-right:4px}}'
+    f'.{CLS} .tbl{{display:flex;flex-direction:column;max-height:262px;overflow-y:scroll;padding-right:6px;scrollbar-width:thin;scrollbar-color:#9DB894 #EEF0E9;border-bottom:1px solid #E3E5DE}}'
+    f'.{CLS} .tbl:has(.st input:checked){{max-height:440px}}.{CLS} .hn{{font-size:12px;color:#245A2C;font-weight:600;margin:0 0 6px}}'
     f'.{CLS} .st{{border-bottom:1px solid #F0F1EA}}.{CLS} .rw{{padding:8px;cursor:pointer;border-radius:8px;transition:background .15s}}.{CLS} .rw:hover{{background:#F6F8F1}}'
     f'.{CLS} .rk b{{display:none;font-size:12px;color:#888;font-weight:700}}.{CLS} .k1{{display:inline!important}}.{CLS} .s2:checked~.tbl .k1,.{CLS} .s3:checked~.tbl .k1{{display:none!important}}'
     f'.{CLS} .nm b{{font-size:13.5px;display:block;line-height:1.2}}.{CLS} .nm small{{font-size:10.5px;color:#888}}'
@@ -178,7 +179,7 @@ def main():
                 pos = json.loads(d.position_json)
                 for comp in pos.values():
                     if isinstance(comp, dict) and comp.get('meta', {}).get('chartId') == sl.id:
-                        comp['meta']['height'] = 134
+                        comp['meta']['height'] = 98
                 d.position_json = json.dumps(pos)
         db.session.commit()
         print('v99d: India state league table:', n)
