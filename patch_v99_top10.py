@@ -32,6 +32,22 @@ LAB = {1: 'Energy', 2: 'Industry and products', 3: 'Land and agriculture', 4: 'W
 CODE = {1: 'IPCC 1', 2: 'IPPU, IPCC 2', 3: 'AFOLU, IPCC 3', 4: 'IPCC 4', 5: ''}
 
 
+VIEW = 'ov_ipcc_view'
+
+
+def view_sql():
+    """one row per country, IPCC sector, C-GEM sector and sub-sector; the sub-sector bar of each row is prepared here (no sub-queries in the chart)"""
+    colors = ' '.join(f'WHEN {i} THEN \'{COL[i]}\'' for i in COL)
+    return (f"CREATE VIEW {VIEW} AS WITH b AS (SELECT country, {case()} AS grp, sector, sub_sector, SUM(credits_issued) AS credits_issued, "
+            "SUM(credits_retired) AS credits_retired, SUM(CASE WHEN credits_retired IS NOT NULL THEN credits_issued END) AS issued_with_retired, "
+            "COUNT(DISTINCT project_key) AS projects FROM projects WHERE country IS NOT NULL AND country NOT IN ('', 'Not recorded') "
+            "GROUP BY country, 2, sector, sub_sector), r AS (SELECT *, 100.0 * credits_issued / NULLIF(SUM(credits_issued) OVER (PARTITION BY country, grp), 0) AS pct, "
+            "ROW_NUMBER() OVER (PARTITION BY country, grp ORDER BY credits_issued DESC) AS rk FROM b) "
+            "SELECT country, grp, sector, sub_sector, credits_issued, credits_retired, issued_with_retired, projects, rk, "
+            "'<div class=\"ss\" style=\"order:' || rk || '\"><span>' || sub_sector || '<small>' || sector || '</small></span><i><u style=\"width:' || "
+            f"printf('%.0f', MAX(COALESCE(pct, 0), 2)) || '%;background:' || CASE grp {colors} END || '\"></u></i><em>' || printf('%.0f', COALESCE(pct, 0)) || '%</em></div>' AS html FROM r")
+
+
 def _fmt(col):
     return (f"CASE WHEN COALESCE(SUM({col}),0) = 0 THEN '0' WHEN SUM({col}) >= 1e9 THEN printf('%.2f bn', SUM({col})/1e9) "
             f"WHEN SUM({col}) >= 1e6 THEN printf('%.1f M', SUM({col})/1e6) WHEN SUM({col}) >= 1e3 THEN printf('%.1f K', SUM({col})/1e3) "
@@ -39,23 +55,18 @@ def _fmt(col):
 
 
 def metrics(old):
-    cs = case()
     m = [old[0]]                              # country name
     for i in range(1, 6):
-        share = f"COALESCE(100.0 * SUM(CASE WHEN {cs} = {i} THEN credits_issued END) / NULLIF(SUM(credits_issued), 0), 0)"
+        share = f"COALESCE(100.0 * SUM(CASE WHEN grp = {i} THEN credits_issued END) / NULLIF(SUM(credits_issued), 0), 0)"
         m.append({'expressionType': 'SQL', 'sqlExpression': f'ROUND({share}, 1)', 'label': f'p{i}'})
         m.append({'expressionType': 'SQL', 'sqlExpression': f"CASE WHEN {share} >= 11 THEN printf('%.0f%%', {share}) ELSE '' END", 'label': f'l{i}'})
-    m.append({'expressionType': 'SQL', 'sqlExpression': "COALESCE(ROUND(100.0 * SUM(credits_retired) / NULLIF(SUM(CASE WHEN credits_retired IS NOT NULL THEN credits_issued END), 0)), 0)", 'label': 'rr'})
-    m.append({'expressionType': 'SQL', 'sqlExpression': "printf('%,d', COUNT(DISTINCT project_key)) || ' projects'", 'label': 'pj'})
+    m.append({'expressionType': 'SQL', 'sqlExpression': "COALESCE(ROUND(100.0 * SUM(credits_retired) / NULLIF(SUM(issued_with_retired), 0)), 0)", 'label': 'rr'})
+    m.append({'expressionType': 'SQL', 'sqlExpression': "printf('%,d', SUM(projects)) || ' projects'", 'label': 'pj'})
     m.append({'expressionType': 'SQL', 'sqlExpression': _fmt('credits_issued'), 'label': 'iss'})
     m.append({'expressionType': 'SQL', 'sqlExpression': _fmt('credits_retired'), 'label': 'ret'})
-    for i in range(1, 6):                     # sub-sectors of each IPCC sector, as ready-made HTML rows (top 6, share of that sector in the country)
-        m.append({'expressionType': 'SQL', 'label': f'q{i}', 'sqlExpression': (
-            "COALESCE((SELECT group_concat(h, '') FROM (SELECT '<div class=\"ss\"><span>' || sub_sector || '<small>' || sector || '</small></span>"
-            "<i><u style=\"width:' || printf('%.0f', MAX(pct, 2)) || '%;background:" + COL[i] + "\"></u></i><em>' || printf('%.0f', pct) || '%</em></div>' AS h "
-            "FROM (SELECT sector, sub_sector, s, 100.0 * s / SUM(s) OVER () AS pct FROM (SELECT sector, sub_sector, SUM(credits_issued) AS s FROM projects p2 "
-            f"WHERE p2.country = projects.country AND {cs} = {i} AND credits_issued > 0 GROUP BY sector, sub_sector) ORDER BY s DESC LIMIT 6))), "
-            "'<div class=\"ss\"><span>No credits issued here</span></div>')")})
+    for i in range(1, 6):                     # sub-sector rows of each IPCC sector (top 6); the order comes from the CSS "order" of each row
+        m.append({'expressionType': 'SQL', 'label': f'q{i}', 'sqlExpression':
+                  f"COALESCE(group_concat(CASE WHEN grp = {i} AND rk <= 6 THEN html END, ''), '<div class=\"ss\"><span>No credits issued here</span></div>')"})
     return m
 
 
@@ -65,7 +76,7 @@ def template():
           "[].forEach.call(r.querySelectorAll('.br s'),function(x){x.classList.remove('sel')});"
           "[].forEach.call(p.children,function(x){x.style.display='none'});"
           "if(same){r.dataset.k='';p.style.display='none';r.classList.remove('op');}"
-          "else{r.dataset.k=k;this.classList.add('sel');p.children[k-1].style.display='block';p.style.display='block';r.classList.add('op');}")
+          "else{r.dataset.k=k;this.classList.add('sel');p.children[k-1].style.display='flex';p.style.display='block';r.classList.add('op');}")
     segs = ''.join(f'<s data-k="{i}" onclick="{js}" style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued. Click to see the sub-sectors."><b>{{{{l{i}}}}}</b></s>' for i in range(1, 6))
     pans = ''.join(f'<div class="bl" data-k="{i}" style="border-top:3px solid {COL[i]};display:none"><h5>{LAB[i]}: sub-sectors <small>(share of this sector\'s credits in the country)</small></h5>{{{{{{q{i}}}}}}}</div>' for i in range(1, 6))
     return (f'<div class="{CLS}"><div class="hd">The ten countries with the most carbon projects, and what kind of projects they are</div>'
@@ -97,7 +108,7 @@ STYLE = (
     f'.{CLS} .br s{{cursor:pointer;transition:opacity .15s,filter .15s}}.{CLS} .br s:hover{{filter:brightness(1.1)}}'
     f'.{CLS} .op .br s:not(.sel){{opacity:.4}}.{CLS} .br s.sel{{outline:2px solid #1b1b1b;outline-offset:-2px}}'
     f'.{CLS} .pn{{margin:2px 0 6px 162px;background:#F7F8F3;border:1px solid #E3E5DE;border-radius:8px;padding:8px 12px 10px}}'
-    f'.{CLS} .bl h5{{margin:6px 0 8px;font-size:12.5px}}.{CLS} .bl h5 small{{font-weight:400;color:#888}}'
+    f'.{CLS} .bl{{flex-direction:column}}.{CLS} .bl h5{{order:-1;margin:6px 0 8px;font-size:12.5px}}.{CLS} .bl h5 small{{font-weight:400;color:#888}}'
     f'.{CLS} .ss{{display:grid;grid-template-columns:230px 1fr 44px;gap:10px;align-items:center;margin:0 0 6px;font-size:12.5px}}'
     f'.{CLS} .ss span small{{display:block;font-size:10.5px;color:#999}}'
     f'.{CLS} .ss i{{display:block;height:10px;border-radius:5px;background:#E3E5DE;overflow:hidden}}.{CLS} .ss u{{display:block;height:100%;text-decoration:none}}'
@@ -129,15 +140,36 @@ with app.app_context():
     from superset.extensions import db
     from superset.models.slice import Slice
     from superset.models.dashboard import Dashboard
+    import sqlite3
+    from superset.connectors.sqla.models import SqlaTable
+    from superset.models.core import Database
+    CGEM_DB = '/app/cgem/cgem.db'
+    con = sqlite3.connect(CGEM_DB)
+    con.execute(f'DROP VIEW IF EXISTS {VIEW}')
+    con.execute(view_sql())
+    con.commit()
+    con.close()
+    dbo = db.session.query(Database).filter(Database.database_name == 'C-GEM mastersheet').first()
+    tbl = db.session.query(SqlaTable).filter(SqlaTable.table_name == VIEW).first()
+    if tbl is None:
+        tbl = SqlaTable(table_name=VIEW, schema='main', database=dbo)
+        db.session.add(tbl)
+        db.session.commit()
+    tbl.fetch_metadata()
+    db.session.commit()
     n = 0
     for s in db.session.query(Slice).filter(Slice.slice_name == NAME).all():
         p = json.loads(s.params)
         if CLS in (p.get('handlebarsTemplate') or ''):
             continue
         p['metrics'] = metrics(p['metrics'])
+        p['timeseries_limit_metric'] = {'expressionType': 'SQL', 'sqlExpression': 'SUM(projects)', 'label': 'o'}
+        p['datasource'] = f'{tbl.id}__table'
         p['handlebarsTemplate'] = template()
         p['styleTemplate'] = STYLE
         s.params = json.dumps(p)
+        s.datasource_id = tbl.id
+        s.datasource_type = 'table'
         s.query_context = None
         s.description = 'The ten countries hosting the most projects. Bar length = credits issued; colours = IPCC sector (Energy, Industry, Land and agriculture, Waste).'
         n += 1
