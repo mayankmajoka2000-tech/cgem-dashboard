@@ -268,7 +268,7 @@ draw();
 
 ST_CSS = """
 .hd{display:grid;grid-template-columns:30px 190px 78px 78px 1fr 230px;gap:12px;padding:0 10px 6px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#7a8270;font-weight:600;position:sticky;top:0;background:#fff;z-index:2;border-bottom:1px solid #eef0e9}
-.sc{max-height:264px;overflow-y:auto;border-bottom:1px solid #eef0e9}
+.sc{max-height:250px;overflow-y:auto;border-bottom:1px solid #eef0e9}
 .r{display:grid;grid-template-columns:30px 190px 78px 78px 1fr 230px;gap:12px;align-items:center;padding:8px 10px;border-radius:10px}
 .r:nth-child(even){background:#f8faf5}
 .k1{width:24px;height:24px;border-radius:50%;background:#eef2e8;color:#2F6B1E;font:700 11px/24px 'Geist Mono',ui-monospace,Menlo,monospace;text-align:center}
@@ -310,7 +310,7 @@ COLS = ['kind', 'a', 'b', 'c', 'scope', 'n', 'iss', 'ret', 'retbase']
 
 CHARTS = [
     # key, chart name, css, js, frame height (px), grid height units
-    ('kpi', 'SDG and social impact in numbers', KPI_CSS, KPI_JS, 132, 28),
+    ('kpi', 'SDG and social impact in numbers', KPI_CSS, KPI_JS, 132, 25),
     ('const', 'The 17 Sustainable Development Goals: where carbon projects claim them', CONST_CSS, CONST_JS, 640, 91),
     ('heat', 'Which goals does each sector claim? (goal by sector heat map)', HEAT_CSS, HEAT_JS, 660, 94),
     ('eff', 'Does doing good sell? Retirement rates by SDG breadth and social label', EFF_CSS, EFF_JS, 700, 99),
@@ -337,13 +337,13 @@ INTRO = [
      'A carbon credit is a tonne of emissions avoided or removed, but many projects also claim wider benefits: clean energy, health, jobs, gender equality, water and land. '
      'This tab shows which of the 17 UN Sustainable Development Goals projects claim, where, and in which sectors, and then asks an economic question: do credits from projects with social claims or labels actually get used (retired) more?', 12),
     ('const', 'The goals at a glance',
-     'Each tile is one goal; its size of bar shows how many projects claim it. Click a goal to see its sectors, registries and countries or states. Switch to India only to see the Indian picture.', 9),
+     'Each tile is one goal; its size of bar shows how many projects claim it. Click a goal to see its sectors, registries and countries or states. Switch to India only to see the Indian picture.', 11),
     ('heat', 'Which sectors claim which goals?',
-     'Renewable energy leans on SDG 7 and 13, household and community projects (cookstoves, water) on health, gender and poverty, and forestry on land and climate. The heat map shows each sector’s signature.', 9),
+     'Renewable energy leans on SDG 7 and 13, household and community projects (cookstoves, water) on health, gender and poverty, and forestry on land and climate. The heat map shows each sector’s signature.', 11),
     ('eff', 'Does doing good sell?',
-     'Retirement means a credit has been used, so retirement rates are a simple market signal. The comparison below is deliberately like for like: the registry a project sits in matters more than its SDG claims.', 9),
+     'Retirement means a credit has been used, so retirement rates are a simple market signal. The comparison below is deliberately like for like: the registry a project sits in matters more than its SDG claims.', 11),
     ('state', "India: where the social claims are",
-     'Which Indian states host the most projects that report SDG goals, and which goals each state stands out for.', 9),
+     'Which Indian states host the most projects that report SDG goals, and which goals each state stands out for.', 11),
 ]
 NOTE = ('Coverage note: SDG goals are reported by some registries only (mainly Gold Standard, GCC, UCR and ICR), so about one project in six carries SDG data. '
         'Goal claims are what developers declare, not independently measured outcomes. Retirement rates use only credits where the registry reports retirements.')
@@ -426,7 +426,7 @@ def main():
                 elif key in units:
                     add_chart(key, units[key])
             note_code = ("<div style=\"font-family:Geist,Inter,'Segoe UI',Arial,sans-serif;padding:8px 6px;font-size:12.5px;color:#777\">" + NOTE + '</div>')
-            add_md('note', note_code, 6)
+            add_md('note', note_code, 9)
             pos[TAB_ID] = {'children': rows, 'id': TAB_ID, 'meta': {'defaultText': TAB_NAME, 'text': TAB_NAME}, 'parents': ['ROOT_ID', 'GRID_ID', 'TABS-main'], 'type': 'TAB'}
             kids = pos['TABS-main']['children']
             anchor = 'TAB-3' if 'TAB-3' in kids else kids[-1]
