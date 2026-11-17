@@ -42,7 +42,19 @@ var REGS=[
   use:'Credits for voluntary buyers, especially in the Gulf. Most Indian projects here are still at listing or registration stage.'},
  {k:'Article 6.4 mechanism (PACM, UNFCCC)',s:'Article 6.4 (PACM)',c:'#265E30',tag:'Successor to CDM',
   what:'The Paris Agreement Crediting Mechanism under Article 6.4, run by the UN Supervisory Body. It replaces the CDM from 2021.',
-  use:'Issues A6.4ERs that can count toward a country’s NDC if the host authorises. CDM projects in India transition here.'}
+  use:'Issues A6.4ERs that can count toward a country’s NDC if the host authorises. CDM projects in India transition here.'},
+ {k:'PlanVivo',s:'Plan Vivo',c:'#3E8E7E',tag:'Community land-use',
+  what:'A foundation-run standard (since 1996) for community-led land-use and nature projects. It issues Plan Vivo Certificates (PVCs).',
+  use:'Agroforestry, restoration and community projects where smallholders share the revenue. Buyers pick it for proven community benefit.'},
+ {k:'ISOMETRIC',s:'Isometric',c:'#5B6EE1',tag:'Science-led removals',
+  what:'A science-led registry (founded 2022) for carbon removal, with detailed public protocols and third-party verification.',
+  use:'Buyers of high-integrity durable removals who want strict measurement. India has a few projects here, with very small volumes so far.'},
+ {k:'C-Sink',s:'C-Sink (CSI)',c:'#7A5A3A',tag:'Biochar registry',
+  what:'The Global Biochar C-Sink registry run by Carbon Standards International (CSI), Switzerland, for biochar carbon sinks.',
+  use:'Issues C-Sink credits for biochar made from biomass. Biochar producers and buyers of durable removals use it.'},
+ {k:'Puroearth',s:'Puro.earth',c:'#D1495B',tag:'Biochar and removals',
+  what:'Puro.earth, a Finland-based registry and standard for engineered carbon removal, including biochar. It issues CORCs (CO2 removal certificates).',
+  use:'Durable removal credits (biochar, carbonated materials, wood in construction) that companies buy to meet removal targets.'}
 ];
 var A62={k:'__a62',s:'Article 6.2',c:'#A23B72',tag:'Government to government',
   what:'Bilateral carbon trading between countries under Article 6.2 of the Paris Agreement. The units are called ITMOs.',
@@ -117,13 +129,13 @@ function actChart(list){
 function legend(list,extra){return'<div class="lg">'+list.map(function(a){return'<span><i style="background:'+a[0].c+'"></i>'+esc(a[0].s.replace(' (PACM)',''))+'</span>'}).join('')+(extra||'')+'</div>'}
 function draw(){
   var data=REGS.map(function(g){return[g,g.k,agg(g.k)]});
-  var withCr=data.filter(function(a){return a[2].iss>0});
+  var withCr=data.filter(function(a){return a[2].iss>0}).sort(function(a,b){return b[2].iss-a[2].iss}).slice(0,6);
   var bar='<button class="pill'+(SEL==='All'?' on':'')+'" data-r="All">All</button>'+REGS.concat([A62]).map(function(g){return'<button class="pill'+(SEL===g.k?' on':'')+'" data-r="'+esc(g.k)+'">'+esc(g.s)+'</button>'}).join('');
   document.getElementById('bar').innerHTML=bar;
-  var p1='<div class="pn"><h3>INDIA: RETIRED VS REMAINING, BY REGISTRY</h3>'+legend(withCr,'<span><i style="background:#D9DBD6"></i>Remaining</span>')+stackChart(withCr)+'<div class="nt">Bar = credits issued to Indian projects; coloured part = retired.</div></div>';
-  var p2='<div class="pn"><h3>INDIA: TOP PROJECT TYPES, BY REGISTRY</h3>'+legend(withCr)+actChart(withCr)+'<div class="nt">Credits issued to Indian projects, leading project types.</div></div>';
+  var p1='<div class="pn"><h3>INDIA: RETIRED VS REMAINING, TOP 6 REGISTRIES</h3>'+legend(withCr,'<span><i style="background:#D9DBD6"></i>Remaining</span>')+stackChart(withCr)+'<div class="nt">Bar = credits issued to Indian projects; coloured part = retired.</div></div>';
+  var p2='<div class="pn"><h3>INDIA: TOP PROJECT TYPES, TOP 6 REGISTRIES</h3>'+legend(withCr)+actChart(withCr)+'<div class="nt">Credits issued to Indian projects, leading project types.</div></div>';
   var lay=document.getElementById('lay'), cards=data.map(function(a){return card(a[0],a[2])}); cards.push(card62());
-  if(SEL==='All'){ lay.style.gridTemplateColumns='repeat(3,1fr)'; lay.innerHTML=cards.join('')+p1+'<div style="grid-column:1/-1;max-width:700px">'+p2+'</div>'; }
+  if(SEL==='All'){ lay.style.gridTemplateColumns='repeat(3,1fr)'; lay.innerHTML=cards.join('')+p1+'<div style="grid-column:span 2">'+p2+'</div>'; }
   else { lay.style.gridTemplateColumns='1fr 1.05fr';
     var i=SEL==='__a62'?cards.length-1:REGS.map(function(g){return g.k}).indexOf(SEL);
     lay.innerHTML=cards[i]+'<div class="side">'+p1+p2+'</div>'; }
@@ -147,7 +159,7 @@ def a6_json(con):
             'p_act': n(g(('Registered Activities', None), 3)), 'p_iss': g(('Registered Activities', 'Mitigation Outcome Issued (tCO₂e)'), 3)}
 
 
-def build(old_tpl, a6, h=2200):
+def build(old_tpl, a6, h=2860):
     m = re.search(r'srcdoc="(.*?)" style="', old_tpl, re.S)
     doc = H.unescape(m.group(1))
     i = doc.index('<script>\nvar D=')
@@ -180,13 +192,13 @@ def main():
             p['row_limit'] = max(int(p.get('row_limit') or 0), 20000)
             sl.params = json.dumps(p)
             sl.query_context = None
-            sl.description = 'The registries that matter for India (CDM, Verra, Gold Standard, UCR, ICR, GCC, Article 6.4) plus Article 6.2, each with what it is and what it is used for.'
+            sl.description = 'The registries that matter for India (CDM, Verra, Gold Standard, UCR, ICR, GCC, Article 6.4, Plan Vivo, Isometric, C-Sink, Puro.earth) plus Article 6.2, each with what it is and what it is used for.'
             n += 1
             for d in db.session.query(Dashboard).filter(Dashboard.slug == 'cgem').all():
                 pos = json.loads(d.position_json)
                 for comp in pos.values():
                     if isinstance(comp, dict) and comp.get('meta', {}).get('chartId') == sl.id:
-                        comp['meta']['height'] = 276
+                        comp['meta']['height'] = 358
                 d.position_json = json.dumps(pos)
         db.session.commit()
         print('v99e: registry cards for India:', n)
