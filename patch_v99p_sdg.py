@@ -427,6 +427,17 @@ def main():
                     add_chart(key, units[key])
             note_code = ("<div style=\"font-family:Geist,Inter,'Segoe UI',Arial,sans-serif;padding:8px 6px;font-size:12.5px;color:#777\">" + NOTE + '</div>')
             add_md('note', note_code, 9)
+            # bring the old 'SDGs claimed by projects, by sector' chart (and its heading) over from Project Pipeline
+            moved = [r for r in ('ROW-3-7', 'ROW-3-8') if r in pos and 'CHART-pl_sdgm' in json.dumps(pos.get('ROW-3-8', {}))]
+            if moved and 'TAB-3' in pos:
+                for r in moved:
+                    if r in pos['TAB-3']['children']:
+                        pos['TAB-3']['children'].remove(r)
+                    pos[r]['parents'] = base
+                    for c in pos[r]['children']:
+                        pos[c]['parents'] = base + [r]
+                at = rows.index('ROW-sdg-heat-c') + 1 if 'ROW-sdg-heat-c' in rows else len(rows) - 1
+                rows[at:at] = moved
             pos[TAB_ID] = {'children': rows, 'id': TAB_ID, 'meta': {'defaultText': TAB_NAME, 'text': TAB_NAME}, 'parents': ['ROOT_ID', 'GRID_ID', 'TABS-main'], 'type': 'TAB'}
             kids = pos['TABS-main']['children']
             anchor = 'TAB-3' if 'TAB-3' in kids else kids[-1]
