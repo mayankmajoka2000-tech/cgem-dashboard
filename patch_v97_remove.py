@@ -6,6 +6,13 @@ DROP_ROWS = {
     'TAB-1': ['ROW-1-7', 'ROW-1-8', 'ROW-1-9'],                # top 15 states + sector list, states bubble chart (with intro)
     'TAB-2': ['ROW-2-18', 'ROW-2-19', 'ROW-2-20', 'ROW-2-21'],  # registry tracker tables
 }
+DROP_CHARTS = {
+    'Credits issued by vintage period and sector', 'Every registry tracker run (newest first)',
+    'Registry sources: which ones the tracker can read', 'Indian projects by sector',
+    'Do more projects mean more credits? Indian states and union territories',
+    'Every registry tracker run, by source (newest first)', 'Every change the tracker made (newest first)',
+    'Top 15 states by number of projects: credits issued and retired', 'Do more projects mean more credits? Countries',
+}   # charts that are still linked to the dashboard are added back at the bottom of the page, so they are unlinked too
 from superset.app import create_app
 app = create_app()
 with app.app_context():
@@ -27,5 +34,8 @@ with app.app_context():
                     pos[tab]['children'].remove(r)
                 gone += 1
         d.position_json = json.dumps(pos)
+        before = len(d.slices)
+        d.slices = [sl for sl in d.slices if sl.slice_name not in DROP_CHARTS]
+        print('charts unlinked from the dashboard:', before - len(d.slices))
         db.session.commit()
         print('v97: rows removed from the online dashboard:', gone)
