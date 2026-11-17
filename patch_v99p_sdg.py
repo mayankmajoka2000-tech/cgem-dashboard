@@ -309,11 +309,11 @@ COLS = ['kind', 'a', 'b', 'c', 'scope', 'n', 'iss', 'ret', 'retbase']
 
 CHARTS = [
     # key, chart name, css, js, frame height (px), grid height units
-    ('kpi', 'SDG and social impact in numbers', KPI_CSS, KPI_JS, 132, 17),
-    ('const', 'The 17 Sustainable Development Goals: where carbon projects claim them', CONST_CSS, CONST_JS, 640, 82),
-    ('heat', 'Which goals does each sector claim? (goal by sector heat map)', HEAT_CSS, HEAT_JS, 660, 84),
-    ('eff', 'Does doing good sell? Retirement rates by SDG breadth and social label', EFF_CSS, EFF_JS, 700, 88),
-    ('state', "India's states: social-impact leaderboard and signature goals", ST_CSS, ST_JS, 360, 45),
+    ('kpi', 'SDG and social impact in numbers', KPI_CSS, KPI_JS, 132, 28),
+    ('const', 'The 17 Sustainable Development Goals: where carbon projects claim them', CONST_CSS, CONST_JS, 640, 91),
+    ('heat', 'Which goals does each sector claim? (goal by sector heat map)', HEAT_CSS, HEAT_JS, 660, 94),
+    ('eff', 'Does doing good sell? Retirement rates by SDG breadth and social label', EFF_CSS, EFF_JS, 700, 99),
+    ('state', "India's states: social-impact leaderboard and signature goals", ST_CSS, ST_JS, 360, 56),
 ]
 
 
@@ -334,13 +334,13 @@ def md(code_id, title, body, height):
 INTRO = [
     ('intro', 'SDG, Social & Economics: what carbon projects deliver beyond the tonne',
      'A carbon credit is a tonne of emissions avoided or removed, but many projects also claim wider benefits: clean energy, health, jobs, gender equality, water and land. '
-     'This tab shows which of the 17 UN Sustainable Development Goals projects claim, where, and in which sectors, and then asks an economic question: do credits from projects with social claims or labels actually get used (retired) more?', 22),
+     'This tab shows which of the 17 UN Sustainable Development Goals projects claim, where, and in which sectors, and then asks an economic question: do credits from projects with social claims or labels actually get used (retired) more?', 12),
     ('const', 'The goals at a glance',
-     'Each tile is one goal; its size of bar shows how many projects claim it. Click a goal to see its sectors, registries and countries or states. Switch to India only to see the Indian picture.', 11),
+     'Each tile is one goal; its size of bar shows how many projects claim it. Click a goal to see its sectors, registries and countries or states. Switch to India only to see the Indian picture.', 9),
     ('heat', 'Which sectors claim which goals?',
-     'Renewable energy leans on SDG 7 and 13, household and community projects (cookstoves, water) on health, gender and poverty, and forestry on land and climate. The heat map shows each sector’s signature.', 11),
+     'Renewable energy leans on SDG 7 and 13, household and community projects (cookstoves, water) on health, gender and poverty, and forestry on land and climate. The heat map shows each sector’s signature.', 9),
     ('eff', 'Does doing good sell?',
-     'Retirement means a credit has been used, so retirement rates are a simple market signal. The comparison below is deliberately like for like: the registry a project sits in matters more than its SDG claims.', 11),
+     'Retirement means a credit has been used, so retirement rates are a simple market signal. The comparison below is deliberately like for like: the registry a project sits in matters more than its SDG claims.', 9),
     ('state', "India: where the social claims are",
      'Which Indian states host the most projects that report SDG goals, and which goals each state stands out for.', 9),
 ]
@@ -425,7 +425,7 @@ def main():
                 elif key in units:
                     add_chart(key, units[key])
             note_code = ("<div style=\"font-family:Geist,Inter,'Segoe UI',Arial,sans-serif;padding:8px 6px;font-size:12.5px;color:#777\">" + NOTE + '</div>')
-            add_md('note', note_code, 9)
+            add_md('note', note_code, 6)
             pos[TAB_ID] = {'children': rows, 'id': TAB_ID, 'meta': {'defaultText': TAB_NAME, 'text': TAB_NAME}, 'parents': ['ROOT_ID', 'GRID_ID', 'TABS-main'], 'type': 'TAB'}
             kids = pos['TABS-main']['children']
             anchor = 'TAB-3' if 'TAB-3' in kids else kids[-1]
