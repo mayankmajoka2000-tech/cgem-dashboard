@@ -17,9 +17,10 @@ def view_sql():
            "'\" text-anchor=\"end\" class=\"lb\">' || REPLACE(country, 'United States of America', 'USA') || '</text>' END")
     cc = ' '.join(f"WHEN '{k}' THEN '{v}'" for k, v in CONT_COL.items())
     return (
-        f"CREATE VIEW {VIEW} AS WITH b AS (SELECT country, CASE WHEN continent IS NULL OR continent IN ('Seven seas (open ocean)', 'Not mapped') THEN 'Other' ELSE continent END AS cont, "
-        "COUNT(DISTINCT project_key) AS p, COALESCE(SUM(credits_issued), 0) AS i, COALESCE(SUM(credits_retired), 0) AS r FROM projects "
-        "WHERE country IS NOT NULL AND country NOT IN ('', 'Not recorded') GROUP BY country), "
+        f"CREATE VIEW {VIEW} AS WITH b AS (SELECT pr.country AS country, COALESCE(cc.continent, 'Other') AS cont, "
+        "COUNT(DISTINCT pr.project_key) AS p, COALESCE(SUM(pr.credits_issued), 0) AS i, COALESCE(SUM(pr.credits_retired), 0) AS r FROM projects pr "
+        "LEFT JOIN ov_country_cont cc ON cc.country = pr.country "
+        "WHERE pr.country IS NOT NULL AND pr.country NOT IN ('', 'Not recorded') GROUP BY pr.country, cc.continent), "
         "a AS (SELECT 1 AS m, country, cont, p AS v FROM b UNION ALL SELECT 2, country, cont, i FROM b UNION ALL SELECT 3, country, cont, r FROM b), "
         "c AS (SELECT m, country, cont, v, ROW_NUMBER() OVER (PARTITION BY m ORDER BY v, country) AS rn, "
         "SUM(v) OVER (PARTITION BY m ORDER BY v, country ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum, "
