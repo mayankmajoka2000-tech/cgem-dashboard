@@ -72,20 +72,16 @@ def metrics(old):
 
 def template():
     leg = ''.join(f'<span><i style="background:{COL[i]}"></i>{LAB[i]}{" <small>(" + CODE[i] + ")</small>" if CODE[i] else ""}</span>' for i in range(1, 6))
-    js = ("var r=this.closest('.ro'),k=this.dataset.k,p=r.querySelector('.pn'),same=r.dataset.k===k;"
-          "[].forEach.call(r.querySelectorAll('.br s'),function(x){x.classList.remove('sel')});"
-          "[].forEach.call(p.children,function(x){x.style.display='none'});"
-          "if(same){r.dataset.k='';p.style.display='none';r.classList.remove('op');}"
-          "else{r.dataset.k=k;this.classList.add('sel');p.children[k-1].style.display='flex';p.style.display='block';r.classList.add('op');}")
-    segs = ''.join(f'<s data-k="{i}" onclick="{js}" style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued. Click to see the sub-sectors."><b>{{{{l{i}}}}}</b></s>' for i in range(1, 6))
-    pans = ''.join(f'<div class="bl" data-k="{i}" style="border-top:3px solid {COL[i]};display:none"><h5>{LAB[i]}: sub-sectors <small>(share of this sector\'s credits in the country)</small></h5>{{{{{{q{i}}}}}}}</div>' for i in range(1, 6))
+    segs = ''.join(f'<label for="k{{{{@index}}}}_{i}" style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued. Click to see the sub-sectors."><b>{{{{l{i}}}}}</b></label>' for i in range(1, 6))
+    pans = ''.join(f'<div class="bl" style="border-top:3px solid {COL[i]}"><label class="x" for="k{{{{@index}}}}_0">close &#10005;</label><h5>{LAB[i]}: sub-sectors <small>(share of this sector\'s credits in the country)</small></h5>{{{{{{q{i}}}}}}}</div>' for i in range(1, 6))
+    ins = '<input type="radio" class="z" name="g{{@index}}" id="k{{@index}}_0" checked>' + ''.join(f'<input type="radio" name="g{{{{@index}}}}" id="k{{{{@index}}}}_{i}">' for i in range(1, 6))
     return (f'<div class="{CLS}"><div class="hd">The ten countries with the most carbon projects, and what kind of projects they are</div>'
-            f'<div class="sb">Each bar shows the mix of a country\'s credits by IPCC sector. <b>Click a colour to open its sub-sectors</b>; click again to close.</div>'
+            f'<div class="sb">Each bar shows the mix of a country\'s credits by IPCC sector. <b>Click a colour to open its sub-sectors</b>; press close to hide them.</div>'
             f'<div class="lg">{leg}</div>'
             '<div class="rw th"><div></div><div>Mix of credits issued, by sector</div><div class="c">Credits issued</div><div class="c">Retired</div></div>'
-            '{{#each data}}<div class="ro"><div class="rw"><div class="nm">{{nm}}<small>{{pj}}</small></div><div class="br">' + segs + '</div>'
+            '{{#each data}}<div class="ro">' + ins + '<div class="rw"><div class="nm">{{nm}}<small>{{pj}}</small></div><div class="br">' + segs + '</div>'
             '<div class="c"><b>{{iss}}</b></div><div class="c"><span class="mt"><u style="width:{{rr}}%"></u></span><em>{{rr}}%</em></div></div>'
-            '<div class="pn" style="display:none">' + pans + '</div></div>{{/each}}'
+            '<div class="pn">' + pans + '</div></div>{{/each}}'
             '<div class="nt">Sectors follow the IPCC 2006 Guidelines for National Greenhouse Gas Inventories. Retired = credits already used by a buyer, as a share of credits issued.</div></div>')
 
 
@@ -98,16 +94,18 @@ STYLE = (
     f'.{CLS} .th{{font-size:11px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}}'
     f'.{CLS} .nm{{text-align:right;font-size:13.5px;font-weight:600;color:#222;line-height:1.2}}.{CLS} .nm small{{display:block;font-size:11px;font-weight:400;color:#888;margin-top:2px}}'
     f'.{CLS} .br{{display:flex;height:32px;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.12);background:#E3E5DE}}'
-    f'.{CLS} .br s{{display:flex;align-items:center;justify-content:center;text-decoration:none;min-width:0;overflow:hidden}}'
-    f'.{CLS} .br b{{font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}}.{CLS} .br s:nth-child(5) b{{color:#333}}'
+    f'.{CLS} .br label{{display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}}'
+    f'.{CLS} .br b{{font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}}.{CLS} .br label:nth-child(5) b{{color:#333}}'
     f'.{CLS} .c{{text-align:right;font-size:13px}}.{CLS} .c b{{font-size:14px}}.{CLS} .th .c{{text-align:right}}'
     f'.{CLS} .c em{{font-style:normal;font-size:12px;color:#444;margin-left:8px;font-weight:600}}'
     f'.{CLS} .mt{{display:inline-block;width:46px;height:7px;border-radius:4px;background:#E3E5DE;overflow:hidden;vertical-align:middle}}'
     f'.{CLS} .mt u{{display:block;height:100%;background:#245A2C;text-decoration:none}}'
     f'.{CLS} .nt{{font-size:11px;color:#888;margin-top:8px}}'
-    f'.{CLS} .br s{{cursor:pointer;transition:opacity .15s,filter .15s}}.{CLS} .br s:hover{{filter:brightness(1.1)}}'
-    f'.{CLS} .op .br s:not(.sel){{opacity:.4}}.{CLS} .br s.sel{{outline:2px solid #1b1b1b;outline-offset:-2px}}'
-    f'.{CLS} .pn{{margin:2px 0 6px 162px;background:#F7F8F3;border:1px solid #E3E5DE;border-radius:8px;padding:8px 12px 10px}}'
+    f'.{CLS} .br label{{cursor:pointer;transition:opacity .15s,filter .15s}}.{CLS} .br label:hover{{filter:brightness(1.1)}}'
+    f'.{CLS} input{{position:absolute;opacity:0;width:0;height:0;pointer-events:none}}.{CLS} .pn,.{CLS} .bl{{display:none}}.{CLS} .ro input:not(.z):checked~.pn{{display:block}}'
+    + ''.join(f'.{CLS} .ro input:nth-of-type({i+1}):checked~.pn .bl:nth-child({i}){{display:flex}}.{CLS} .ro input:nth-of-type({i+1}):checked~.rw .br label:not(:nth-child({i})){{opacity:.4}}.{CLS} .ro input:nth-of-type({i+1}):checked~.rw .br label:nth-child({i}){{outline:2px solid #1b1b1b;outline-offset:-2px}}' for i in range(1,6)) +
+    f'.{CLS} .x{{align-self:flex-end;cursor:pointer;font-size:11px;color:#777;order:-2}}.{CLS} .x:hover{{color:#000}}'
+        f'.{CLS} .pn{{margin:2px 0 6px 162px;background:#F7F8F3;border:1px solid #E3E5DE;border-radius:8px;padding:8px 12px 10px}}'
     f'.{CLS} .bl{{flex-direction:column}}.{CLS} .bl h5{{order:-1;margin:6px 0 8px;font-size:12.5px}}.{CLS} .bl h5 small{{font-weight:400;color:#888}}'
     f'.{CLS} .ss{{display:grid;grid-template-columns:230px 1fr 44px;gap:10px;align-items:center;margin:0 0 6px;font-size:12.5px}}'
     f'.{CLS} .ss span small{{display:block;font-size:10.5px;color:#999}}'
