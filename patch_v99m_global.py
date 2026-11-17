@@ -20,7 +20,7 @@ def edit_chart(t, css):
     cls = re.search(r'class="(cgx[0-9a-f]+)"', t).group(1)
     t = t.replace('<div class="tt">{{#each data}}', '<div class="tt"><div class="sc">{{#each data}}', 1)
     t = t.replace('{{/each}}{{#each data}}{{#if @first}}', '{{/each}}</div><div class="hn">' + HINT + '</div>{{#each data}}{{#if @first}}', 1)
-    css += (f'\n.{cls} .sc{{max-height:312px;overflow-y:auto}}\n.{cls} .hn{{font-size:11px;color:#888;margin:6px 0 0}}')
+    css += (f'\n.{cls} .sc{{max-height:328px;overflow-y:auto}}\n.{cls} .hn{{font-size:11px;color:#888;margin:6px 0 0}}')
     return t, css
 
 
@@ -39,7 +39,7 @@ def layout(pos):
     pos[BUY]['parents'] = pos[DEV]['parents']
     for c in (DEV, BUY):
         pos[c]['meta']['width'] = 6
-        pos[c]['meta']['height'] = 52
+        pos[c]['meta']['height'] = 56
     tab = parent_of(pos, old)
     for r in (old, ROW_BUY_HEAD):
         if r in pos and tab and r in pos[tab]['children']:

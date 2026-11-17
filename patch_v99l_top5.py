@@ -5,9 +5,9 @@ import re
 
 HINT = 'Showing the top 5. Scroll inside the list to see the rest.'
 CHARTS = {
-    'Registries active in India: projects, credits issued and retired, and states covered': ('bh', '.br', 190, 40),
-    'Registries active in India: credits issued, retired and vintage': ('fh', '.fr', 270, 64),
-    'Sectors: credits issued and retired': ('fh', '.fr', 270, 64),
+    'Registries active in India: projects, credits issued and retired, and states covered': ('bh', '.br', 180, 38),
+    'Registries active in India: credits issued, retired and vintage': ('fh', '.fr', 342, 76),
+    'Sectors: credits issued and retired': ('fh', '.fr', 342, 76),
 }
 
 
