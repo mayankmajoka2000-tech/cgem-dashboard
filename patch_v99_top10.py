@@ -3,19 +3,18 @@ Each country's bar is split by IPCC sector (Energy, Industrial processes and pro
 share retired shown next to it; a small table below shows how C-GEM sectors map to IPCC categories."""
 import json
 
-# C-GEM sector / sub-sector -> IPCC 2006 sector (1 Energy, 2 IPPU, 3 AFOLU, 4 Waste, 5 Other and not classified)
+# C-GEM sector / sub-sector -> IPCC 2006 sector (1 Energy, 2 IPPU, 3 AFOLU, 4 Waste)
 IPCC = [
  # (sector, sub_sector or None, group)
  ('Industrial & Commercial', 'Fossil Fuel Ops', 1), ('Industrial & Commercial', 'Materials & Manufacturing', 2),
  ('Industrial & Commercial', 'Methane Capture', 4),
- ('Carbon Capture & Storage', 'Industrial CCS', 1), ('Carbon Capture & Storage', None, 5),
+ ('Carbon Capture & Storage', 'Industrial CCS', 1),
  ('Renewable Energy', None, 1), ('Renewable Thermal Energy', None, 1), ('Household & Community', None, 1), ('Transport', None, 1),
  ('Industrial & Commercial', None, 1),
  ('Chemical Processes', None, 2),
  ('Forestry & Land Use', None, 3), ('Agriculture', None, 3),
  ('Waste Management', None, 4),
- ('Carbon Removal (Tech)', None, 5), ('Not classified', None, 5),
-]
+ ]
 def q(s): return "'" + s.replace("'", "''") + "'"
 def case():
     parts = []
@@ -27,9 +26,58 @@ def case():
 
 NAME = 'Top 10 countries by number of total projects, with credits issued and retired'
 CLS = 'cgxipcc99'
-COL = {1: '#C98A1F', 2: '#4F7CA3', 3: '#2C7A3D', 4: '#B85829', 5: '#B9BDB0'}
-LAB = {1: 'Energy', 2: 'Industry and products', 3: 'Land and agriculture', 4: 'Waste', 5: 'Other, not classified'}
-CODE = {1: 'IPCC 1', 2: 'IPPU, IPCC 2', 3: 'AFOLU, IPCC 3', 4: 'IPCC 4', 5: ''}
+COL = {1: '#C98A1F', 2: '#4F7CA3', 3: '#2C7A3D', 4: '#B85829'}
+LAB = {1: 'Energy', 2: 'Industry and products', 3: 'Land and agriculture', 4: 'Waste'}
+CODE = {1: 'IPCC 1', 2: 'IPPU, IPCC 2', 3: 'AFOLU, IPCC 3', 4: 'IPCC 4'}
+
+
+# ---- every project gets one IPCC sector: C-GEM sector first, then project type / methodology / name, then the registry's usual sector
+RULES = [
+    (2, 'Materials, chemicals and carbon in products', ['concrete', 'carbonat', 'plastic', 'cement', 'chemical', 'refrigerant', 'nitric', 'adipic', 'hfc', 'n2o', 'steel', 'iron', 'aluminium', 'aluminum', 'industrial process', 'lime', 'glass', 'fertili']),
+    (3, 'Land use, forests and soils', ['biochar', 'biomass carbon removal', 'terrestrial', 'weathering', 'ewr', 'soil', 'forest', 'land use', 'afolu', 'cropland', 'agricult', 'afforest', 'reforest', 'redd', 'mangrove', 'livestock', 'rice', 'grassland', 'peat', 'tree', 'carbon farming', 'conservation', 'biodiversity', 'wildfire', 'ecosystem', 'amazon', 'reserve', 'carbon sink', 'blue carbon', 'seagrass', 'kelp', 'farm', 'pasture', '\u6797\u4e1a', '\u78b3\u6c47']),
+    (4, 'Waste', ['waste', 'landfill', 'wastewater', 'incinerat', 'compost', 'sewage', 'recycl', 'manure', '\u5e9f', '\u5783\u573e']),
+    (1, 'Fossil fuels and fugitive emissions', ['fugitive', 'flaring', 'oil', 'natural gas', 'fossil', 'coal', 'methane', 'pipeline', 'lng']),
+    (1, 'CO2 capture and storage', ['ccs', 'capture', 'storage', 'beccs', 'direct air', 'dac', 'engineered', 'removal', 'co2', 'carbon dioxide']),
+    (1, 'Energy supply and use', ['energy', 'solar', 'wind', 'hydro', 'geothermal', 'renewable', 'biomass', 'bioenergy', 'electric', 'cook', 'stove', 'boiler', 'lighting', 'efficien',
+                                  'pool', 'transport', 'vehicle', 'fuel', 'power', 'biogas', 'heat', 'transit', 'metro', 'rail', 'grid', 'battery', 'hydrogen', 'nuclear', '\u80fd\u6e90', '\u6c22', '\u5149\u4f0f']),
+]
+KEEP = {'Renewable Energy', 'Industrial & Commercial', 'Renewable Thermal Energy', 'Agriculture', 'Waste Management', 'Household & Community', 'Transport',
+        'Forestry & Land Use', 'Chemical Processes'}
+
+
+def build_classes(con):
+    """creates table ipcc_class(project_key, grp, sec, sub, basis) with exactly one IPCC group per project"""
+    exact = {(a, b): g for a, b, g in IPCC if b}
+    by_sector = {a: g for a, b, g in IPCC if not b}
+    rows = con.execute('SELECT project_key, sector, sub_sector, project_type, methodology, project_name, registry FROM projects').fetchall()
+    out = {}
+    for key, sec, sub, pt, me, pn, reg in rows:
+        g = exact.get((sec, sub))
+        if g is None and (sec in KEEP or sec == 'Carbon Capture & Storage' and sub == 'Industrial CCS'):
+            g = by_sector.get(sec)
+        if g is not None:
+            out[key] = [g, sec, sub or sec, 'c-gem', reg]
+            continue
+        text = ' '.join(str(x or '') for x in (pt, me, pn)).lower()
+        for gg, label, kws in RULES:
+            if any(w in text for w in kws):
+                out[key] = [gg, 'Placed by project details', label, 'rule', reg]
+                break
+        else:
+            out[key] = [None, 'Placed by registry', 'No project detail recorded', 'registry', reg]
+    votes = {}
+    for g, _, _, b, reg in out.values():
+        if g is not None:
+            votes.setdefault(reg, {}).setdefault(g, 0)
+            votes[reg][g] += 1
+    for key, v in out.items():
+        if v[0] is None:
+            c = votes.get(v[4]) or {1: 1}
+            v[0] = max(sorted(c), key=lambda x: c[x])
+    con.execute('DROP TABLE IF EXISTS ipcc_class')
+    con.execute('CREATE TABLE ipcc_class (project_key TEXT PRIMARY KEY, grp INTEGER, sec TEXT, sub TEXT, basis TEXT)')
+    con.executemany('INSERT OR REPLACE INTO ipcc_class VALUES (?,?,?,?,?)', [(k, v[0], v[1], v[2], v[3]) for k, v in out.items()])
+    return out
 
 
 VIEW = 'ov_ipcc_view'
@@ -38,10 +86,10 @@ VIEW = 'ov_ipcc_view'
 def view_sql():
     """one row per country, IPCC sector, C-GEM sector and sub-sector; the sub-sector bar of each row is prepared here (no sub-queries in the chart)"""
     colors = ' '.join(f'WHEN {i} THEN \'{COL[i]}\'' for i in COL)
-    return (f"CREATE VIEW {VIEW} AS WITH b AS (SELECT country, {case()} AS grp, sector, sub_sector, SUM(credits_issued) AS credits_issued, "
-            "SUM(credits_retired) AS credits_retired, SUM(CASE WHEN credits_retired IS NOT NULL THEN credits_issued END) AS issued_with_retired, "
-            "COUNT(DISTINCT project_key) AS projects FROM projects WHERE country IS NOT NULL AND country NOT IN ('', 'Not recorded') "
-            "GROUP BY country, 2, sector, sub_sector), r AS (SELECT *, 100.0 * credits_issued / NULLIF(SUM(credits_issued) OVER (PARTITION BY country, grp), 0) AS pct, "
+    return (f"CREATE VIEW {VIEW} AS WITH b AS (SELECT pr.country AS country, ic.grp AS grp, ic.sec AS sector, ic.sub AS sub_sector, SUM(pr.credits_issued) AS credits_issued, "
+            "SUM(pr.credits_retired) AS credits_retired, SUM(CASE WHEN pr.credits_retired IS NOT NULL THEN pr.credits_issued END) AS issued_with_retired, "
+            "COUNT(DISTINCT pr.project_key) AS projects FROM projects pr JOIN ipcc_class ic ON ic.project_key = pr.project_key WHERE pr.country IS NOT NULL AND pr.country NOT IN ('', 'Not recorded') "
+            "GROUP BY pr.country, ic.grp, ic.sec, ic.sub), r AS (SELECT *, 100.0 * credits_issued / NULLIF(SUM(credits_issued) OVER (PARTITION BY country, grp), 0) AS pct, "
             "ROW_NUMBER() OVER (PARTITION BY country, grp ORDER BY credits_issued DESC) AS rk FROM b) "
             "SELECT country, grp, sector, sub_sector, credits_issued, credits_retired, issued_with_retired, projects, rk, "
             "'<div class=\"ss\" style=\"order:' || rk || '\"><span>' || sub_sector || '<small>' || sector || '</small></span><i><u style=\"width:' || "
@@ -56,7 +104,7 @@ def _fmt(col):
 
 def metrics(old):
     m = [old[0]]                              # country name
-    for i in range(1, 6):
+    for i in range(1, 5):
         share = f"COALESCE(100.0 * SUM(CASE WHEN grp = {i} THEN credits_issued END) / NULLIF(SUM(credits_issued), 0), 0)"
         m.append({'expressionType': 'SQL', 'sqlExpression': f'ROUND({share}, 1)', 'label': f'p{i}'})
         m.append({'expressionType': 'SQL', 'sqlExpression': f"CASE WHEN {share} >= 11 THEN printf('%.0f%%', {share}) ELSE '' END", 'label': f'l{i}'})
@@ -64,17 +112,17 @@ def metrics(old):
     m.append({'expressionType': 'SQL', 'sqlExpression': "printf('%,d', SUM(projects)) || ' projects'", 'label': 'pj'})
     m.append({'expressionType': 'SQL', 'sqlExpression': _fmt('credits_issued'), 'label': 'iss'})
     m.append({'expressionType': 'SQL', 'sqlExpression': _fmt('credits_retired'), 'label': 'ret'})
-    for i in range(1, 6):                     # sub-sector rows of each IPCC sector (top 6); the order comes from the CSS "order" of each row
+    for i in range(1, 5):                     # sub-sector rows of each IPCC sector (top 6); the order comes from the CSS "order" of each row
         m.append({'expressionType': 'SQL', 'label': f'q{i}', 'sqlExpression':
                   f"COALESCE(group_concat(CASE WHEN grp = {i} AND rk <= 6 THEN html END, ''), '<div class=\"ss\"><span>No credits issued here</span></div>')"})
     return m
 
 
 def template():
-    leg = ''.join(f'<span><i style="background:{COL[i]}"></i>{LAB[i]}{" <small>(" + CODE[i] + ")</small>" if CODE[i] else ""}</span>' for i in range(1, 6))
-    segs = ''.join(f'<label for="k{{{{@index}}}}_{i}" style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued. Click to see the sub-sectors."><b>{{{{l{i}}}}}</b></label>' for i in range(1, 6))
-    pans = ''.join(f'<div class="bl" style="border-top:3px solid {COL[i]}"><label class="x" for="k{{{{@index}}}}_0">close &#10005;</label><h5>{LAB[i]}: sub-sectors <small>(share of this sector\'s credits in the country)</small></h5>{{{{{{q{i}}}}}}}</div>' for i in range(1, 6))
-    ins = '<input type="radio" class="z" name="g{{@index}}" id="k{{@index}}_0" checked>' + ''.join(f'<input type="radio" name="g{{{{@index}}}}" id="k{{{{@index}}}}_{i}">' for i in range(1, 6))
+    leg = ''.join(f'<span><i style="background:{COL[i]}"></i>{LAB[i]}{" <small>(" + CODE[i] + ")</small>" if CODE[i] else ""}</span>' for i in range(1, 5))
+    segs = ''.join(f'<label for="k{{{{@index}}}}_{i}" style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued. Click to see the sub-sectors."><b>{{{{l{i}}}}}</b></label>' for i in range(1, 5))
+    pans = ''.join(f'<div class="bl" style="border-top:3px solid {COL[i]}"><label class="x" for="k{{{{@index}}}}_0">close &#10005;</label><h5>{LAB[i]}: sub-sectors <small>(share of this sector\'s credits in the country)</small></h5>{{{{{{q{i}}}}}}}</div>' for i in range(1, 5))
+    ins = '<input type="radio" class="z" name="g{{@index}}" id="k{{@index}}_0" checked>' + ''.join(f'<input type="radio" name="g{{{{@index}}}}" id="k{{{{@index}}}}_{i}">' for i in range(1, 5))
     return (f'<div class="{CLS}"><div class="hd">The ten countries with the most carbon projects, and what kind of projects they are</div>'
             f'<div class="sb">Each bar shows the mix of a country\'s credits by IPCC sector. <b>Click a colour to open its sub-sectors</b>; press close to hide them.</div>'
             f'<div class="lg">{leg}</div>'
@@ -95,7 +143,7 @@ STYLE = (
     f'.{CLS} .nm{{text-align:right;font-size:13.5px;font-weight:600;color:#222;line-height:1.2}}.{CLS} .nm small{{display:block;font-size:11px;font-weight:400;color:#888;margin-top:2px}}'
     f'.{CLS} .br{{display:flex;height:32px;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.12);background:#E3E5DE}}'
     f'.{CLS} .br label{{display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}}'
-    f'.{CLS} .br b{{font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}}.{CLS} .br label:nth-child(5) b{{color:#333}}'
+    f'.{CLS} .br b{{font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}}'
     f'.{CLS} .c{{text-align:right;font-size:13px}}.{CLS} .c b{{font-size:14px}}.{CLS} .th .c{{text-align:right}}'
     f'.{CLS} .c em{{font-style:normal;font-size:12px;color:#444;margin-left:8px;font-weight:600}}'
     f'.{CLS} .mt{{display:inline-block;width:46px;height:7px;border-radius:4px;background:#E3E5DE;overflow:hidden;vertical-align:middle}}'
@@ -103,7 +151,7 @@ STYLE = (
     f'.{CLS} .nt{{font-size:11px;color:#888;margin-top:8px}}'
     f'.{CLS} .br label{{cursor:pointer;transition:opacity .15s,filter .15s}}.{CLS} .br label:hover{{filter:brightness(1.1)}}'
     f'.{CLS} input{{position:absolute;opacity:0;width:0;height:0;pointer-events:none}}.{CLS} .pn,.{CLS} .bl{{display:none}}.{CLS} .ro input:not(.z):checked~.pn{{display:block}}'
-    + ''.join(f'.{CLS} .ro input:nth-of-type({i+1}):checked~.pn .bl:nth-child({i}){{display:flex}}.{CLS} .ro input:nth-of-type({i+1}):checked~.rw .br label:not(:nth-child({i})){{opacity:.4}}.{CLS} .ro input:nth-of-type({i+1}):checked~.rw .br label:nth-child({i}){{outline:2px solid #1b1b1b;outline-offset:-2px}}' for i in range(1,6)) +
+    + ''.join(f'.{CLS} .ro input:nth-of-type({i+1}):checked~.pn .bl:nth-child({i}){{display:flex}}.{CLS} .ro input:nth-of-type({i+1}):checked~.rw .br label:not(:nth-child({i})){{opacity:.4}}.{CLS} .ro input:nth-of-type({i+1}):checked~.rw .br label:nth-child({i}){{outline:2px solid #1b1b1b;outline-offset:-2px}}' for i in range(1,5)) +
     f'.{CLS} .x{{align-self:flex-end;cursor:pointer;font-size:11px;color:#777;order:-2}}.{CLS} .x:hover{{color:#000}}'
         f'.{CLS} .pn{{margin:2px 0 6px 162px;background:#F7F8F3;border:1px solid #E3E5DE;border-radius:8px;padding:8px 12px 10px}}'
     f'.{CLS} .bl{{flex-direction:column}}.{CLS} .bl h5{{order:-1;margin:6px 0 8px;font-size:12.5px}}.{CLS} .bl h5 small{{font-weight:400;color:#888}}'
@@ -123,14 +171,13 @@ NOTE = (
         (1, '1 Energy', '1A2 Manufacturing industries', 'Industrial &amp; Commercial: energy efficiency'),
         (1, '1 Energy', '1A3 Transport', 'Transport: electrification, efficiency and shift'),
         (1, '1 Energy', '1A4 Other sectors (homes, commercial)', 'Household &amp; Community: clean cooking, efficient lighting, water and health; Renewable Thermal Energy'),
-        (1, '1 Energy', '1B Fugitive emissions from fuels / 1C CO2 storage', 'Industrial &amp; Commercial: fossil fuel operations; Carbon Capture &amp; Storage: industrial CCS'),
+        (1, '1 Energy', '1B Fugitive emissions from fuels / 1C CO2 capture and storage', 'Industrial &amp; Commercial: fossil fuel operations; Carbon Capture &amp; Storage, direct air capture and BECCS'),
         (2, '2 Industrial processes and product use (IPPU)', '2B Chemical industry, 2F Refrigerants, 2A/2C Minerals and metals', 'Chemical Processes: gas destruction, refrigerant management; Industrial &amp; Commercial: materials and manufacturing'),
         (3, '3 Agriculture, forestry and other land use (AFOLU)', '3A Livestock, 3C Non-CO2 sources on land', 'Agriculture: livestock and methane, soil and crop management, water management'),
         (3, '3 Agriculture, forestry and other land use (AFOLU)', '3B Land (forest land, cropland)', 'Forestry &amp; Land Use: restoration, land management, conservation'),
-        (4, '4 Waste', '4A Solid waste, 4B Biological treatment, 4C Incineration, 4D Wastewater', 'Waste Management: methane capture, circular economy, advanced recovery, waste to energy'),
-        (5, 'Other', 'Outside the IPCC inventory sectors', 'Carbon Removal (Tech), engineered removal, projects not yet classified')])
+        (4, '4 Waste', '4A Solid waste, 4B Biological treatment, 4C Incineration, 4D Wastewater', 'Waste Management: methane capture, circular economy, advanced recovery, waste to energy')])
     + '</table><div style="font-size:11.5px;color:#777;margin-top:8px">The IPCC sectors are made for national inventories. C-GEM groups each project by what it does, '
-      'so a project is placed in the closest IPCC category and its true category can differ.</div></div>')
+      'so every project is placed in the closest IPCC category and its true category can differ. Projects that C-GEM has not classified (and carbon capture, removal and storage projects) are placed by their project type, methodology and name; where the registry gives no detail they take the most common sector of their registry.</div></div>')
 
 from superset.app import create_app
 app = create_app()
@@ -144,6 +191,7 @@ with app.app_context():
     CGEM_DB = '/app/cgem/cgem.db'
     con = sqlite3.connect(CGEM_DB)
     con.execute(f'DROP VIEW IF EXISTS {VIEW}')
+    build_classes(con)
     con.execute(view_sql())
     con.commit()
     con.close()
