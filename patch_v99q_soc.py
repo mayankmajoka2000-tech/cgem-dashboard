@@ -316,13 +316,53 @@ function draw(){
 draw();
 """
 
+SG_CSS = """
+.sc{max-height:470px;overflow:auto;border:1px solid #eef0e9;border-radius:10px}
+table{border-collapse:separate;border-spacing:2px;width:100%;min-width:900px}
+th{position:sticky;top:0;background:#fff;z-index:2;padding:4px 0 6px;font-weight:600;font-size:10.5px;color:#555}
+th.s,td.s{position:sticky;left:0;background:#fff;z-index:1;text-align:left;min-width:170px;padding:0 8px}
+th.s{z-index:3}
+th i{display:inline-block;min-width:24px;height:22px;border-radius:6px;text-align:center;font:800 11px/22px 'Geist Mono',ui-monospace,Menlo,monospace}
+td.s{font-size:12.5px;font-weight:600;white-space:nowrap}td.s small{display:block;font:500 10.5px Geist,Arial,sans-serif;color:#8a9080}
+td.c{text-align:center;height:26px;border-radius:5px;font:600 11px 'Geist Mono',ui-monospace,Menlo,monospace;min-width:38px}
+.hn{font-size:11px;color:#888;margin:8px 0 0}
+.lgd{display:flex;align-items:center;gap:8px;font-size:11px;color:#777;margin:8px 0 0}.lgd i{display:inline-block;width:150px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgba(38,94,48,.04),rgba(38,94,48,1))}
+"""
+SG_JS = r"""
+var MODE='s',SORT='n';
+function draw(){
+  var tot={},cell={};
+  pick('sd','India',function(r){return r.b==='state'}).forEach(function(r){if(r.a==='0')tot[r.c]=r.n;else(cell[r.c]=cell[r.c]||{})[r.a]=r.n});
+  var names=Object.keys(tot).filter(function(k){return tot[k]>=3});
+  names.sort(function(a,b){return SORT==='n'?tot[b]-tot[a]:a.localeCompare(b)});
+  var hid=Object.keys(tot).length-names.length;
+  var th='<th class="s">State</th>';for(var g=1;g<=17;g++)th+='<th title="'+esc(SDG[g][0])+'"><i style="background:'+SDG[g][1]+';color:'+ink(SDG[g][1])+'">'+g+'</i></th>';
+  var rows=names.map(function(k){
+    var tds='';for(var g=1;g<=17;g++){var n=(cell[k]||{})[g]||0,sh=n/tot[k];var a=MODE==='s'?sh:Math.min(1,n/Math.max.apply(null,names.map(function(x){return (cell[x]||{})[g]||0})));
+      tds+='<td class="c" title="'+esc(SDG[g][0])+': '+n+' of '+tot[k]+' projects" style="background:rgba(38,94,48,'+(0.04+0.96*a).toFixed(2)+');color:'+(a>.5?'#fff':'#333')+'">'+(n?(MODE==='s'?Math.round(100*sh)+'%':n):'\u2013')+'</td>'}
+    return '<tr><td class="s">'+esc(k)+'<small>'+ni(tot[k])+' SDG-reporting projects</small></td>'+tds+'</tr>'}).join('');
+  var h='<div class="pills"><button class="pill'+(MODE==='s'?' on':'')+'" data-m="s">Share of the state’s projects</button><button class="pill'+(MODE==='c'?' on':'')+'" data-m="c">Number of projects</button><span style="width:12px"></span>'
+   +'<button class="pill'+(SORT==='n'?' on':'')+'" data-o="n">Most projects first</button><button class="pill'+(SORT==='a'?' on':'')+'" data-o="a">A to Z</button></div>'
+   +'<div class="sc"><table><thead><tr>'+th+'</tr></thead><tbody>'+rows+'</tbody></table></div>'
+   +'<div class="lgd">'+(MODE==='s'?'0%':'few')+'<i></i>'+(MODE==='s'?'100% of the state’s SDG-reporting projects':'most projects for that goal')+'</div>'
+   +'<div class="hn">Only projects that report SDG goals. '+hid+' states or territories with fewer than 3 such projects are left out. A project can claim several goals, so each row adds up to more than 100%. Hover a cell for the count.</div>';
+  document.getElementById('app').innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-m]'),function(b){b.onclick=function(){MODE=b.getAttribute('data-m');draw()}});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-o]'),function(b){b.onclick=function(){SORT=b.getAttribute('data-o');draw()}});
+}
+draw();
+"""
+
 NEW = [
     # key, chart name, css, js, frame px, grid units
     ('stage', 'SDG claims by project stage: issued, registered, listed and stopped', STAGE_CSS, STAGE_JS, 850, 118),
     ('who', 'Who gets the projects? Big economies against Africa and the least developed countries', WHO_CSS, WHO_JS, 470, 70),
+    ('sgrid', 'Which goals does each Indian state claim? (state by goal heat map)', SG_CSS, SG_JS, 580, 84),
     ('indc', "India's concentration: states, districts and the left-behind regions", IND_CSS, IND_JS, 940, 129),
 ]
 INTRO2 = {
+    'sgrid': ('Indian states and the goals they claim',
+              'Each row is a state, each column one of the 17 goals. Darker means a larger share of that state’s SDG-reporting projects claim the goal, so you can see which states lean on energy, water, health or land.', 11),
     'stage': ('Which stage are SDG-claiming projects at?',
               'Every project in the dataset sorted into four stages, then split by the goals it claims: how many are issuing credits, registered but not yet issuing, still listed or under validation, or stopped. Goals claimed on a project that never reaches issuance deliver nothing yet.', 11),
     'who': ('Who is left behind? Carbon projects and vulnerable countries',
@@ -397,7 +437,7 @@ def main():
                 pos[crid] = {'children': [cid], 'id': crid, 'meta': {'background': 'BACKGROUND_TRANSPARENT'}, 'parents': base, 'type': 'ROW'}
                 return [rid, crid]
             a = make('stage')
-            b = make('who') + make('indc')
+            b = make('who') + make('indc') + make('sgrid')
             i = rows.index('ROW-sdg-const-c') + 1 if 'ROW-sdg-const-c' in rows else len(rows)
             rows[i:i] = a
             j = rows.index('ROW-sdg-eff-c') + 1 if 'ROW-sdg-eff-c' in rows else rows.index('ROW-sdg-state-m')
