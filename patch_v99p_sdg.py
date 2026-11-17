@@ -123,7 +123,8 @@ KPI_CSS = """
 .k .v{font:800 28px/1.1 'Geist Mono',ui-monospace,Menlo,monospace;letter-spacing:-.02em;color:#173F0F}
 .k .l{font-weight:700;font-size:12.5px;margin:4px 0 3px}
 .k .s{font-size:11px;color:#6b7266;line-height:1.35}
-@media (max-width:900px){#app{grid-template-columns:repeat(2,1fr)}}
+.k{min-width:0}
+@media (max-width:1150px){.k .s{display:none}.k{padding:10px 10px 8px}.k .v{font-size:clamp(16px,2.4vw,28px)}.k .l{font-size:11px}#app{gap:8px}}
 """
 KPI_JS = r"""
 var K=function(s,a){return pick('kp',s,function(r){return r.a===a})[0]||{n:0,iss:0}};
