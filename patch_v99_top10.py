@@ -49,18 +49,32 @@ def metrics(old):
     m.append({'expressionType': 'SQL', 'sqlExpression': "printf('%,d', COUNT(DISTINCT project_key)) || ' projects'", 'label': 'pj'})
     m.append({'expressionType': 'SQL', 'sqlExpression': _fmt('credits_issued'), 'label': 'iss'})
     m.append({'expressionType': 'SQL', 'sqlExpression': _fmt('credits_retired'), 'label': 'ret'})
+    for i in range(1, 6):                     # sub-sectors of each IPCC sector, as ready-made HTML rows (top 6, share of that sector in the country)
+        m.append({'expressionType': 'SQL', 'label': f'q{i}', 'sqlExpression': (
+            "COALESCE((SELECT group_concat(h, '') FROM (SELECT '<div class=\"ss\"><span>' || sub_sector || '<small>' || sector || '</small></span>"
+            "<i><u style=\"width:' || printf('%.0f', MAX(pct, 2)) || '%;background:" + COL[i] + "\"></u></i><em>' || printf('%.0f', pct) || '%</em></div>' AS h "
+            "FROM (SELECT sector, sub_sector, s, 100.0 * s / SUM(s) OVER () AS pct FROM (SELECT sector, sub_sector, SUM(credits_issued) AS s FROM projects p2 "
+            f"WHERE p2.country = projects.country AND {cs} = {i} AND credits_issued > 0 GROUP BY sector, sub_sector) ORDER BY s DESC LIMIT 6))), "
+            "'<div class=\"ss\"><span>No credits issued here</span></div>')")})
     return m
 
 
 def template():
     leg = ''.join(f'<span><i style="background:{COL[i]}"></i>{LAB[i]}{" <small>(" + CODE[i] + ")</small>" if CODE[i] else ""}</span>' for i in range(1, 6))
-    segs = ''.join(f'<s style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued"><b>{{{{l{i}}}}}</b></s>' for i in range(1, 6))
+    js = ("var r=this.closest('.ro'),k=this.dataset.k,p=r.querySelector('.pn'),same=r.dataset.k===k;"
+          "[].forEach.call(r.querySelectorAll('.br s'),function(x){x.classList.remove('sel')});"
+          "[].forEach.call(p.children,function(x){x.style.display='none'});"
+          "if(same){r.dataset.k='';p.style.display='none';r.classList.remove('op');}"
+          "else{r.dataset.k=k;this.classList.add('sel');p.children[k-1].style.display='block';p.style.display='block';r.classList.add('op');}")
+    segs = ''.join(f'<s data-k="{i}" onclick="{js}" style="flex:{{{{p{i}}}}};background:{COL[i]}" title="{LAB[i]}: {{{{p{i}}}}}% of the credits issued. Click to see the sub-sectors."><b>{{{{l{i}}}}}</b></s>' for i in range(1, 6))
+    pans = ''.join(f'<div class="bl" data-k="{i}" style="border-top:3px solid {COL[i]};display:none"><h5>{LAB[i]}: sub-sectors <small>(share of this sector\'s credits in the country)</small></h5>{{{{{{q{i}}}}}}}</div>' for i in range(1, 6))
     return (f'<div class="{CLS}"><div class="hd">The ten countries with the most carbon projects, and what kind of projects they are</div>'
-            f'<div class="sb">Each bar shows the mix of a country\'s credits by IPCC sector. Hover a colour for its share.</div>'
+            f'<div class="sb">Each bar shows the mix of a country\'s credits by IPCC sector. <b>Click a colour to open its sub-sectors</b>; click again to close.</div>'
             f'<div class="lg">{leg}</div>'
             '<div class="rw th"><div></div><div>Mix of credits issued, by sector</div><div class="c">Credits issued</div><div class="c">Retired</div></div>'
-            '{{#each data}}<div class="rw"><div class="nm">{{nm}}<small>{{pj}}</small></div><div class="br">' + segs + '</div>'
-            '<div class="c"><b>{{iss}}</b></div><div class="c"><span class="mt"><u style="width:{{rr}}%"></u></span><em>{{rr}}%</em></div></div>{{/each}}'
+            '{{#each data}}<div class="ro"><div class="rw"><div class="nm">{{nm}}<small>{{pj}}</small></div><div class="br">' + segs + '</div>'
+            '<div class="c"><b>{{iss}}</b></div><div class="c"><span class="mt"><u style="width:{{rr}}%"></u></span><em>{{rr}}%</em></div></div>'
+            '<div class="pn" style="display:none">' + pans + '</div></div>{{/each}}'
             '<div class="nt">Sectors follow the IPCC 2006 Guidelines for National Greenhouse Gas Inventories. Retired = credits already used by a buyer, as a share of credits issued.</div></div>')
 
 
@@ -80,7 +94,15 @@ STYLE = (
     f'.{CLS} .mt{{display:inline-block;width:46px;height:7px;border-radius:4px;background:#E3E5DE;overflow:hidden;vertical-align:middle}}'
     f'.{CLS} .mt u{{display:block;height:100%;background:#245A2C;text-decoration:none}}'
     f'.{CLS} .nt{{font-size:11px;color:#888;margin-top:8px}}'
-    '@media (max-width:760px){' + f'.{CLS} .rw{{grid-template-columns:1fr 70px 80px}}.{CLS} .nm{{text-align:left;grid-column:1/-1}}.{CLS} .br{{grid-column:1/-1}}.{CLS} .th{{display:none}}.{CLS} .c{{text-align:left}}' + '}')
+    f'.{CLS} .br s{{cursor:pointer;transition:opacity .15s,filter .15s}}.{CLS} .br s:hover{{filter:brightness(1.1)}}'
+    f'.{CLS} .op .br s:not(.sel){{opacity:.4}}.{CLS} .br s.sel{{outline:2px solid #1b1b1b;outline-offset:-2px}}'
+    f'.{CLS} .pn{{margin:2px 0 6px 162px;background:#F7F8F3;border:1px solid #E3E5DE;border-radius:8px;padding:8px 12px 10px}}'
+    f'.{CLS} .bl h5{{margin:6px 0 8px;font-size:12.5px}}.{CLS} .bl h5 small{{font-weight:400;color:#888}}'
+    f'.{CLS} .ss{{display:grid;grid-template-columns:230px 1fr 44px;gap:10px;align-items:center;margin:0 0 6px;font-size:12.5px}}'
+    f'.{CLS} .ss span small{{display:block;font-size:10.5px;color:#999}}'
+    f'.{CLS} .ss i{{display:block;height:10px;border-radius:5px;background:#E3E5DE;overflow:hidden}}.{CLS} .ss u{{display:block;height:100%;text-decoration:none}}'
+    f'.{CLS} .ss em{{font-style:normal;font-weight:600;text-align:right}}'
+    '@media (max-width:760px){' + f'.{CLS} .rw{{grid-template-columns:1fr 70px 80px}}.{CLS} .nm{{text-align:left;grid-column:1/-1}}.{CLS} .br{{grid-column:1/-1}}.{CLS} .th{{display:none}}.{CLS} .pn{{margin-left:0}}.{CLS} .ss{{grid-template-columns:1fr 1fr 40px}}.{CLS} .c{{text-align:left}}' + '}')
 
 NOTE = (
     '<div style="font-family:Geist,Inter,\'Segoe UI\',Arial,sans-serif;padding:4px 6px 10px"><div style="font-size:14px;font-weight:700;margin-bottom:6px">'
@@ -124,7 +146,7 @@ with app.app_context():
         pos = json.loads(d.position_json)
         if 'CHART-ov_top10' not in pos or 'ROW-ipcc-note' in pos:
             continue
-        pos['CHART-ov_top10']['meta']['height'] = 74
+        pos['CHART-ov_top10']['meta']['height'] = 98
         path = ['ROOT_ID', 'GRID_ID', 'TABS-main', 'TAB-0']
         pos['ROW-ipcc-note'] = {'children': ['MARKDOWN-ipcc-note'], 'id': 'ROW-ipcc-note', 'meta': {'background': 'BACKGROUND_TRANSPARENT'},
                                 'parents': path, 'type': 'ROW'}
