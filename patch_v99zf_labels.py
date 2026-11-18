@@ -132,7 +132,7 @@ HEAD = ("<div style=\"font-family:Geist,Inter,'Segoe UI',Arial,sans-serif;paddin
         'eligibility for airline offsetting (CORSIA) or Article 6 authorisation, and co-benefit labels such as CCB, SDG+ or Gold Standard Gender Responsive. '
         'The chart counts the projects worldwide that carry each one.</p></div>')
 
-H_HEAD, H_CHART = 17, 140
+H_HEAD, H_CHART = 17, 171
 
 
 def main():
@@ -180,7 +180,9 @@ def main():
                 d.slices.append(sl)
             pos = json.loads(d.position_json)
             if 'CHART-labels' in pos:
-                LOG('already in layout')
+                pos['CHART-labels']['meta']['height'] = H_CHART
+                d.position_json = json.dumps(pos)
+                LOG('already in layout, height set to', H_CHART)
                 continue
             tab = None
             for k, v in pos.items():
