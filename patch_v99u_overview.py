@@ -1,8 +1,8 @@
-"""v99u: Overview tab: 'How does India compare?', 'What comes next?' and 'Registry update log' sections come off."""
+"""v99u: Overview tab: 'How does India compare?' and 'What comes next?' sections come off; the Registry update log stays."""
 import json
 from patch_v99t_trim import remove_comp
 
-ROWS = ['ROW-0-12', 'ROW-0-13', 'ROW-0-14', 'ROW-0-15', 'ROW-2-16', 'ROW-2-17']
+ROWS = ['ROW-0-12', 'ROW-0-13', 'ROW-0-14', 'ROW-0-15']  # the registry update log (ROW-2-16, ROW-2-17) stays on the Overview
 
 
 def main():
