@@ -21,26 +21,26 @@ def LOG(*a):
 FONT = "Geist,Inter,'Segoe UI',Arial,sans-serif"
 
 HERO = (
-    '<div style="font-family:' + FONT + ';position:relative;overflow:hidden;border-radius:16px;padding:24px 28px;color:#fff;'
-    'background:#2F6B1E;background-image:linear-gradient(120deg,#1B4423 0%,#2F6B1E 58%,#5A9440 100%)">'
-    '<div style="font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#CFE6B8;margin-bottom:8px">'
+    '<div style="font-family:' + FONT + ';position:relative;overflow:hidden;border-radius:16px;padding:24px 28px;color:#1b1b1b;'
+    'background:#fff;border:1px solid #e3e6dc;border-top:4px solid #2F6B1E;box-shadow:0 1px 3px rgba(31,42,20,.06)">'
+    '<div style="font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#2F6B1E;margin-bottom:8px">'
     "India's compliance market &middot; CCTS</div>"
-    '<div style="font-size:25px;line-height:1.2;font-weight:700;letter-spacing:-.3px;margin-bottom:10px">'
+    '<div style="font-size:25px;line-height:1.2;font-weight:700;letter-spacing:-.3px;color:#0E1410;margin-bottom:10px">'
     'Which Indian plants must cut emissions under CCTS?</div>'
-    '<p style="margin:0 0 14px;max-width:880px;font-size:14px;line-height:1.6;color:#E8F2DE">'
+    '<p style="margin:0 0 14px;max-width:880px;font-size:14px;line-height:1.6;color:#3d4536">'
     "Under the Carbon Credit Trading Scheme, plants in heavy industry get a target for emissions per tonne of product. "
     "Plants that beat it earn carbon credit certificates; plants that miss it must buy them. "
     "490 plants are covered so far, across seven sectors.</p>"
     '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">'
-    '<span style="padding:5px 11px;border-radius:999px;font-size:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22)">'
+    '<span style="padding:5px 11px;border-radius:999px;font-size:12px;color:#265E30;background:#eef4e6;border:1px solid #d6e3c6">'
     'G.S.R. 739(E) &middot; 8 Oct 2025 &middot; 282 plants</span>'
-    '<span style="padding:5px 11px;border-radius:999px;font-size:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22)">'
+    '<span style="padding:5px 11px;border-radius:999px;font-size:12px;color:#265E30;background:#eef4e6;border:1px solid #d6e3c6">'
     'G.S.R. 25(E) &middot; 13 Jan 2026 &middot; 208 plants</span>'
-    '<span style="padding:5px 11px;border-radius:999px;font-size:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22)">'
+    '<span style="padding:5px 11px;border-radius:999px;font-size:12px;color:#265E30;background:#eef4e6;border:1px solid #d6e3c6">'
     'G.S.R. 794(E) &middot; 7 Sep 2026 &middot; refinery and textile amendment</span></div>'
-    '<a href="/cgem-projects/ccts" target="_blank" style="display:inline-block;padding:10px 18px;border-radius:9px;background:#fff;'
-    'color:#1B4423;font-size:14px;font-weight:700;text-decoration:none">Open the full CCTS list: search, filter, download &rarr;</a>'
-    '<div style="margin-top:12px;font-size:11.5px;color:#BFD9A8">Source: Ministry of Environment notifications, Gazette of India.</div>'
+    '<a href="/cgem-projects/ccts" target="_blank" style="display:inline-block;padding:10px 18px;border-radius:9px;background:#2C7A3D;'
+    'color:#fff;font-size:14px;font-weight:700;text-decoration:none">Open the full CCTS list: search, filter, download &rarr;</a>'
+    '<div style="margin-top:12px;font-size:11.5px;color:#7b8374">Source: Ministry of Environment notifications, Gazette of India.</div>'
     '</div>')
 
 # ------------------------------------------------------------------ KPI cards (chart 37)
@@ -170,7 +170,7 @@ PL_METRICS = [
     met('w', 'ROUND(100.0 * COALESCE(MAX(reduction_pct), 0) / NULLIF(MAX(MAX(reduction_pct)) OVER (), 0), 1)'),
 ]
 
-H_HERO, H_KPI, H_PLANTS = 36, 22, 46   # frame heights in 8px units (tuned after a screenshot)
+H_HERO, H_KPI, H_PLANTS = 38, 22, 46   # frame heights in 8px units (tuned after a screenshot)
 H_SEC, H_STATE = 52, 44
 
 
