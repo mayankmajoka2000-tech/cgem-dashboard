@@ -4,6 +4,8 @@ import json
 OLD = 'Understanding the Global Carbon Market'
 NEW = 'Understanding the Voluntary Carbon Market'
 HI = 'स्वैच्छिक कार्बन बाज़ार को समझना'
+OLD2 = 'Welcome to the global carbon market'
+NEW2 = 'Welcome to the voluntary carbon market'
 
 
 def main():
@@ -18,8 +20,8 @@ def main():
             for v in pos.values():
                 if isinstance(v, dict) and v.get('type') == 'MARKDOWN':
                     code = (v.get('meta') or {}).get('code') or ''
-                    if OLD in code:
-                        v['meta']['code'] = code.replace(OLD, NEW)
+                    if OLD in code or OLD2 in code:
+                        v['meta']['code'] = code.replace(OLD, NEW).replace(OLD2, NEW2)
                         n += 1
             d.position_json = json.dumps(pos)
         db.session.commit()
@@ -27,7 +29,11 @@ def main():
     try:
         p = '/app/cgem/chat/i18n_hi.json'
         dic = json.load(open(p, encoding='utf-8'))
-        dic.setdefault('exact', {})[NEW] = HI
+        ex = dic.setdefault('exact', {})
+        ex[NEW] = HI
+        for k, v in list(ex.items()):
+            if OLD2 in k:
+                ex[k.replace(OLD2, NEW2)] = v.replace('वैश्विक कार्बन बाज़ार', 'स्वैच्छिक कार्बन बाज़ार')
         json.dump(dic, open(p, 'w', encoding='utf-8'), ensure_ascii=False)
         print('v99z: Hindi line added')
     except Exception as e:
