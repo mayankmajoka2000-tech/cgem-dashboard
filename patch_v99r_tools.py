@@ -109,7 +109,7 @@ function draw(){
    +(shown.length?shown.map(function(r){var s=STG[r.stg];
      return '<div class="r"><div class="n" title="'+esc(r.name)+'">'+(r.url?'<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.name)+'</a>':esc(r.name))+'<small>'+esc(r.reg)+' '+esc(r.pid)+'</small></div><div><span>'+esc(r.ctry)+'</span><small>'+esc(r.st)+'</small></div><div>'+esc(r.sec)+'</div>'
       +'<div class="g">'+r.g.map(function(g){return '<i style="background:'+SDG[g][1]+';color:'+ink(SDG[g][1])+'" title="'+esc(SDG[g][0])+'">'+g+'</i>'}).join('')+'</div><div><span class="st" style="background:'+s[1]+'">'+s[0]+'</span></div><div class="v">'+(r.iss?fm(r.iss):'0')+'</div><div class="v">'+(r.rrep?fm(r.ret):'n/a')+'</div></div>'}).join(''):'<div class="r"><div class="n">No project matches these filters.</div></div>')
-   +'</div><div class="hn">'+(rows.length>400?'Showing the first 400 of '+ni(rows.length)+' (the download holds all). ':'')+'Showing about the top 5 rows; scroll for more. Only projects whose registry publishes SDG goals are listed, so absence here does not mean a project has no co-benefits. Stage is read from registry status text. Retired shows credits used, where the registry reports it. Not investment or purchasing advice: check each registry page and the project documents.</div>';
+   +'</div><div class="hn">'+(rows.length>400?'Showing the first 400 of '+ni(rows.length)+' (the download holds all). ':'')+'Scroll inside the table for more rows. Only projects whose registry publishes SDG goals are listed, so absence here does not mean a project has no co-benefits. Stage is read from registry status text. Retired shows credits used, where the registry reports it. Not investment or purchasing advice: check each registry page and the project documents.</div>';
   document.getElementById('out').innerHTML=h;
   document.getElementById('so').onchange=function(e){F.sort=e.target.value;draw()};
   document.getElementById('dl').onclick=function(){var b=new Blob(['﻿'+csv(rows)],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='cgem_sdg_projects.csv';document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)};
@@ -151,7 +151,7 @@ function draw(){
    +[52,58,64,70,76,82].map(function(v){return '<text x="'+X(v)+'" y="'+(H-B+14)+'" text-anchor="middle">'+v+'</text><line x1="'+X(v)+'" x2="'+X(v)+'" y1="'+Tm+'" y2="'+(H-B)+'" stroke="#eef0e9"/>'}).join('')
    +[0,10,100,1000].map(function(p){return '<text x="'+(L-6)+'" y="'+(Y(p)+4)+'" text-anchor="end">'+p+'</text><line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(p)+'" y2="'+Y(p)+'" stroke="#eef0e9"/>'}).join('')
    +'<line x1="'+X(avg)+'" x2="'+X(avg)+'" y1="'+Tm+'" y2="'+(H-B)+'" stroke="#888" stroke-dasharray="4 3"/><line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(med)+'" y2="'+Y(med)+'" stroke="#888" stroke-dasharray="4 3"/>'
-   +'<text x="'+(L+6)+'" y="'+(Y(med)+16)+'" style="fill:#B85829;font-weight:700">Under-served: below-average score, few projects</text>'
+   +'<text x="'+(L+6)+'" y="'+(H-B-8)+'" style="fill:#B85829;font-weight:700">Under-served corner</text>'
    +S.map(function(s){var c=s.sc>=65?'#265E30':s.sc>=50?'#C98A1F':'#B85829';return '<circle cx="'+X(s.sc)+'" cy="'+Y(s.p)+'" r="'+(s.opp?6:4.5)+'" fill="'+(s.opp?'#B85829':c)+'" fill-opacity="'+(s.opp?.9:.55)+'" stroke="#fff"><title>'+esc(s.s)+': SDG score '+s.sc+', '+s.p+' projects</title></circle>'}).join('')
    +S.filter(function(s){return s.opp&&(s.sc<=66||s.p<=3)||s.p>=400}).map(function(s){return '<text x="'+(X(s.sc)+8)+'" y="'+(Y(s.p)+3)+'">'+esc(s.s.replace('Dadra and Nagar Haveli and Daman and Diu','DNH & DD'))+'</text>'}).join('')
    +'<text x="'+(L+(W-L-R)/2)+'" y="'+(H-4)+'" text-anchor="middle">SDG India Index score 2023-24 (higher = closer to the goals)</text><text transform="rotate(-90 12 '+(H/2)+')" x="12" y="'+(H/2)+'" text-anchor="middle">Carbon projects in the state (log scale)</text></svg>';
@@ -162,7 +162,7 @@ function draw(){
   document.getElementById('app').innerHTML='<div class="ins"><b>How to read it.</b> '+low+' of 36 states and territories score below India’s average of 71 on the SDG India Index, but together they host only <b>'+pc(lowp,tp,0)+'</b> of the carbon projects that have a known state. '
    +'<b>'+opp.length+'</b> sit in the shaded corner: below-average score <b>and</b> at most '+med+' projects (the median). Thin supply can reflect real constraints (security, land, grid, capacity), so treat this as a screening list, not a recommendation.</div>'
    +'<div class="g2"><div class="pn"><h3>SDG SCORE AGAINST CARBON PROJECTS</h3><p class="sb">One dot per state or territory. Hover a dot for its numbers.</p>'+svg+'<div class="lg"><span><i style="background:#B85829"></i>under-served corner</span><span><i style="background:#C98A1F"></i>performer band</span><span><i style="background:#265E30"></i>front-runner band</span></div></div>'
-   +'<div class="pn"><h3>UNDER-SERVED STATES, LOWEST SCORE FIRST</h3><p class="sb">Score below 71 and projects at or under the median ('+med+').</p><div class="sc"><div class="cr ch"><span></span><span>State</span><span style="text-align:right">Score</span><span style="text-align:right">Projects</span><span style="text-align:right">Issued</span><span>Goals claimed</span></div>'+list+'</div><div class="hn">Showing about the top 5. Scroll for the rest. Goals claimed are the three most common among the state’s SDG-reporting projects. Scores: NITI Aayog SDG India Index 2023-24.</div></div></div>';
+   +'<div class="pn"><h3>UNDER-SERVED STATES, LOWEST SCORE FIRST</h3><p class="sb">Score below 71 and projects at or under the median ('+med+').</p><div class="sc"><div class="cr ch"><span></span><span>State</span><span style="text-align:right">Score</span><span style="text-align:right">Projects</span><span style="text-align:right">Issued</span><span>Goals claimed</span></div>'+list+'</div><div class="hn">Showing the top 5; scroll inside the list for the rest. Goals claimed are the three most common among the state’s SDG-reporting projects. Scores: NITI Aayog SDG India Index 2023-24.</div></div></div>';
 }
 draw();
 """
@@ -222,7 +222,7 @@ draw();
 TOOLS = [
     # key, name, css, js, frame px, units, dataset ('p' = project table, 't' = sdg_tab)
     ('finder', 'Project finder: SDG-reporting projects by goal, place, sector and stage', FIND_CSS, FIND_JS, 600, 86, 'p'),
-    ('opp', 'Where is the gap widest? SDG score against carbon projects, by Indian state', OPP_CSS, OPP_JS.replace('__IDX__', json.dumps(STATE_IDX)), 720, 101, 't'),
+    ('opp', 'Where is the gap widest? SDG score against carbon projects, by Indian state', OPP_CSS, OPP_JS.replace('__IDX__', json.dumps(STATE_IDX)), 690, 97, 't'),
     ('cmp', 'Compare two Indian states: SDG score, projects and goals claimed', CMP_CSS, CMP_JS.replace('__IDX__', json.dumps(STATE_IDX)), 660, 94, 't'),
 ]
 INTRO3 = {

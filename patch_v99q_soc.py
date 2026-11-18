@@ -302,8 +302,11 @@ function draw(){
   var cmp='<div class="pn"><h3>INDUSTRIALISED STATES AGAINST LEFT-BEHIND REGIONS</h3><p class="sb2">Share of India’s '+(MET==='n'?'projects':'credits issued')+'.</p>'
    +GI.map(function(g){var x=grp[g]||{n:0,iss:0,c:0};var v=x[key];return '<div class="cm"><div class="t"><span>'+g+' <span class="nt">('+x.c+')</span></span><b>'+pc(v,tot,1)+'</b></div><div class="bar"><i style="width:'+(tot?100*v/tot:0).toFixed(1)+'%;background:'+GCOL[g]+'"></i></div><div class="d">'+GD[g]+': '+ni(x.n)+' projects</div></div>'}).join('')
    +'<p class="hn">Left-behind regions is an editorial grouping: the North-East, Bihar, Jharkhand, Jammu & Kashmir and Ladakh, which are lower-income, hill or conflict-affected regions. Industrialised states are the five with the most industry and projects.</p></div>';
+  var jn=function(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1]};
+  var z0=S.filter(function(r){return r.n===0}).map(function(r){return r.a}),z1=S.filter(function(r){return r.n===1}).map(function(r){return r.a});
+  var zs=(z0.length?jn(z0)+(z0.length===1?' has':' have')+' no project on record'+(z1.length?'; ':'. '):'')+(z1.length?jn(z1)+(z1.length===1?' has':' have')+' only one. ':'');
   var ins='<div class="ins"><b>Reading this.</b> The top five states hold <b>'+Math.round(100*ls.top5)+'%</b> of India’s '+(MET==='n'?'projects':'issued credits')+'. Across districts, the top 10% hold <b>'+Math.round(100*ld.top10pct)+'%</b>, and <b>'+ld.zero+'</b> of '+ld.n+' districts have no project on record. '
-   +'Projects cluster in the large industrialised states: Mizoram and Lakshadweep have none and Ladakh and Manipur one each. District figures use only the '+ni(Dd.reduce(function(s,r){return s+r.n},0))+' projects whose location could be matched to a district.</div>';
+   +zs+'District figures use only the '+ni(Dd.reduce(function(s,r){return s+r.n},0))+' projects whose location could be matched to a district.</div>';
   var D2=Dd.slice().sort(function(a,b){return b[key]-a[key]||b.n-a.n}),top=D2.filter(function(r){return r.n>0}).slice(0,10);
   var S2=S.slice().sort(function(a,b){return a[key]-b[key]||a.a.localeCompare(b.a)});
   var lst=function(title,sub,rows,fn){return '<div class="pn"><h3>'+title+'</h3><p class="sb2">'+sub+'</p><div class="sc"><div class="cr ch"><span></span><span>Name</span><span style="text-align:right">Projects</span><span style="text-align:right">Credits</span></div>'+rows.map(fn).join('')+'</div><p class="hn">Showing the top 5. Scroll inside the list to see the rest.</p></div>'};
@@ -442,11 +445,11 @@ draw();
 
 NEW = [
     # key, chart name, css, js, frame px, grid units
-    ('prog', 'How far are the Goals from being met? World, India and Indian states', PROG_CSS, PROG_JS, 1050, 142),
+    ('prog', 'How far are the Goals from being met? World, India and Indian states', PROG_CSS, PROG_JS, 1130, 152),
     ('stage', 'SDG claims by project stage: issued, registered, listed and stopped', STAGE_CSS, STAGE_JS, 850, 118),
     ('who', 'Who gets the projects? Big economies against Africa and the least developed countries', WHO_CSS, WHO_JS, 470, 70),
     ('sgrid', 'Which goals does each Indian state claim? (state by goal heat map)', SG_CSS, SG_JS, 580, 84),
-    ('indc', "India's concentration: states, districts and the left-behind regions", IND_CSS, IND_JS, 940, 129),
+    ('indc', "India's concentration: states, districts and the left-behind regions", IND_CSS, IND_JS, 975, 134),
 ]
 INTRO2 = {
     'prog': ('How far are the Goals from being met?',
