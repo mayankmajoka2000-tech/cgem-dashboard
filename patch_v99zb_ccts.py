@@ -50,7 +50,7 @@ KPI_TPL = ('<div class="' + KC + '"><div class="mk">{{#each data}}<div class="kg
            '<div class="kc a2"><h4>Sectors covered</h4><b>{{b}}</b><p>Aluminium, cement, chlor-alkali, pulp and paper, refining, petrochemicals and textiles.</p></div>'
            '<div class="kc a3"><h4>States and union territories</h4><b>{{c}}</b><p>Where the obligated plants are located.</p></div>'
            '<div class="kc a4"><h4>Average cut by 2026-27</h4><b>{{d}}</b><p>Reduction in emissions per tonne of product, from the 2023-24 baseline.</p></div>'
-           '<div class="kc a5"><h4>Plants that buy if they miss</h4><b>{{e}}</b><p>A plant that misses its target buys certificates; one that beats it can sell them.</p></div>'
+           '<div class="kc a5"><h4>Plants that buy if they miss</h4><b>{{e}} {{a}}</b><p>Every obligated plant: one that misses its target buys certificates, one that beats it can sell them.</p></div>'
            '</div>{{/each}}</div></div>')
 KPI_CSS = """
 .cgx927636dc .mk{font-family:Geist,Inter,'Segoe UI',Arial,sans-serif;color:#1b1b1b;padding:2px}
@@ -170,7 +170,7 @@ PL_METRICS = [
     met('w', 'ROUND(100.0 * COALESCE(MAX(reduction_pct), 0) / NULLIF(MAX(MAX(reduction_pct)) OVER (), 0), 1)'),
 ]
 
-H_HERO, H_KPI, H_PLANTS = 38, 22, 46   # frame heights in 8px units (tuned after a screenshot)
+H_HERO, H_KPI, H_PLANTS = 38, 28, 46   # frame heights in 8px units (tuned after a screenshot)
 H_SEC, H_STATE = 52, 44
 
 
