@@ -37,13 +37,26 @@ function badge(tn){
     logoUrl(dom,function(u){if(!u){ph.remove();return}ph.onload=function(){ph.style.display='inline-block'};ph.src=u})})(D[k],tn,p);return}
  }
 }
+var SCL=['','#E5243B','#DDA63A','#4C9F38','#C5192D','#FF3A21','#26BDE2','#FCC30B','#A21942','#FD6925','#DD1367','#FD9D24','#BF8B2E','#3F7E44','#0A97D9','#56C02B','#00689D','#19486A'];
+function rgbs(h){return 'rgb('+parseInt(h.substr(1,2),16)+', '+parseInt(h.substr(3,2),16)+', '+parseInt(h.substr(5,2),16)+')'}
+var SCR=SCL.map(function(h){return h?rgbs(h):''});
+function sdgUrl(n){return 'https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-'+(n<10?'0'+n:n)+'.jpg'}
+function chips(root){
+ if(!root||!root.querySelectorAll)return;
+ var els=root.querySelectorAll('span,i,b,div,em,td,button,u'),i,e,t,n;
+ for(i=0;i<els.length;i++){e=els[i];if(e.__cgc||e.children.length)continue;t=e.textContent;if(t.length>3||!/^\s*\d{1,2}\s*$/.test(t))continue;n=+t;if(n<1||n>17)continue;
+  if(getComputedStyle(e).backgroundColor!==SCR[n])continue;e.__cgc=1;
+  (function(e,n){var u=sdgUrl(n),im=new Image();im.onload=function(){e.style.backgroundImage='url('+u+')';e.style.backgroundSize='cover';e.style.backgroundPosition='center';e.style.color='transparent';e.style.textShadow='none'};im.src=u})(e,n)}
+ var tl=root.querySelectorAll('.t[data-g]');
+ for(i=0;i<tl.length;i++){e=tl[i];if(e.__cgi)continue;e.__cgi=1;if(getComputedStyle(e).position==='static')e.style.position='relative';(function(e){var im=mk(sdgUrl(+e.getAttribute('data-g')),0);im.style.cssText='position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:4px;margin:0;opacity:.95;object-fit:cover';e.appendChild(im)})(e)}
+}
 function scan(root){
  if(!root)return;
  if(root.nodeType===3){badge(root);return}
  if(root.nodeType!==1||SKIP[root.nodeName])return;
  var w=document.createTreeWalker(root,4,null),n,list=[];
  while((n=w.nextNode()))list.push(n);
- list.forEach(badge)}
+ list.forEach(badge);chips(root)}
 var tm=0;
 function sched(){clearTimeout(tm);tm=setTimeout(function(){scan(document.body)},350)}
 function start(){
@@ -55,8 +68,8 @@ start();
 })();
 '''
 
-TAG = '<script src="/cgem-static/cgem_badges.js?v=2" defer></script>'
-ESC_TAG = '&lt;script src=&quot;/cgem-static/cgem_badges.js?v=2&quot;&gt;&lt;/script&gt;'
+TAG = '<script src="/cgem-static/cgem_badges.js?v=3" defer></script>'
+ESC_TAG = '&lt;script src=&quot;/cgem-static/cgem_badges.js?v=3&quot;&gt;&lt;/script&gt;'
 
 
 def main():
