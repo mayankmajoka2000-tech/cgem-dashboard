@@ -46,7 +46,7 @@ def main():
                 pos[k]['parents'] = par
                 pos[k]['meta']['width'] = 6
                 if k.startswith('MARKDOWN'):
-                    pos[k]['meta']['height'] = 20
+                    pos[k]['meta']['height'] = 11
                 else:
                     pos[k]['meta']['height'] = UNITS
             tab = pos['TAB-1']['children']
