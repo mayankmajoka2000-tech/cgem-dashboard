@@ -9,6 +9,18 @@ FRAME_PX = 440
 UNITS = 66
 
 
+def LOG(*a):
+    msg = ' '.join(str(x) for x in a)
+    print(msg)
+    try:
+        import os
+        os.makedirs('/app/cgem/chat', exist_ok=True)
+        with open('/app/cgem/chat/v99v.log', 'a', encoding='utf-8') as f:
+            f.write(msg + '\n')
+    except Exception:
+        pass
+
+
 def edit(doc):
     log = []
 
@@ -34,21 +46,23 @@ def main():
         from superset.extensions import db
         from superset.models.slice import Slice
         from superset.models.dashboard import Dashboard
-        sl = db.session.query(Slice).filter(Slice.slice_name == OLD_NAME).first()
+        sl = db.session.query(Slice).filter(Slice.slice_name.like('States and union territories ranked by credits issued%')).first()
+        LOG('found', sl and sl.id, sl and sl.slice_name)
         if sl is None:
-            print('v99v: chart not found')
+            LOG('chart not found')
             return
         p = json.loads(sl.params)
         t = p['handlebarsTemplate']
         m = re.search(r'srcdoc="(.*?)" style="[^"]*"', t, re.S)
+        LOG('srcdoc match', bool(m))
         doc = H.unescape(m.group(1))
         doc2, log = edit(doc)
-        print('v99v:', log)
+        LOG('edit log', log, 'doc len', len(doc), 'tpl len', len(t))
         if any(n != 1 for _, n in log):
-            print('v99v: a piece did not match, left unchanged')
+            LOG('piece did not match')
             return
         attr = H.escape(doc2, quote=True).replace('\n', '&#10;')
-        t2 = t[:m.start()] + 'srcdoc="' + attr + '" style="width:100%;height:%dpx;border:0;display:block"' % FRAME_PX + t[m.end():]
+        t2 = t[:m.start()] + 'srcdoc="' + attr + '" style="width:100%;height:' + str(FRAME_PX) + 'px;border:0;display:block"' + t[m.end():]
         p['handlebarsTemplate'] = t2
         sl.params = json.dumps(p)
         sl.slice_name = NEW_NAME
@@ -60,7 +74,7 @@ def main():
                     v['meta']['sliceName'] = NEW_NAME
             d.position_json = json.dumps(pos)
         db.session.commit()
-        print('v99v: done')
+        LOG('done')
 
 
 if __name__ == '__main__':
@@ -68,5 +82,6 @@ if __name__ == '__main__':
         main()
     except Exception as exc:
         import traceback
-        traceback.print_exc()
-        print('v99v: skipped:', exc)
+        import io
+        LOG(traceback.format_exc())
+        LOG('skipped', repr(exc))
