@@ -84,7 +84,8 @@ def bar_css(c, cols, scroll=None, dots=False):
 .C .bn i{font-style:normal;flex:none;width:24px;height:24px;border-radius:50%;background:#eef2e8;color:#265E30;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .C .bv{display:flex;align-items:center;gap:8px;min-width:0}
 .C .bv span{display:block;height:10px;border-radius:6px;min-width:3px;flex:none}
-.C .bv b{font-size:12.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.C .bv b{font-size:12.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.C .bv.tx b{font-weight:500;color:#3d4536}
 .C .m1 span{background:linear-gradient(90deg,#2C7A3D,#8CC06A)}
 .C .m2 span{background:linear-gradient(90deg,#B66F12,#E7B659)}
 .C .m3 span{background:linear-gradient(90deg,#9E4521,#DE8A5A)}
@@ -118,11 +119,11 @@ ST_TPL = ('<div class="' + ST_C + '"><div class="bl"><div class="bh"><span>State
           '<span>Average cut by 2026-27</span></div><div class="sc">'
           '{{#each data}}<div class="br"><div class="bn"><i>{{rid}}</i><b>{{nm}}</b></div>'
           '<div class="bv m1"><span style="width:calc({{w0}}% * .62)"></span><b>{{t0}}</b></div>'
-          '<div class="bv m2"><span style="width:calc({{w1}}% * .62)"></span><b>{{t1}}</b></div>'
+          '<div class="bv m2 tx"><b title="{{t1}}">{{t1}}</b></div>'
           '<div class="bv m3"><span style="width:calc({{w2}}% * .62)"></span><b>{{t2}}</b></div></div>{{/each}}</div>'
           '<div class="bk">Showing the top 5; scroll inside the list for the rest. These plants either cut their emissions per tonne or buy '
           'carbon credit certificates: they are the first buyers in the compliance market.</div></div></div>')
-ST_CSS = bar_css(ST_C, "220px 1fr 1fr 1fr", 228)
+ST_CSS = bar_css(ST_C, "200px 1.1fr 2fr 1.2fr", 228)
 
 # ------------------------------------------------------------------ plant list (chart 12 becomes a handlebars list)
 PL_C = 'cgxcc7512'
