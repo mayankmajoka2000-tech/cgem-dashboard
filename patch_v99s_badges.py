@@ -55,8 +55,8 @@ start();
 })();
 '''
 
-TAG = '<script src="/cgem-static/cgem_badges.js?v=1" defer></script>'
-ESC_TAG = '&lt;script src=&quot;/cgem-static/cgem_badges.js?v=1&quot;&gt;&lt;/script&gt;'
+TAG = '<script src="/cgem-static/cgem_badges.js?v=2" defer></script>'
+ESC_TAG = '&lt;script src=&quot;/cgem-static/cgem_badges.js?v=2&quot;&gt;&lt;/script&gt;'
 
 
 def main():
