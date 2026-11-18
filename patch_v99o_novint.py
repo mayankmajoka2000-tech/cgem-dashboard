@@ -2,7 +2,7 @@
 "Vintage map: credits issued by sector and vintage year" (slice 72) come off the dashboard."""
 import json
 
-GONE = {'CHART-pl_vbubble': 59, 'CHART-vint_dna': 72}
+GONE = {'CHART-pl_vbubble': 59, 'CHART-vint_dna': 72, 'CHART-pl_vstrip': 55, 'MARKDOWN-3-3-0': None}
 
 
 def drop(pos):
@@ -12,7 +12,8 @@ def drop(pos):
             continue
         row = next((k for k, v in pos.items() if isinstance(v, dict) and comp in (v.get('children') or [])), None)
         del pos[comp]
-        ids.add(cid)
+        if cid:
+            ids.add(cid)
         if row:
             pos[row]['children'].remove(comp)
             if not pos[row]['children']:
@@ -32,8 +33,9 @@ def main():
         n = 0
         for d in db.session.query(Dashboard).filter(Dashboard.slug == 'cgem').all():
             pos = json.loads(d.position_json)
+            before = len(pos)
             gone = drop(pos)
-            if gone:
+            if gone or len(pos) != before:
                 d.position_json = json.dumps(pos)
                 d.slices = [s for s in d.slices if s.id not in gone]
                 n += 1
