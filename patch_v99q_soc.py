@@ -353,14 +353,104 @@ function draw(){
 draw();
 """
 
+PROG_CSS = """
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.pn{border:1px solid #e3e6dc;border-radius:12px;padding:12px 14px;background:#fbfcf9}
+.pn h3{margin:0 0 6px;font:700 11px 'Geist Mono',ui-monospace,Menlo,monospace;letter-spacing:.08em;color:#333}
+.pn ul{margin:0;padding-left:16px;font-size:12.5px;line-height:1.5}.pn li{margin-bottom:5px}
+.ins{border-left:4px solid #C98A1F;background:#FFF9EC;border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.5;margin-bottom:12px}
+.stk{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:4px 0 6px}.stk b{display:flex;align-items:center;justify-content:center;color:#fff;font:700 11.5px 'Geist Mono',ui-monospace,Menlo,monospace}
+.lgd{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:#555;margin-bottom:12px}.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hd,.rw{display:grid;gap:10px;align-items:center}
+.wr{grid-template-columns:230px 1.05fr 1.3fr 96px}
+.hd{padding:0 8px 6px;font-size:10.5px;color:#7a8270;text-transform:uppercase;letter-spacing:.05em;font-weight:600;border-bottom:1px solid #eef0e9}
+.rw{padding:6px 8px;border-radius:8px;font-size:12.5px;line-height:1.35}.rw:nth-child(even){background:#f8faf5}
+.nm{display:flex;align-items:center;gap:8px;font-weight:600}
+.nm i{display:inline-block;min-width:22px;height:22px;border-radius:6px;text-align:center;font:800 11px/22px 'Geist Mono',ui-monospace,Menlo,monospace}
+.tg{color:#555;font-size:12px}.v{font:600 12px 'Geist Mono',ui-monospace,Menlo,monospace;text-align:right}
+.ir{grid-template-columns:230px 1fr 56px 80px 96px}
+.sr{grid-template-columns:30px 220px 1fr 50px 60px 96px 82px}
+.bar{position:relative;height:14px;border-radius:7px;background:#eef0ea}.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:7px}
+.bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:#333;opacity:.55}
+.sc{max-height:520px;overflow-y:auto;border-bottom:1px solid #eef0e9}.hd.s{position:sticky;top:0;background:#fff;z-index:2}
+.hn{font-size:11px;color:#888;margin:8px 0 0;line-height:1.5}
+.k1{color:#8a9080;font:700 10.5px 'Geist Mono',ui-monospace,Menlo,monospace}
+@media (max-width:1000px){.g2{grid-template-columns:1fr}}
+"""
+PROG_JS = r"""
+var VIEW='w',SORT='s';
+var GOAL=[null,
+['Eradicate extreme poverty; halve national poverty','800M+ people in extreme poverty; only 1 in 5 countries on track to halve national poverty'],
+['End hunger and all malnutrition; double small farmers’ productivity','1 in 11 people hungry (2023); child stunting 26.4% to 23.2%'],
+['Under-5 deaths at most 25 per 1,000; maternal deaths under 70 per 100,000','Under-5 deaths 37 per 1,000; maternal deaths 197 per 100,000'],
+['Free, quality primary and secondary schooling for all','272M children out of school; 60% finish upper secondary'],
+['End discrimination and violence against women and girls','Women hold 27.2% of parliament seats; do 2.5x the unpaid care work'],
+['Safe drinking water and sanitation for everyone','2.2B lack safe drinking water; 3.4B lack safe sanitation'],
+['Universal modern energy access; a much larger renewable share','92% have electricity; 2.1B lack clean cooking'],
+['Full employment and decent work for all; end child labour','Unemployment 5.0% (record low), but 57.8% of workers are informal'],
+['Resilient infrastructure; affordable internet in the poorest countries','Internet reach 68% (40% in 2015); 2.6B still offline'],
+['Income of the bottom 40% growing faster than the average','Bottom 40% outgrew the average in ~6 of 10 countries; refugees at 37.8M'],
+['Safe, affordable housing and basic services; no slums','1.12B people live in slums or informal settlements'],
+['Halve food waste; sound management of chemicals and waste','No headline figure in the UN key findings used here'],
+['Bring climate action into policy; build resilience to disasters','2024 hottest year on record: 1.55°C above pre-industrial'],
+['Cut marine pollution; protect and restore ocean ecosystems','84% of coral reefs hit by bleaching (2023-25), the worst on record'],
+['Halt deforestation and biodiversity loss; restore degraded land','Protected key biodiversity areas doubled since 2000'],
+['Cut violence; effective, accountable institutions for all','120M+ people forcibly displaced; ~50,000 conflict deaths in 2024'],
+['Mobilise finance (aid at 0.7% of income); close the digital divide','Aid fell 7.1% in 2024; developing countries face a $4T yearly SDG financing gap']];
+var IG={1:72,3:77,4:61,5:49,6:89,7:96,9:61,10:65,11:83,13:67,15:75};
+var IDX=[['Andaman and Nicobar Islands',58,70],['Andhra Pradesh',64,74],['Arunachal Pradesh',51,65],['Assam',49,65],['Bihar',48,57],['Chandigarh',68,77],['Chhattisgarh',58,67],['Dadra and Nagar Haveli and Daman and Diu',57,66],['Delhi',62,70],['Goa',64,77],['Gujarat',64,74],['Haryana',55,72],['Himachal Pradesh',69,77],['Jammu and Kashmir',53,74],['Jharkhand',50,62],['Karnataka',64,75],['Kerala',69,79],['Ladakh',null,65],['Lakshadweep',62,66],['Madhya Pradesh',52,67],['Maharashtra',64,73],['Manipur',59,72],['Meghalaya',52,63],['Mizoram',59,72],['Nagaland',51,63],['Odisha',51,66],['Puducherry',65,74],['Punjab',60,76],['Rajasthan',59,67],['Sikkim',58,76],['Tamil Nadu',66,78],['Telangana',61,74],['Tripura',55,71],['Uttar Pradesh',42,67],['Uttarakhand',60,79],['West Bengal',56,70]];
+function cat(x){return x>=65?['Front-runner','#265E30']:x>=50?['Performer','#C98A1F']:['Aspirant','#B85829']}
+function draw(){
+  var allp={},ip={};
+  pick('sd','World',function(r){return r.b==='all'&&r.a!=='0'}).forEach(function(r){allp[r.a]=r.n});
+  pick('sd','India',function(r){return r.b==='all'&&r.a!=='0'}).forEach(function(r){ip[r.a]=r.n});
+  var h='<div class="pills"><button class="pill'+(VIEW==='w'?' on':'')+'" data-v="w">World: the 17 goals</button><button class="pill'+(VIEW==='i'?' on':'')+'" data-v="i">India: national scores</button><button class="pill'+(VIEW==='s'?' on':'')+'" data-v="s">Indian states</button></div>';
+  if(VIEW==='w'){
+    h+='<div class="ins"><b>The 2030 deadline.</b> Of the 169 targets with data, only <b>35%</b> are on track or progressing moderately, nearly half are moving too slowly and <b>18%</b> have gone backwards (UN SDG Report 2025). Projects in this dataset claim these goals; the table sets what each goal asks for against where the world stands.</div>'
+     +'<div class="stk"><b style="width:35%;background:#265E30">35%</b><b style="width:47%;background:#C98A1F">about 47%</b><b style="width:18%;background:#B85829">18%</b></div>'
+     +'<div class="lgd"><span><i style="background:#265E30"></i>on track or moderate progress</span><span><i style="background:#C98A1F"></i>too slow or marginal</span><span><i style="background:#B85829"></i>regressed</span></div>';
+    h+='<div class="hd wr"><span>Goal</span><span>What it asks for by 2030</span><span>Where the world stands</span><span style="text-align:right">Carbon projects claiming it</span></div>';
+    for(var g=1;g<=17;g++){var c=SDG[g][1];h+='<div class="rw wr"><span class="nm"><i style="background:'+c+';color:'+ink(c)+'">'+g+'</i>'+esc(SDG[g][0])+'</span><span class="tg">'+esc(GOAL[g][0])+'</span><span>'+esc(GOAL[g][1])+'</span><span class="v">'+(allp[g]?ni(allp[g]):'–')+'</span></div>'}
+    h+='<div class="hn">Source: UN, The Sustainable Development Goals Report 2025. The last column counts projects in this dashboard whose registry lists the goal (only some registries report goals).</div>';
+  }else if(VIEW==='i'){
+    var tr=[[2018,57],[2019,60],[2020,66],[2023,71]];
+    h+='<div class="ins"><b>India has moved from 57 to 71 out of 100</b> on NITI Aayog’s SDG India Index (100 = every target met). Gender equality (49) is the weakest scored goal; clean energy (96) the strongest, and reduced inequalities is the only goal that slipped (67 to 65 since 2020-21).</div>';
+    h+='<div class="g2" style="margin-top:0"><div class="pn"><h3>COMPOSITE SCORE OVER TIME</h3>'+tr.map(function(t){return '<div class="rw" style="grid-template-columns:70px 1fr 40px;padding:4px 0"><span>'+(t[0]===2023?'2023-24':t[0]===2020?'2020-21':t[0])+'</span><div class="bar"><i style="width:'+t[1]+'%;background:#265E30"></i></div><span class="v">'+t[1]+'</span></div>'}).join('')+'<div class="hn">Bands: below 50 aspirant, 50 to 64 performer, 65 to 99 front-runner, 100 achiever.</div><ul style="margin-top:14px"><li>State scores now run from <b>57</b> (Bihar) to <b>79</b> (Kerala and Uttarakhand).</li><li><b>32</b> states and territories are front-runners, up from 22 in 2020-21.</li><li>At the pace of the last three years (about +5 points), India would still be short of 100 in 2030.</li></ul></div>'
+     +'<div class="pn"><h3>HOW FAR IS EACH GOAL FROM 100?</h3><div class="hd ir" style="grid-template-columns:200px 1fr 48px 70px"><span>Goal</span><span>Score (100 = goal met)</span><span style="text-align:right">Gap</span><span style="text-align:right">Projects</span></div>'
+     +Object.keys(IG).map(Number).sort(function(a,b){return IG[a]-IG[b]}).map(function(g){var c=SDG[g][1];return '<div class="rw" style="grid-template-columns:200px 1fr 48px 70px"><span class="nm"><i style="background:'+c+';color:'+ink(c)+'">'+g+'</i>'+esc(SDG[g][0])+'</span><div class="bar"><i style="width:'+IG[g]+'%;background:'+(IG[g]<50?'#B85829':IG[g]<65?'#C98A1F':'#265E30')+'"></i></div><span class="v">'+(100-IG[g])+'</span><span class="v">'+ni(ip[g]||0)+'</span></div>'}).join('')
+     +'<div class="hn">Goals 2, 8, 12 and 16 have no national score in the sources used; goal 14 applies to coastal states only. Projects = Indian projects claiming the goal.</div></div></div>';
+  }else{
+    var T={};pick('is','India').forEach(function(r){T[r.a]=r.n});
+    var rows=IDX.map(function(x){return {s:x[0],a:x[1],b:x[2],n:T[x[0]]||0}});
+    rows.sort(function(p,q){return SORT==='s'?q.b-p.b:SORT==='c'?((q.a==null?-1:q.b-q.a)-(p.a==null?-1:p.b-p.a)):q.n-p.n});
+    var tot=rows.reduce(function(s,r){return s+r.n},0),srt=rows.slice().sort(function(p,q){return q.b-p.b||q.n-p.n}),top=srt.slice(0,6),low=srt.slice(-6);
+    var sh=function(a){return a.reduce(function(s,r){return s+r.n},0)};
+    h+='<div class="ins"><b>Reading this.</b> The six best-scoring states hold <b>'+pc(sh(top),tot,0)+'</b> of the carbon projects with a known state, the six lowest-scoring only <b>'+pc(sh(low),tot,0)+'</b> ('+low.map(function(r){return r.s}).join(', ')+'). Scores have risen almost everywhere since 2018, but no state is near 100: even the best are at 79, so every state is at least 21 points short.</div>';
+    h+='<div class="pills"><button class="pill'+(SORT==='s'?' on':'')+'" data-o="s">Sort by SDG score</button><button class="pill'+(SORT==='c'?' on':'')+'" data-o="c">Sort by gain since 2018</button><button class="pill'+(SORT==='n'?' on':'')+'" data-o="n">Sort by carbon projects</button></div>';
+    h+='<div class="sc"><div class="hd sr s"><span></span><span>State</span><span>SDG India Index 2023-24 (100 = goals met)</span><span style="text-align:right">Gap</span><span style="text-align:right">Since 2018</span><span style="text-align:right">Band</span><span style="text-align:right">Carbon projects</span></div>';
+    rows.forEach(function(r,i){var c=cat(r.b);h+='<div class="rw sr"><span class="k1">'+(i+1)+'</span><span class="nm">'+esc(r.s)+'</span><div class="bar"><i style="width:'+r.b+'%;background:'+c[1]+'"></i><u style="left:65%" title="front-runner line"></u></div><span class="v">'+(100-r.b)+'</span><span class="v">'+(r.a==null?'n/a':'+'+(r.b-r.a))+'</span><span class="v" style="color:'+c[1]+';font-size:11px">'+c[0]+'</span><span class="v">'+ni(r.n)+'</span></div>'});
+    h+='</div><div class="hn">The vertical line marks 65, the front-runner threshold. Carbon projects = all projects on the registries in this dashboard located in the state. Ladakh has no 2018 score (it became a union territory in 2019). Source: NITI Aayog SDG India Index 2023-24, as published in the RBI Handbook of Statistics on Indian States. The index gives scores, not the reasons behind each state’s gap.</div>';
+  }
+  h+='<div class="g2"><div class="pn"><h3>WHY THE WORLD IS OFF TRACK</h3><ul><li><b>Money.</b> Developing countries face a $4 trillion yearly financing gap; debt payments hit a record $1.4 trillion in 2023 and official aid fell 7.1% in 2024.</li><li><b>Conflict.</b> Over 120 million people were forcibly displaced by the end of 2024.</li><li><b>Climate.</b> 2024 was the hottest year recorded (1.55°C), hitting the poorest first.</li><li><b>Setbacks.</b> COVID-19 cut healthy life expectancy by 1.8 years and rising inequality slows the rest.</li></ul></div>'
+   +'<div class="pn"><h3>WHY INDIA STILL FALLS SHORT (NITI AAYOG)</h3><ul><li><b>Gender equality (49).</b> Sex ratio at birth, women’s ownership of land and assets, and women’s employment and labour-force participation.</li><li><b>Reduced inequalities (65, falling).</b> Unequal job opportunities at the low end and gender gaps in work.</li><li><b>Education (61).</b> Quality, not access, mainly in central India.</li><li><b>Climate (67).</b> Disaster preparedness scores just 19; only 55% of hazardous waste is recycled or reused.</li><li><b>Justice.</b> 71% of IPC crimes reach charge sheet.</li></ul></div></div>';
+  document.getElementById('app').innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-v]'),function(b){b.onclick=function(){VIEW=b.getAttribute('data-v');draw()}});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-o]'),function(b){b.onclick=function(){SORT=b.getAttribute('data-o');draw()}});
+}
+draw();
+"""
+
 NEW = [
     # key, chart name, css, js, frame px, grid units
+    ('prog', 'How far are the Goals from being met? World, India and Indian states', PROG_CSS, PROG_JS, 1050, 142),
     ('stage', 'SDG claims by project stage: issued, registered, listed and stopped', STAGE_CSS, STAGE_JS, 850, 118),
     ('who', 'Who gets the projects? Big economies against Africa and the least developed countries', WHO_CSS, WHO_JS, 470, 70),
     ('sgrid', 'Which goals does each Indian state claim? (state by goal heat map)', SG_CSS, SG_JS, 580, 84),
     ('indc', "India's concentration: states, districts and the left-behind regions", IND_CSS, IND_JS, 940, 129),
 ]
 INTRO2 = {
+    'prog': ('How far are the Goals from being met?',
+             'Before looking at the projects: what each goal asks for, how much of it the world and India have achieved, how every Indian state scores, and why the gaps remain.', 11),
     'sgrid': ('Indian states and the goals they claim',
               'Each row is a state, each column one of the 17 goals. Darker means a larger share of that state’s SDG-reporting projects claim the goal, so you can see which states lean on energy, water, health or land.', 11),
     'stage': ('Which stage are SDG-claiming projects at?',
@@ -436,10 +526,13 @@ def main():
                 pos[cid] = comp
                 pos[crid] = {'children': [cid], 'id': crid, 'meta': {'background': 'BACKGROUND_TRANSPARENT'}, 'parents': base, 'type': 'ROW'}
                 return [rid, crid]
+            p0 = make('prog')
             a = make('stage')
             b = make('who') + make('indc') + make('sgrid')
             i = rows.index('ROW-sdg-const-c') + 1 if 'ROW-sdg-const-c' in rows else len(rows)
             rows[i:i] = a
+            k0 = rows.index('ROW-sdg-kpi-c') + 1 if 'ROW-sdg-kpi-c' in rows else 1
+            rows[k0:k0] = p0
             j = rows.index('ROW-sdg-eff-c') + 1 if 'ROW-sdg-eff-c' in rows else rows.index('ROW-sdg-state-m')
             rows[j:j] = b
             d.position_json = json.dumps(pos)
